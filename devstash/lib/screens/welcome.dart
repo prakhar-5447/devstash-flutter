@@ -46,7 +46,57 @@ class WelcomeScreen extends StatelessWidget {
                 ),
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  showModalBottomSheet<void>(
+                    isScrollControlled: true,
+                    context: context,
+                    builder: (BuildContext context) {
+                      return FractionallySizedBox(
+                          widthFactor: 1,
+                          heightFactor: 0.7,
+                          child: Container(
+                            decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.elliptical(30, 25),
+                                    topRight: Radius.elliptical(30, 25)),
+                                color: Color.fromARGB(166, 199, 198, 198)),
+                            child: Column(children: <Widget>[
+                              const Expanded(
+                                  flex: 1,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        "Create New Account",
+                                        style: TextStyle(
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                            fontFamily: 'Comfortaa',
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 25),
+                                      ),
+                                    ],
+                                  )),
+                              Expanded(
+                                flex: 7,
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                      color: Color.fromARGB(255, 255, 255, 255),
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.elliptical(30, 25),
+                                          topRight: Radius.elliptical(30, 25))),
+                                  child: const Column(
+                                    children: <Widget>[Row(), Row(), Column()],
+                                  ),
+                                ),
+                              )
+                            ]),
+                          )
+                          // onPressed: () => Navigator.pop(context),
+                          );
+                    },
+                  );
+                },
                 style: const ButtonStyle(
                     backgroundColor: MaterialStatePropertyAll<Color>(
                         Color.fromARGB(255, 39, 24, 126))),
