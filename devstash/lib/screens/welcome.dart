@@ -59,8 +59,8 @@ class WelcomeScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.only(
                                     topLeft: Radius.elliptical(30, 25),
                                     topRight: Radius.elliptical(30, 25)),
-                                color: Color.fromARGB(166, 199, 198, 198)),
-                            child: Column(children: <Widget>[
+                                color: Color.fromARGB(221, 221, 215, 215)),
+                            child: Column(children: [
                               const Expanded(
                                   flex: 1,
                                   child: Column(
@@ -85,15 +85,164 @@ class WelcomeScreen extends StatelessWidget {
                                       borderRadius: BorderRadius.only(
                                           topLeft: Radius.elliptical(30, 25),
                                           topRight: Radius.elliptical(30, 25))),
-                                  child: const Column(
-                                    children: <Widget>[Row(), Row(), Column()],
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 20, horizontal: 50),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        const Column(
+                                          children: [
+                                            Row(),
+                                            Padding(
+                                                padding:
+                                                    EdgeInsets.only(top: 15),
+                                                child: Row(children: [
+                                                  Expanded(
+                                                      child: Divider(
+                                                    color: Color.fromARGB(
+                                                        197, 144, 144, 144),
+                                                    height: 25,
+                                                    thickness: 2,
+                                                    indent: 5,
+                                                    endIndent: 5,
+                                                  )),
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 10),
+                                                    child: Text("or",
+                                                        style: TextStyle(
+                                                            color: Color
+                                                                .fromARGB(
+                                                                    197,
+                                                                    144,
+                                                                    144,
+                                                                    144),
+                                                            fontFamily:
+                                                                'Comfortaa',
+                                                            fontWeight:
+                                                                FontWeight.w400,
+                                                            fontSize: 20)),
+                                                  ),
+                                                  Expanded(
+                                                      child: Divider(
+                                                    color: Color.fromARGB(
+                                                        197, 144, 144, 144),
+                                                    height: 25,
+                                                    thickness: 2,
+                                                    indent: 5,
+                                                    endIndent: 5,
+                                                  )),
+                                                ])),
+                                          ],
+                                        ),
+                                        const Column(
+                                          children: [
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 10),
+                                              child: TextField(
+                                                decoration: InputDecoration(
+                                                  border: OutlineInputBorder(),
+                                                  labelText: 'Name',
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 10),
+                                                child: TextField(
+                                                  decoration: InputDecoration(
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                    labelText: 'Email',
+                                                  ),
+                                                )),
+                                            Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 10),
+                                                child: TextField(
+                                                  decoration: InputDecoration(
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                    // hintText: 'Enter Password',
+                                                    labelText: 'Password',
+                                                  ),
+                                                )),
+                                          ],
+                                        ),
+                                        Column(children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 15),
+                                            child: ElevatedButton(
+                                                style: const ButtonStyle(
+                                                    backgroundColor:
+                                                        MaterialStatePropertyAll<
+                                                                Color>(
+                                                            Color.fromARGB(255,
+                                                                33, 149, 221))),
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
+                                                child: const Padding(
+                                                    padding: EdgeInsets.only(
+                                                        left: 50,
+                                                        top: 12,
+                                                        right: 50,
+                                                        bottom: 12),
+                                                    child: Text(
+                                                      "REGISTER",
+                                                      style: TextStyle(
+                                                          color:
+                                                              Color.fromARGB(
+                                                                  221,
+                                                                  221,
+                                                                  215,
+                                                                  215),
+                                                          fontFamily:
+                                                              'Comfortaa',
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                          fontSize: 22),
+                                                    ))),
+                                          ),
+                                          const Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                "Already have an account?",
+                                                style: TextStyle(
+                                                    color: Color.fromARGB(
+                                                        197, 144, 144, 144),
+                                                    fontFamily: 'Comfortaa',
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 18),
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text(
+                                                "Login here",
+                                                style: TextStyle(
+                                                    color: Color.fromARGB(
+                                                        255, 24, 178, 250),
+                                                    fontFamily: 'Comfortaa',
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 18),
+                                              ),
+                                            ],
+                                          )
+                                        ]),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               )
                             ]),
-                          )
-                          // onPressed: () => Navigator.pop(context),
-                          );
+                          ));
                     },
                   );
                 },
