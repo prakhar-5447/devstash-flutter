@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         routes: {
-          '/': (context) => WelcomeScreen(title: "hello"),
+          '/': (context) => const WelcomeScreen(title: "hello"),
           // '/': (context) => MyHomePage(title: "hello"),
         });
   }
