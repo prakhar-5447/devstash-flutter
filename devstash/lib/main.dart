@@ -1,3 +1,5 @@
+import 'package:devstash/screens/HomeScreen.dart';
+import 'package:devstash/screens/WeekdayTaskScreen.dart';
 import 'package:devstash/screens/welcome.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +18,8 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         routes: {
-          '/': (context) => const WelcomeScreen(title: "hello"),
+          // '/': (context) => const WelcomeScreen(title: "hello"),
+          '/': (context) => const HomeScreen(),
           // '/': (context) => MyHomePage(title: "hello"),
         });
   }
