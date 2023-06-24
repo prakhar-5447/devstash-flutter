@@ -1,11 +1,19 @@
 import 'dart:ui';
+import 'package:devstash/models/TechStack.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ProjectDetailScreen extends StatelessWidget {
   const ProjectDetailScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final List<TechStack> tech = [
+      TechStack("assets/google.png", "google"),
+      TechStack("assets/linkedin.png", "linkedin"),
+      TechStack("assets/github.png", "github")
+    ];
+
     return Scaffold(
       body: Column(
         children: [
@@ -75,38 +83,39 @@ class ProjectDetailScreen extends StatelessWidget {
                             children: [
                               Text("Juicy-N-Yummy",
                                   style: TextStyle(
-                                      color: Color.fromARGB(255, 27, 26, 26),
+                                      color: Color.fromARGB(255, 75, 73, 70),
                                       fontFamily: 'Comfortaa',
                                       fontWeight: FontWeight.w700,
                                       fontSize: 20)),
                               Text("Medium",
                                   style: TextStyle(
-                                      color: Color.fromARGB(255, 105, 105, 105),
+                                      color: Color.fromARGB(255, 165, 165, 165),
                                       fontFamily: 'Comfortaa',
                                       fontWeight: FontWeight.w400,
-                                      fontSize: 18)),
+                                      fontSize: 14)),
                             ],
                           ),
                           ElevatedButton(
                               style: ButtonStyle(
                                   shape: MaterialStateProperty.all<
                                           RoundedRectangleBorder>(
-                                      const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.zero,
-                                          side: BorderSide(
+                                      RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(3),
+                                          side: const BorderSide(
                                               color: Color.fromARGB(
-                                                  255, 33, 149, 221)))),
+                                                  255, 117, 140, 253)))),
                                   backgroundColor:
                                       const MaterialStatePropertyAll<Color>(
-                                          Color.fromARGB(255, 33, 149, 221))),
+                                          Color.fromARGB(255, 117, 140, 253))),
                               onPressed: () => {},
                               child: const Text(
                                 "view code",
                                 style: TextStyle(
                                     color: Color.fromARGB(255, 234, 228, 228),
                                     fontFamily: 'Comfortaa',
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 16),
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 14),
                               )),
                         ],
                       ),
@@ -142,67 +151,56 @@ class ProjectDetailScreen extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 30),
                         child: Column(
                           children: [
-                            const Row(
+                            Row(
                               children: [
-                                Text("TECH STACK",
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 10),
+                                  child: SvgPicture.asset(
+                                    "assets/tech-stack.svg",
+                                    height: 30,
+                                  ),
+                                ),
+                                const Text("TECH STACK",
                                     style: TextStyle(
                                         color:
                                             Color.fromARGB(255, 165, 165, 165),
                                         fontFamily: 'Comfortaa',
-                                        fontWeight: FontWeight.w700,
+                                        fontWeight: FontWeight.w500,
                                         fontSize: 20)),
                               ],
                             ),
                             Padding(
                               padding: const EdgeInsets.only(
                                   left: 20, right: 20, top: 15),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Container(
-                                    width: 45,
-                                    height: 45,
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black),
-                                      borderRadius: BorderRadius.circular(30),
-                                      color: Colors.white,
-                                    ),
-                                    child: Image.asset(
-                                      'assets/google.png',
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
-                                  Container(
-                                    width: 45,
-                                    height: 45,
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black),
-                                      borderRadius: BorderRadius.circular(30),
-                                      color: Colors.white,
-                                    ),
-                                    child: Image.asset(
-                                      'assets/github.png',
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
-                                  Container(
-                                    width: 45,
-                                    height: 45,
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black),
-                                      borderRadius: BorderRadius.circular(30),
-                                      color: Colors.white,
-                                    ),
-                                    child: Image.asset(
-                                      'assets/linkedin.png',
-                                      fit: BoxFit.contain,
-                                    ),
-                                  )
-                                ],
+                              child: SingleChildScrollView(
+                                child: Container(
+                                  width: 200,
+                                  child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: tech.length,
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          child: Container(
+                                            width: 45,
+                                            height: 45,
+                                            padding: const EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.black),
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                              color: Colors.white,
+                                            ),
+                                            child: Image.asset(
+                                              tech[index].icon,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                        );
+                                      }),
+                                ),
                               ),
                             ),
                           ],
@@ -219,62 +217,151 @@ class ProjectDetailScreen extends StatelessWidget {
                                         color:
                                             Color.fromARGB(255, 165, 165, 165),
                                         fontFamily: 'Comfortaa',
-                                        fontWeight: FontWeight.w700,
+                                        fontWeight: FontWeight.w500,
                                         fontSize: 20)),
                               ],
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 20, right: 20, top: 15),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Container(
-                                    width: 45,
-                                    height: 45,
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black),
-                                      borderRadius: BorderRadius.circular(30),
-                                      color: Colors.white,
-                                    ),
-                                    child: Image.asset(
-                                      'assets/google.png',
-                                      fit: BoxFit.contain,
-                                    ),
+                                padding: const EdgeInsets.only(top: 15),
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: Container(
+                                          decoration: const BoxDecoration(
+                                              color: Color.fromARGB(
+                                                  255, 241, 242, 246)),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10),
+                                            child: Row(
+                                              children: [
+                                                Image.asset(
+                                                  "assets/google.png",
+                                                  height: 20,
+                                                ),
+                                                const Padding(
+                                                  padding:
+                                                      EdgeInsets.only(left: 10),
+                                                  child: Text("PRAKHAR SAHU",
+                                                      style: TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255, 39, 24, 126),
+                                                          fontFamily:
+                                                              'Comfortaa',
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontSize: 12)),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: Container(
+                                          decoration: const BoxDecoration(
+                                              color: Color.fromARGB(
+                                                  255, 241, 242, 246)),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10),
+                                            child: Row(
+                                              children: [
+                                                Image.asset(
+                                                  "assets/google.png",
+                                                  height: 20,
+                                                ),
+                                                const Padding(
+                                                  padding:
+                                                      EdgeInsets.only(left: 10),
+                                                  child: Text("PRAKHAR SAHU",
+                                                      style: TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255, 39, 24, 126),
+                                                          fontFamily:
+                                                              'Comfortaa',
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontSize: 12)),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: Container(
+                                          decoration: const BoxDecoration(
+                                              color: Color.fromARGB(
+                                                  255, 241, 242, 246)),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10),
+                                            child: Row(
+                                              children: [
+                                                Image.asset(
+                                                  "assets/google.png",
+                                                  height: 20,
+                                                ),
+                                                const Padding(
+                                                  padding:
+                                                      EdgeInsets.only(left: 10),
+                                                  child: Text("PRAKHAR SAHU",
+                                                      style: TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255, 39, 24, 126),
+                                                          fontFamily:
+                                                              'Comfortaa',
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontSize: 12)),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: Container(
+                                          decoration: const BoxDecoration(
+                                              color: Color.fromARGB(
+                                                  255, 241, 242, 246)),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10),
+                                            child: Row(
+                                              children: [
+                                                Image.asset(
+                                                  "assets/google.png",
+                                                  height: 20,
+                                                ),
+                                                const Padding(
+                                                  padding:
+                                                      EdgeInsets.only(left: 10),
+                                                  child: Text("PRAKHAR SAHU",
+                                                      style: TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255, 39, 24, 126),
+                                                          fontFamily:
+                                                              'Comfortaa',
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontSize: 12)),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ],
                                   ),
-                                  Container(
-                                    width: 45,
-                                    height: 45,
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black),
-                                      borderRadius: BorderRadius.circular(30),
-                                      color: Colors.white,
-                                    ),
-                                    child: Image.asset(
-                                      'assets/github.png',
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
-                                  Container(
-                                    width: 45,
-                                    height: 45,
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black),
-                                      borderRadius: BorderRadius.circular(30),
-                                      color: Colors.white,
-                                    ),
-                                    child: Image.asset(
-                                      'assets/linkedin.png',
-                                      fit: BoxFit.contain,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
+                                )),
                           ],
                         ),
                       ),
