@@ -1,5 +1,5 @@
 import 'package:devstash/screens/HomeScreen.dart';
-import 'package:devstash/screens/WeekdayTaskScreen.dart';
+import 'package:devstash/widgets/WeekdayTaskScreen.dart';
 import 'package:devstash/screens/welcome.dart';
 import 'package:flutter/material.dart';
 
