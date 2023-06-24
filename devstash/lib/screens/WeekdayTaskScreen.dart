@@ -1,11 +1,5 @@
+import 'package:devstash/models/tasks.dart';
 import 'package:flutter/material.dart';
-
-class Task {
-  final String day;
-  final String taskName;
-
-  Task(this.day, this.taskName);
-}
 
 class WeekdayTaskScreen extends StatefulWidget {
   @override
@@ -14,14 +8,61 @@ class WeekdayTaskScreen extends StatefulWidget {
 
 class _WeekdayTaskScreenState extends State<WeekdayTaskScreen> {
   int _selectedDay = DateTime.now().weekday; // Initialize with current weekday
-  List<Task> _tasks = [
-    Task('Monday', 'Task 1'),
-    Task('Tuesday', 'Task 2'),
-    Task('Wednesday', 'Task 3'),
-    Task('Thursday', 'Task 4'),
-    Task('Friday', 'Task 5'),
-    Task('Saturday', 'Task 6'),
-    Task('Sunday', 'Task 7'),
+  final List<List<Task>> _tasks = [
+    [
+      Task(
+        "Schema Design",
+        "Design database schema, and  implement ACID property.",
+      ),
+      Task(
+        "Schema Design",
+        "Design database schema, and  implement ACID property.",
+      ),
+      Task(
+        "Frontend",
+        "Complete home page with responsive design.",
+      ),
+      Task(
+        "Backend",
+        "Integrate payment gateway and fix payment methods.",
+      ),
+    ],
+    [
+      Task(
+        "Frontend",
+        "Complete home page with responsive design.",
+      ),
+    ],
+    [
+      Task(
+        "Backend",
+        "Integrate payment gateway and fix payment methods.",
+      ),
+    ],
+    [
+      Task(
+        "Schema Design",
+        "Design database schema, and  implement ACID property.",
+      ),
+    ],
+    [
+      Task(
+        "Frontend",
+        "Complete home page with responsive design.",
+      ),
+    ],
+    [
+      Task(
+        "Backend",
+        "Integrate payment gateway and fix payment methods.",
+      ),
+    ],
+    [
+      Task(
+        "Backend",
+        "Integrate payment gateway and fix payment methods.",
+      ),
+    ]
   ];
 
   @override
@@ -61,12 +102,43 @@ class _WeekdayTaskScreenState extends State<WeekdayTaskScreen> {
             )
           ],
         ),
-        const SizedBox(height: 16),
-        Text(
-          'Tasks for ${_tasks[_selectedDay - 1].day}:',
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        Text(_tasks[_selectedDay - 1].taskName),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(25, 0, 25, 5),
+            child: ListView.builder(
+                itemCount: _tasks[_selectedDay - 1].length,
+                itemBuilder: (context, index) {
+                  List<Task> tasksForDay = _tasks[_selectedDay - 1];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 25),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 5),
+                            child: Text(
+                              tasksForDay[index].title,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'Comfortaa',
+                              ),
+                            ),
+                          ),
+                          Text(
+                            tasksForDay[index].desc,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'Comfortaa',
+                              color: Color.fromARGB(255, 165, 165, 165),
+                            ),
+                          ),
+                        ]),
+                  );
+                }),
+          ),
+        )
       ],
     );
   }

@@ -141,7 +141,7 @@ class HomeScreen extends StatelessWidget {
             ),
           ]),
         ),
-        Container(
+        Expanded(
           child: WeekdayTaskScreen(),
         ),
       ]),
