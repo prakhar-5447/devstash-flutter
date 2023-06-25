@@ -1,3 +1,4 @@
+import 'package:devstash/screens/project.dart';
 import 'package:devstash/screens/projectDetailScreen.dart';
 import 'package:devstash/screens/welcome.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,8 @@ class MyApp extends StatelessWidget {
         ),
         routes: {
           // '/': (context) => const WelcomeScreen(title: "hello"),
-          '/': (context) => const ProjectDetailScreen(),
+          // '/': (context) => const ProjectDetailScreen(),
+          '/': (context) => const Project(),
           // '/': (context) => MyHomePage(title: "hello"),
         });
   }
