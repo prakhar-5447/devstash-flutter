@@ -1,3 +1,4 @@
+import 'package:devstash/screens/saved.dart';
 import 'package:devstash/screens/project.dart';
 import 'package:devstash/screens/projectDetailScreen.dart';
 import 'package:devstash/screens/welcome.dart';
@@ -20,7 +21,8 @@ class MyApp extends StatelessWidget {
         routes: {
           // '/': (context) => const WelcomeScreen(title: "hello"),
           // '/': (context) => const ProjectDetailScreen(),
-          '/': (context) => const Project(),
+          // '/': (context) => const Project(),
+          '/': (context) => const Saved(),
           // '/': (context) => MyHomePage(title: "hello"),
         });
   }
