@@ -1,4 +1,4 @@
-import 'package:devstash/models/tasks.dart';
+import 'package:devstash/models/Task.dart';
 import 'package:flutter/material.dart';
 
 class WeekdayTaskScreen extends StatefulWidget {
