@@ -2,6 +2,8 @@ import 'package:devstash/models/Task.dart';
 import 'package:flutter/material.dart';
 
 class WeekdayTaskScreen extends StatefulWidget {
+  const WeekdayTaskScreen({super.key});
+
   @override
   _WeekdayTaskScreenState createState() => _WeekdayTaskScreenState();
 }
@@ -148,7 +150,7 @@ class WeekdaySwitchButton extends StatelessWidget {
   final int selectedDay;
   final Function(int) onDaySelected;
 
-  const WeekdaySwitchButton({
+  const WeekdaySwitchButton({super.key, 
     required this.selectedDay,
     required this.onDaySelected,
   });

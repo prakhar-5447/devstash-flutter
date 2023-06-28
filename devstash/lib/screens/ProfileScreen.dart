@@ -1,5 +1,3 @@
-import 'dart:async';
-import 'dart:ui';
 
 import 'package:devstash/models/Project.dart';
 import 'package:flutter/material.dart';
@@ -147,7 +145,7 @@ class ProfileScreen extends StatelessWidget {
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Transform.translate(
-                      offset: Offset(0, 75),
+                      offset: const Offset(0, 75),
                       child: Container(
                         width: 150,
                         height: 150,
@@ -159,7 +157,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ),
                         child: Align(
-                          alignment: AlignmentDirectional(-0.01, 2.25),
+                          alignment: const AlignmentDirectional(-0.01, 2.25),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(100),
                             child: Image.network(
@@ -179,9 +177,9 @@ class ProfileScreen extends StatelessWidget {
             Stack(
               children: [
                 Align(
-                  alignment: AlignmentDirectional(0.93, 0),
+                  alignment: const AlignmentDirectional(0.93, 0),
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(0, 10, 10, 0),
+                    padding: const EdgeInsets.fromLTRB(0, 10, 10, 0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -249,7 +247,7 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ),
                   Center(
-                    child: Container(
+                    child: SizedBox(
                       width: 250,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
