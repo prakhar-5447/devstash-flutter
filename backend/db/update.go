@@ -13,7 +13,7 @@ func (q *Queries) UpdateUser(ctx context.Context, user *User) error {
 }
 
 // Implement other update-related query methods here
-func (q *Queries) UpdateUserProile(ctx context.Context, user *User) bool {
+func (q *Queries) UpdateUserProfile(ctx context.Context, user *User) bool {
 	filter := bson.M{"_id": user.ID}
 	update := bson.M{}
 

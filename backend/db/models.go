@@ -33,4 +33,5 @@ type Project struct {
 	CollaboratorsID []primitive.ObjectID `bson:"collaboratorsID"`
 	ProjectType     ProjectType          `bson:"projectType"`
 	Hashtags        []string             `bson:"hashtags"`
+	UserID          primitive.ObjectID   `bson:"userID"`
 }

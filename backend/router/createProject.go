@@ -11,6 +11,20 @@ import (
 )
 
 func (server *Server) CreateProject(c *gin.Context) {
+	token := c.GetHeader("Authorization")
+	if token == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
+		return
+	}
+
+	payload, err := server.tokenMaker.VerifyToken(token)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		return
+	}
+
+	userID := payload.UserID
+
 	var req models.ProjectRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -27,14 +41,22 @@ func (server *Server) CreateProject(c *gin.Context) {
 		collaboratorsID[i] = objectID
 	}
 
-	project := &db.Project{
-		Title:        req.Title,
-		Description:  req.Description,
-		Technologies: req.Technologies,
-		CreatedDate:  primitive.NewDateTimeFromTime(time.Now().UTC()),
-		ProjectType:  convertToProjectType(req.ProjectType),
+	ID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
-	project.CollaboratorsID = collaboratorsID
+
+	project := &db.Project{
+		Title:           req.Title,
+		Description:     req.Description,
+		Technologies:    req.Technologies,
+		CreatedDate:     primitive.NewDateTimeFromTime(time.Now().UTC()),
+		ProjectType:     convertToProjectType(req.ProjectType),
+		CollaboratorsID: collaboratorsID,
+		Hashtags:        req.Hashtags,
+		UserID:          ID,
+	}
 
 	createdProject, err := server.store.CreateProject(c.Request.Context(), project)
 	if err != nil {
@@ -60,16 +82,36 @@ func convertToProjectType(projectType string) db.ProjectType {
 }
 
 func (server *Server) UpdateProjectByID(c *gin.Context) {
+	// Extract the token from the Authorization header
+	token := c.GetHeader("Authorization")
+	if token == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
+		return
+	}
+
+	payload, err := server.tokenMaker.VerifyToken(token)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		return
+	}
+
+	// Retrieve the user ID from the payload
+	ID, err := primitive.ObjectIDFromHex(payload.UserID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	// Get the project ID from the request URL parameters
 	projectId := c.Param("id")
 
 	// Convert the projectID to primitive.ObjectID
-	projectID, err := primitive.ObjectIDFromHex(projectId)
 	if err != nil {
 		// Handle error if the conversion fails
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
 		return
 	}
+
 	// Bind the request JSON to a ProjectRequest struct
 	var req models.ProjectRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -77,8 +119,27 @@ func (server *Server) UpdateProjectByID(c *gin.Context) {
 		return
 	}
 
+	// Retrieve the existing project from the database
+	existingProject, err := server.store.GetProjectByID(c.Request.Context(), projectId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Check if the userID in the project matches the user ID in the token
+	if existingProject.UserID != ID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Unauthorized access"})
+		return
+	}
+
+	pID, err := primitive.ObjectIDFromHex(projectId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	// Update the project in the database
-	result, err := server.store.UpdateProject(c.Request.Context(), projectID, req)
+	result, err := server.store.UpdateProject(c.Request.Context(), pID, req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

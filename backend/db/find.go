@@ -21,7 +21,7 @@ func (q *Queries) FindUserByUsername(ctx context.Context, username string) (*Use
 // Implement other find-related query methods here
 func (store *MongoDBStore) CheckUserByEmail(ctx context.Context, email string) (bool, error) {
 	filter := bson.M{"email": email}
-	count, err := store.collection.CountDocuments(ctx, filter)
+	count, err := store.GetCollection("users").CountDocuments(ctx, filter)
 	if err != nil {
 		return false, err
 	}
@@ -38,7 +38,7 @@ func (store *MongoDBStore) CheckUserByEmail(ctx context.Context, email string) (
 
 func (store *MongoDBStore) CheckUserByUsername(ctx context.Context, username string) (bool, error) {
 	filter := bson.M{"username": username}
-	count, err := store.collection.CountDocuments(ctx, filter)
+	count, err := store.GetCollection("users").CountDocuments(ctx, filter)
 	if err != nil {
 		return false, err
 	}
@@ -59,7 +59,7 @@ func (store *MongoDBStore) FindByUsernameOrEmail(ctx context.Context, usernameOr
 		{"email": usernameOrEmail},
 	}}
 	user := &User{}
-	err := store.collection.FindOne(ctx, filter).Decode(user)
+	err := store.GetCollection("users").FindOne(ctx, filter).Decode(user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, &models.HTTPError{
