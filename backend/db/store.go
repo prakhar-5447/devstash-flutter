@@ -29,7 +29,9 @@ type Store interface {
 	GetFileByID(fileID primitive.ObjectID) (io.ReadCloser, string, error)
 	CreateProject(ctx context.Context, project *Project) (*Project, error)
 	GetProjectByID(ctx context.Context, projectID string) (*Project, error)
-	UpdateProject(ctx context.Context, projectID primitive.ObjectID, project models.ProjectRequest) (*Project, error)
+	UpdateProject(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID, update models.ProjectRequest) (*Project, error)
+	GetProjectsByUserID(ctx context.Context, userID primitive.ObjectID) ([]*Project, error)
+	DeleteProjectByUserID(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID) error
 }
 
 type MongoDBStore struct {

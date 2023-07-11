@@ -41,9 +41,32 @@ func (store *MongoDBStore) GetProjectByID(ctx context.Context, projectID string)
 	return project, nil
 }
 
-func (store *MongoDBStore) UpdateProject(ctx context.Context, projectID primitive.ObjectID, update models.ProjectRequest) (*Project, error) {
-	// Create the update query
+func (store *MongoDBStore) GetProjectsByUserID(ctx context.Context, userID primitive.ObjectID) ([]*Project, error) {
+	filter := bson.M{
+		"userID": userID,
+	}
 
+	cursor, err := store.projectsCollection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	projects := []*Project{}
+	for cursor.Next(ctx) {
+		project := &Project{}
+		err := cursor.Decode(project)
+		if err != nil {
+			return nil, err
+		}
+		projects = append(projects, project)
+	}
+
+	return projects, nil
+}
+
+func (store *MongoDBStore) UpdateProject(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID, update models.ProjectRequest) (*Project, error) {
+	// Create the update query
 	collaboratorsID := make([]primitive.ObjectID, len(update.CollaboratorsID))
 	for i, collabID := range update.CollaboratorsID {
 		objectID, err := primitive.ObjectIDFromHex(collabID)
@@ -55,23 +78,24 @@ func (store *MongoDBStore) UpdateProject(ctx context.Context, projectID primitiv
 
 	updateQuery := bson.M{
 		"$set": bson.M{
-			"image":           update.Image,
-			"title":           update.Title,
-			"description":     update.Description,
-			"technologies":    update.Technologies,
-			"projectType":     update.ProjectType,
-			"hashtags":        update.Hashtags,
+			"image":        update.Image,
+			"title":        update.Title,
+			"description":  update.Description,
+			"technologies": update.Technologies,
+			"projectType":  update.ProjectType,
+			"hashtags":     update.Hashtags,
 			"collaboratorsID": collaboratorsID,
-		}}
+		},
+	}
 
 	// Perform the update operation
-	result, err := store.projectsCollection.UpdateOne(ctx, bson.M{"_id": projectID}, updateQuery)
+	result, err := store.projectsCollection.UpdateOne(ctx, bson.M{"_id": projectID, "userID": userID}, updateQuery)
 	if err != nil {
 		return nil, err
 	}
 
 	if result.ModifiedCount == 0 {
-		return nil, fmt.Errorf("project not found")
+		return nil, fmt.Errorf("project not found or unauthorized access")
 	}
 
 	// Retrieve and return the updated project
@@ -82,4 +106,24 @@ func (store *MongoDBStore) UpdateProject(ctx context.Context, projectID primitiv
 	}
 
 	return updatedProject, nil
+}
+
+
+
+func (store *MongoDBStore) DeleteProjectByUserID(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID) error {
+	filter := bson.M{
+		"userID":  userID,
+		"_id":     projectID,
+	}
+
+	result, err := store.projectsCollection.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+
+	if result.DeletedCount == 0 {
+		return fmt.Errorf("project not found or unauthorized access")
+	}
+
+	return nil
 }

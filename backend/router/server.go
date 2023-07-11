@@ -41,7 +41,9 @@ func (server *Server) setupRouter() {
 	router.PUT("/profile", server.UpdateProfile)
 	router.POST("/upload", server.handleFileUpload)
 	router.POST("/createProject", server.CreateProject)
-	router.POST("/updateProject/:id", server.UpdateProjectByID)
+	router.GET("/getprojects", server.GetProjectsByUser)
+	router.PUT("/updateProject/:id", server.UpdateProjectByID)
+	router.DELETE("/deleteproject/:id", server.DeleteProject)
 	router.GET("/images/:filename", server.handleImage)
 	server.router = router
 }

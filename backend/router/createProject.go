@@ -82,7 +82,6 @@ func convertToProjectType(projectType string) db.ProjectType {
 }
 
 func (server *Server) UpdateProjectByID(c *gin.Context) {
-	// Extract the token from the Authorization header
 	token := c.GetHeader("Authorization")
 	if token == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
@@ -95,58 +94,96 @@ func (server *Server) UpdateProjectByID(c *gin.Context) {
 		return
 	}
 
-	// Retrieve the user ID from the payload
-	ID, err := primitive.ObjectIDFromHex(payload.UserID)
+	projectID := c.Param("id")
+
+	pID, err := primitive.ObjectIDFromHex(projectID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Get the project ID from the request URL parameters
-	projectId := c.Param("id")
-
-	// Convert the projectID to primitive.ObjectID
+	userID, err := primitive.ObjectIDFromHex(payload.UserID)
 	if err != nil {
-		// Handle error if the conversion fails
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Bind the request JSON to a ProjectRequest struct
 	var req models.ProjectRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Retrieve the existing project from the database
-	existingProject, err := server.store.GetProjectByID(c.Request.Context(), projectId)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Check if the userID in the project matches the user ID in the token
-	if existingProject.UserID != ID {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Unauthorized access"})
-		return
-	}
-
-	pID, err := primitive.ObjectIDFromHex(projectId)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Update the project in the database
-	result, err := server.store.UpdateProject(c.Request.Context(), pID, req)
+	updatedProject, err := server.store.UpdateProject(c.Request.Context(), pID, userID, req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message":     "Project updated successfully",
-		"new project": result,
+		"message": "Project updated successfully",
+		"project": updatedProject,
 	})
+}
+
+func (server *Server) GetProjectsByUser(c *gin.Context) {
+	token := c.GetHeader("Authorization")
+	if token == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
+		return
+	}
+
+	payload, err := server.tokenMaker.VerifyToken(token)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		return
+	}
+
+	userID, err := primitive.ObjectIDFromHex(payload.UserID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	projects, err := server.store.GetProjectsByUserID(c.Request.Context(), userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"projects": projects})
+}
+
+func (server *Server) DeleteProject(c *gin.Context) {
+	token := c.GetHeader("Authorization")
+	if token == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
+		return
+	}
+
+	payload, err := server.tokenMaker.VerifyToken(token)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		return
+	}
+
+	projectID := c.Param("id")
+	pID, err := primitive.ObjectIDFromHex(projectID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	userID, err := primitive.ObjectIDFromHex(payload.UserID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = server.store.DeleteProjectByUserID(c.Request.Context(), pID, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Project deleted successfully"})
 }

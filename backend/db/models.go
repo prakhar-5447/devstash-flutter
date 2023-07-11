@@ -24,6 +24,7 @@ const (
 )
 
 type Project struct {
+	UserID          primitive.ObjectID   `bson:"userID"`
 	ID              primitive.ObjectID   `bson:"_id,omitempty"`
 	Image           string               `bson:"image"`
 	Title           string               `bson:"title"`
@@ -33,5 +34,4 @@ type Project struct {
 	CollaboratorsID []primitive.ObjectID `bson:"collaboratorsID"`
 	ProjectType     ProjectType          `bson:"projectType"`
 	Hashtags        []string             `bson:"hashtags"`
-	UserID          primitive.ObjectID   `bson:"userID"`
 }
