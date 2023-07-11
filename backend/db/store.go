@@ -15,7 +15,7 @@ type Store interface {
 	FindUserByUsername(ctx context.Context, username string) (*User, error)
 	CreateUser(ctx context.Context, user *User) error
 	UpdateUser(ctx context.Context, user *User) error
-	UpdateUserProile(ctx context.Context, user *User) bool
+	UpdateUserProfile(ctx context.Context, user *User) bool
 	DeleteUser(ctx context.Context, userID string) error
 	CheckUserByEmail(ctx context.Context, email string) (bool, error)
 	CheckUserByUsername(ctx context.Context, username string) (bool, error)

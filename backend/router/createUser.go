@@ -22,7 +22,7 @@ func (server *Server) CreateUser(c *gin.Context) {
 		return
 	}
 	if found {
-		c.JSON(http.StatusOK, gin.H{"message": "User with same email already exist"})
+		c.JSON(http.StatusOK, gin.H{"message": "User with the same email already exists"})
 		return
 	}
 
@@ -32,31 +32,36 @@ func (server *Server) CreateUser(c *gin.Context) {
 		return
 	}
 	if found {
-		c.JSON(http.StatusOK, gin.H{"message": "User with same username already exist"})
+		c.JSON(http.StatusOK, gin.H{"message": "User with the same username already exists"})
 		return
 	}
 
-	user := &db.User{}
-	user.Name = req.Name
-	user.Avatar = req.Avatar
-	user.Username = req.Username
-	user.Password = req.Password
-	user.Email = req.Email
-	user.Phone = req.Phone
-	user.Description = req.Description
+	user := &db.User{
+		Name:        req.Name,
+		Avatar:      req.Avatar,
+		Username:    req.Username,
+		Password:    req.Password,
+		Email:       req.Email,
+		Phone:       req.Phone,
+		Description: req.Description,
+	}
+
 	if err := server.store.CreateUser(c.Request.Context(), user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	token, err := server.tokenMaker.CreateToken(user.Username, time.Hour*24)
+	// Create the token with the user's username and document object ID
+	token, err := server.tokenMaker.CreateToken(user.Username, user.ID.Hex(), time.Hour*24)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User created successfully", "token": token})
-
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User created successfully",
+		"token":   token,
+	})
 }
 
 func (server *Server) GetUser(c *gin.Context) {
@@ -99,7 +104,8 @@ func (server *Server) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := server.tokenMaker.CreateToken(user.Username, time.Hour*24) // Adjust the token duration as needed
+	// Create the token with the user's username and document object ID
+	token, err := server.tokenMaker.CreateToken(user.Username, user.ID.Hex(), time.Hour*24) // Adjust the token duration as needed
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
@@ -134,6 +140,32 @@ func (server *Server) UpdateProfile(c *gin.Context) {
 		return
 	}
 
+	// Check if the updated username already exists
+	if req.Username != "" && req.Username != user.Username {
+		found, err := server.store.CheckUserByUsername(c.Request.Context(), req.Username)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		if found {
+			c.JSON(http.StatusOK, gin.H{"message": "User with the same username already exists"})
+			return
+		}
+	}
+
+	// Check if the updated email already exists
+	if req.Email != "" && req.Email != user.Email {
+		found, err := server.store.CheckUserByEmail(c.Request.Context(), req.Email)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		if found {
+			c.JSON(http.StatusOK, gin.H{"message": "User with the same email already exists"})
+			return
+		}
+	}
+
 	if req.Name != "" {
 		user.Name = req.Name
 	}
@@ -153,7 +185,7 @@ func (server *Server) UpdateProfile(c *gin.Context) {
 		user.Description = req.Description
 	}
 
-	success := server.store.UpdateUserProile(c.Request.Context(), user)
+	success := server.store.UpdateUserProfile(c.Request.Context(), user)
 	if success {
 		c.JSON(http.StatusOK, gin.H{"success": true, "message": "Profile updated successfully"})
 	} else {
