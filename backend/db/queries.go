@@ -5,11 +5,15 @@ import (
 )
 
 type Queries struct {
-	usersCollection *mongo.Collection
+	usersCollection  *mongo.Collection
+	projectssCollection  *mongo.Collection
+	imagesCollection *mongo.Collection
 }
 
 func NewQueries(database *mongo.Database) *Queries {
 	return &Queries{
-		usersCollection: database.Collection("devstash"),
+		usersCollection:  database.Collection("users"),
+		projectssCollection:  database.Collection("projects"),
+		imagesCollection: database.Collection("fs.files"),
 	}
 }
