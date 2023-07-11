@@ -8,10 +8,14 @@ import (
 )
 
 type Store interface {
-	FindUserByID(ctx context.Context, userID string) (*User, error)
+	FindUserByUsername(ctx context.Context, username string) (*User, error)
 	CreateUser(ctx context.Context, user *User) error
 	UpdateUser(ctx context.Context, user *User) error
+	UpdateUserProile(ctx context.Context, user *User) bool
 	DeleteUser(ctx context.Context, userID string) error
+	CheckUserByEmail(ctx context.Context, email string) (bool, error)
+	CheckUserByUsername(ctx context.Context, username string) (bool, error)
+	FindByUsernameOrEmail(ctx context.Context, usernameOrEmail string, password string) (*User, error)
 }
 
 type MongoDBStore struct {
