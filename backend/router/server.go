@@ -36,7 +36,10 @@ func (server *Server) setupRouter() {
 	router := gin.Default()
 
 	router.POST("/users", server.CreateUser)
-	
+	router.POST("/upload", server.handleFileUpload)
+	router.POST("/createProject", server.CreateProject)
+	router.POST("/updateProject/:id", server.UpdateProjectByID)
+	router.GET("/images/:filename", server.handleImage)
 	server.router = router
 }
 

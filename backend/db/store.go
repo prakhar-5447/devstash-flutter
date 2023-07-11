@@ -2,7 +2,11 @@ package db
 
 import (
 	"context"
+	"io"
+	"mime/multipart"
 
+	"github.com/prakhar-5447/models"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -12,12 +16,25 @@ type Store interface {
 	CreateUser(ctx context.Context, user *User) error
 	UpdateUser(ctx context.Context, user *User) error
 	DeleteUser(ctx context.Context, userID string) error
+	UploadFileToGridFS(file multipart.File, handler *multipart.FileHeader) error
+	GetImageURL(filename string) (string, error)
+	GetClient() *mongo.Client
+	GetConnectionString() string
+	GetDatabase() *mongo.Database
+	GetCollection(collectionName string) *mongo.Collection
+	GetFileByID(fileID primitive.ObjectID) (io.ReadCloser, string, error)
+	CreateProject(ctx context.Context, project *Project) (*Project, error)
+	GetProjectByID(ctx context.Context, projectID string) (*Project, error)
+	UpdateProject(ctx context.Context, projectID primitive.ObjectID, project models.ProjectRequest) (*Project, error)
 }
 
 type MongoDBStore struct {
-	client     *mongo.Client
-	database   *mongo.Database
-	collection *mongo.Collection
+	client             *mongo.Client
+	database           *mongo.Database
+	usersCollection    *mongo.Collection
+	projectsCollection *mongo.Collection
+	imagesCollection   *mongo.Collection
+	connectionString   string
 	*Queries
 }
 
@@ -29,28 +46,16 @@ func NewStore(connectionString string, databaseName string, collectionName strin
 
 	database := client.Database(databaseName)
 	queries := NewQueries(database)
-	collection := database.Collection(collectionName)
+	usersCollection := database.Collection("users")
+	projectsCollection := database.Collection("projects")
+	imagesCollection := database.Collection("fs.files")
 	return &MongoDBStore{
-		client:     client,
-		database:   database,
-		collection: collection,
-		Queries:    queries,
+		client:             client,
+		database:           database,
+		usersCollection:    usersCollection,
+		projectsCollection: projectsCollection,
+		imagesCollection:   imagesCollection,
+		connectionString:   connectionString,
+		Queries:            queries,
 	}, nil
-}
-
-func (store *MongoDBStore) execTx(ctx context.Context, fn func(*Queries) error) error {
-	session, err := store.client.StartSession()
-	if err != nil {
-		return err
-	}
-	defer session.EndSession(ctx)
-
-	err = session.StartTransaction()
-	if err != nil {
-		return err
-	}
-
-	q := NewQueries(store.database)
-	err = fn(q)
-	return nil
 }
