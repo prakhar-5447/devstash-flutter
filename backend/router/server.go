@@ -43,6 +43,8 @@ func (server *Server) setupRouter() {
 	router.POST("/createProject", server.CreateProject)
 	router.POST("/updateProject/:id", server.UpdateProjectByID)
 	router.GET("/images/:filename", server.handleImage)
+	router.PUT("/favorite", server.AddOrRemoveUserFromFavorite)
+	router.PUT("/bookmark", server.AddOrRemoveUserFromBookmark)
 	server.router = router
 }
 
