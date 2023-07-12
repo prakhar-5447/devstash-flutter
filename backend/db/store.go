@@ -29,11 +29,13 @@ type Store interface {
 	GetFileByID(fileID primitive.ObjectID) (io.ReadCloser, string, error)
 	CreateProject(ctx context.Context, project *Project) (*Project, error)
 	GetProjectByID(ctx context.Context, projectID string) (*Project, error)
-	UpdateProject(ctx context.Context, projectID primitive.ObjectID, project models.ProjectRequest) (*Project, error)
 	AddFavorite(ctx context.Context, userID primitive.ObjectID, projectID primitive.ObjectID) (bool, error)
 	RemoveFavorite(ctx context.Context, userID primitive.ObjectID, projectID primitive.ObjectID) (bool, error)
 	AddUserToBookmark(ctx context.Context, userID primitive.ObjectID, otherUserID primitive.ObjectID) (bool, error)
 	RemoveUserFromBookmark(ctx context.Context, userID primitive.ObjectID, otherUserID primitive.ObjectID) (bool, error)
+	UpdateProject(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID, update models.ProjectRequest) (*Project, error)
+	GetProjectsByUserID(ctx context.Context, userID primitive.ObjectID) ([]*Project, error)
+	DeleteProjectByUserID(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID) error
 }
 
 type MongoDBStore struct {
