@@ -185,8 +185,5 @@ func (server *Server) DeleteProject(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message":     "Project updated successfully",
-		"new project": result,
-	})
+	c.JSON(http.StatusOK, gin.H{"message": "Project deleted successfully"})
 }
