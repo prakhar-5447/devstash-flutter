@@ -1,6 +1,6 @@
 package models
 
 type LoginRequest struct {
-	UsernameOrEmail string `bson:"usernameOremail"`
-	Password   string `bson:"password"`
+	UsernameOrEmail string `json:"usernameOremail"`
+	Password        string `json:"password"`
 }
