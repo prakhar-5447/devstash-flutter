@@ -1,14 +1,14 @@
-class UserRequest {
+class UserResponse {
   String _ID;
   String _Name;
   String _Avatar;
   String _Username;
-  List<String> _Password;
-  List<String> _Email;
+  String _Password;
+  String _Email;
   String _Phone;
-  List<String> _Description;
+  String _Description;
 
-  UserRequest(
+  UserResponse(
     this._ID,
     this._Name,
     this._Avatar,
