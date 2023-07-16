@@ -1,9 +1,7 @@
-import 'package:devstash/models/response/userResponse.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer';
 
 // screens
-import 'package:devstash/models/response/projectResponse.dart';
 import 'package:devstash/screens/saved.dart';
 import 'package:devstash/screens/project.dart';
 import 'package:devstash/screens/projectDetailScreen.dart';
@@ -13,8 +11,16 @@ import 'package:devstash/screens/ProfileScreen.dart';
 import 'package:devstash/screens/CalendarScreen.dart';
 
 // services
+import 'package:devstash/services/bookmarkServices.dart';
+import 'package:devstash/services/favoriteServices.dart';
 import 'package:devstash/services/projectServices.dart';
 import 'package:devstash/services/userServices.dart';
+
+// models
+import 'package:devstash/models/response/bookmarkResponse.dart';
+import 'package:devstash/models/response/favoriteResponse.dart';
+import 'package:devstash/models/response/userResponse.dart';
+import 'package:devstash/models/response/projectResponse.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,7 +34,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late UserResponse? _user;
+  late dynamic _project;
 
   @override
   void initState() {
@@ -37,9 +43,9 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _getData() async {
-    _user = (await UserServices().getUser());
+    _project = (await PrjectServices().daleteProject('64ad8bff6f609ba2ebb7b49d'));
     Future.delayed(const Duration(seconds: 1)).then((value) => setState(() {
-          log(_user.toString());
+          log(_project.toString());
         }));
   }
 

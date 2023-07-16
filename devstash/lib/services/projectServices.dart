@@ -12,13 +12,32 @@ class PrjectServices {
           Uri.parse(ApiConstants.baseUrl + ApiConstants.getProjectsEndpoint);
       var headers = {
         'Authorization':
-            'v2.local.tN3JYuKCqQgZTQuTEAYTzcI58bOb23EO5MdIMZPbO6IWDjGbr93tnFWBkKtB95BbAEycczByqEhJB8VLj13cVs44tlKF6Km1c_DzMkSjtXc_bKY_Wysh7rbPh87eHpDR-WheHigRLHS89OGmGReGcohUIdlgRu1SduSu15ZD-Xnr-TzM_m-P8CI7ahQYaY1bJDShaG8W9sU0lpYoLi_-q0L1-4arnGMdiWEDdHZ8l-euU4QMbpf-QCrzvoMbxlkj6Cx2n2qQ3Z-_8Bp3ee1zz_15mw4OZ4dscKGkJrSxBlJuHDmysdGrz2Qp1m5k9czt.bnVsbA',
+            'v2.local.Gdj7OTm8jFjgmU6D-Mqoy4YboGlJA6CC1ytk2jMQsoORoBVdR-iIGx-MW4Xd603RkHbpQFDRtB1tNXRnETyiD4FyirXUuExgZGC2lHvRlb-AlcUikcWsd1_AiBm7cwYBY0tggGJeB7qsf-HsjrvggDZjSP9H276i3mBIAiyYmvtDu7WOE8mi1Em-uEPLNt1vOK5ABCnNSylZiz42wzhiI7oO3m6Wbu_AOQgeydBkesx0-4pCu0wNWBgbg_fTzxcc0fJpyKf0tee_sbfu2Pw90s0SyLr2mnoiStv5dkAfEJlu_I29cD1sMzF1VJLUsBCw.bnVsbA',
       };
 
       var response = await http.get(url, headers: headers);
       if (response.statusCode == 200) {
         List<ProjectResponse> project = projectFromJson(response.body);
         return project;
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  Future<dynamic> daleteProject(String projectid) async {
+    try {
+      var url = Uri.parse(ApiConstants.baseUrl +
+          ApiConstants.deleteProjectEndpoint +
+          projectid);
+      var headers = {
+        'Authorization':
+            'v2.local.Gdj7OTm8jFjgmU6D-Mqoy4YboGlJA6CC1ytk2jMQsoORoBVdR-iIGx-MW4Xd603RkHbpQFDRtB1tNXRnETyiD4FyirXUuExgZGC2lHvRlb-AlcUikcWsd1_AiBm7cwYBY0tggGJeB7qsf-HsjrvggDZjSP9H276i3mBIAiyYmvtDu7WOE8mi1Em-uEPLNt1vOK5ABCnNSylZiz42wzhiI7oO3m6Wbu_AOQgeydBkesx0-4pCu0wNWBgbg_fTzxcc0fJpyKf0tee_sbfu2Pw90s0SyLr2mnoiStv5dkAfEJlu_I29cD1sMzF1VJLUsBCw.bnVsbA',
+      };
+
+      var response = await http.delete(url, headers: headers);
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
       }
     } catch (e) {
       log(e.toString());
