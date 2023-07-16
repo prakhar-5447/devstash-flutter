@@ -136,6 +136,47 @@ func (server *Server) downloadImage(c *gin.Context) {
 	}
 }
 
+func (server *Server) deleteImage(c *gin.Context) {
+	filename := c.Param("filename")
+
+	var fileInfo struct {
+		ID primitive.ObjectID `bson:"_id"`
+	}
+
+	ctx := context.TODO()
+
+	// Get the MongoDB database from the store
+	database := server.store.GetDatabase()
+
+	// Obtain the GridFS bucket
+	bucket, err := gridfs.NewBucket(database)
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Failed to create GridFS bucket")
+		return
+	}
+
+	filter := bson.M{"filename": filename}
+	err = server.store.GetCollection("fs.files").FindOne(ctx, filter).Decode(&fileInfo)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.String(http.StatusNotFound, "Image not found")
+			return
+		}
+		c.String(http.StatusInternalServerError, "Failed to find image")
+		return
+	}
+
+	// Delete the file from GridFS
+	err = bucket.Delete(fileInfo.ID)
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Failed to delete image")
+		return
+	}
+
+	// Success response
+	c.String(http.StatusOK, "Image deleted successfully")
+}
+
 func getContentType(filename string) string {
 	extension := strings.ToLower(strings.TrimPrefix(strings.TrimPrefix(filename, "."), "."))
 

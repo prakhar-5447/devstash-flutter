@@ -92,12 +92,12 @@ func (server *Server) GetUserBookmarksByID(c *gin.Context) {
 	}
 
 	// Call the data store to retrieve the cursor of bookmarks
-	cursor, err := server.store.GetUserBookmarksByID(c.Request.Context(), objectID)
+	bookmarks, err := server.store.GetUserBookmarksByID(c.Request.Context(), objectID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	// Return the cursor directly in the HTTP response
-	c.JSON(http.StatusOK, cursor)
+	c.JSON(http.StatusOK, bookmarks)
 }

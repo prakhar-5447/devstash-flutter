@@ -99,5 +99,5 @@ func (server *Server) GetUserFavoritesByID(c *gin.Context) {
 	}
 
 	// Return the favorites data in the HTTP response
-	c.JSON(http.StatusOK, gin.H{"favorites": favorites})
+	c.JSON(http.StatusOK, favorites)
 }
