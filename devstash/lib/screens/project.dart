@@ -155,7 +155,7 @@ class Project extends StatelessWidget {
                 borderRadius: BorderRadius.all(Radius.circular(11)),
               ),
               child: FloatingActionButton(
-                backgroundColor: Color.fromARGB(255, 255, 95, 95),
+                backgroundColor: const Color.fromARGB(255, 255, 95, 95),
                 onPressed: () {},
                 elevation: 0,
                 child: const Icon(

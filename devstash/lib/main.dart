@@ -1,9 +1,5 @@
-import 'package:devstash/screens/saved.dart';
-import 'package:devstash/screens/project.dart';
-import 'package:devstash/screens/projectDetailScreen.dart';
-import 'package:devstash/screens/welcome.dart';
+import 'package:devstash/screens/CalendarScreen.dart';
 import 'package:devstash/screens/HomeScreen.dart';
-import 'package:devstash/screens/ProfileScreen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -26,7 +22,8 @@ class MyApp extends StatelessWidget {
           // '/': (context) => const Project(),
           // '/': (context) => const Saved(),
           // '/': (context) => MyHomePage(title: "hello"),
-          '/': (context) => const HomeScreen(),
+          '/': (context) => HomeScreen(),
+          '/calendar': (context) => CalendarScreen(context),
           // '/': (context) => const ProfileScreen(),
         });
   }

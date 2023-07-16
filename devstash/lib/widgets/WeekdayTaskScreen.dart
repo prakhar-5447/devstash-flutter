@@ -1,71 +1,54 @@
-import 'package:devstash/models/Task.dart';
+import 'package:devstash/models/Events.dart';
+import 'package:devstash/screens/CalendarScreen.dart';
+import 'package:devstash/utils/utils.dart' as devstash_utils;
 import 'package:flutter/material.dart';
 
 class WeekdayTaskScreen extends StatefulWidget {
-  const WeekdayTaskScreen({super.key});
-
   @override
   _WeekdayTaskScreenState createState() => _WeekdayTaskScreenState();
 }
 
 class _WeekdayTaskScreenState extends State<WeekdayTaskScreen> {
   int _selectedDay = DateTime.now().weekday; // Initialize with current weekday
-  final List<List<Task>> _tasks = [
-    [
-      Task(
-        "Schema Design",
-        "Design database schema, and  implement ACID property.",
-      ),
-      Task(
-        "Schema Design",
-        "Design database schema, and  implement ACID property.",
-      ),
-      Task(
-        "Frontend",
-        "Complete home page with responsive design.",
-      ),
-      Task(
-        "Backend",
-        "Integrate payment gateway and fix payment methods.",
-      ),
-    ],
-    [
-      Task(
-        "Frontend",
-        "Complete home page with responsive design.",
-      ),
-    ],
-    [
-      Task(
-        "Backend",
-        "Integrate payment gateway and fix payment methods.",
-      ),
-    ],
-    [
-      Task(
-        "Schema Design",
-        "Design database schema, and  implement ACID property.",
-      ),
-    ],
-    [
-      Task(
-        "Frontend",
-        "Complete home page with responsive design.",
-      ),
-    ],
-    [
-      Task(
-        "Backend",
-        "Integrate payment gateway and fix payment methods.",
-      ),
-    ],
-    [
-      Task(
-        "Backend",
-        "Integrate payment gateway and fix payment methods.",
-      ),
-    ]
-  ];
+  final List<List<Event>> _tasks = List.generate(7, (index) => []);
+  late DatabaseHelper _databaseHelper;
+
+  @override
+  void initState() {
+    super.initState();
+    _databaseHelper = DatabaseHelper.instance;
+    _loadEvents();
+    _selectedDay =
+        DateTime.now().weekday; // Set selected day to current weekday
+  }
+
+  void _loadEvents() async {
+    List<Event> events = await _databaseHelper.getEvents();
+    _populateTasks(events);
+  }
+
+  void _populateTasks(List<Event> events) {
+    _tasks.forEach(
+        (weekdayTasks) => weekdayTasks.clear()); // Clear existing tasks
+
+    for (Event event in events) {
+      if (devstash_utils.isDateInRange(
+          event.date, _getFirstDayOfWeek(), _getLastDayOfWeek())) {
+        int weekday = event.date.weekday;
+        _tasks[weekday - 1].add(event);
+      }
+    }
+  }
+
+  DateTime _getFirstDayOfWeek() {
+    DateTime now = DateTime.now();
+    return now.subtract(Duration(days: now.weekday - 1));
+  }
+
+  DateTime _getLastDayOfWeek() {
+    DateTime now = DateTime.now();
+    return now.add(Duration(days: DateTime.daysPerWeek - now.weekday));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +93,7 @@ class _WeekdayTaskScreenState extends State<WeekdayTaskScreen> {
             child: ListView.builder(
                 itemCount: _tasks[_selectedDay - 1].length,
                 itemBuilder: (context, index) {
-                  List<Task> tasksForDay = _tasks[_selectedDay - 1];
+                  List<Event> tasksForDay = _tasks[_selectedDay - 1];
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 25),
                     child: Column(
@@ -128,7 +111,7 @@ class _WeekdayTaskScreenState extends State<WeekdayTaskScreen> {
                             ),
                           ),
                           Text(
-                            tasksForDay[index].desc,
+                            tasksForDay[index].description,
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
@@ -150,7 +133,8 @@ class WeekdaySwitchButton extends StatelessWidget {
   final int selectedDay;
   final Function(int) onDaySelected;
 
-  const WeekdaySwitchButton({super.key, 
+  const WeekdaySwitchButton({
+    super.key,
     required this.selectedDay,
     required this.onDaySelected,
   });

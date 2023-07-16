@@ -1,7 +1,15 @@
+import 'package:devstash/screens/CalendarScreen.dart';
+import 'package:devstash/screens/HomeScreen.dart';
+import 'package:devstash/screens/ProfileScreen.dart';
+import 'package:devstash/screens/saved.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AppDrawer extends StatefulWidget {
+  final int currentIndex; // Add currentIndex property
+
+  const AppDrawer({Key? key, required this.currentIndex}) : super(key: key);
+
   @override
   State<AppDrawer> createState() => _AppDrawerState();
 }
@@ -38,23 +46,27 @@ class _AppDrawerState extends State<AppDrawer> {
                 children: [
                   ListTile(
                     shape: RoundedRectangleBorder(
-                      // side: BorderSide(width: 2),
                       borderRadius: BorderRadius.circular(5),
                     ),
                     selectedColor: Colors.white,
                     selectedTileColor: const Color.fromARGB(255, 174, 183, 254),
-                    selected: _currentScreenIndex ==
-                        0, // Set the selected state based on the current screen index
+                    selected: widget.currentIndex == 0,
                     onTap: () {
                       setState(() {
                         _currentScreenIndex = 0;
                       });
-                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                      );
                     },
                     leading: SvgPicture.asset(
                       'assets/home.svg',
                       height: 15.0,
                       width: 30.0,
+                      color: widget.currentIndex == 0
+                          ? Colors.white
+                          : Colors.black,
                     ),
                     title: const Text(
                       'Home',
@@ -62,7 +74,6 @@ class _AppDrawerState extends State<AppDrawer> {
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                         fontFamily: "Comfortaa",
-                        color: Color.fromARGB(255, 75, 73, 70),
                       ),
                     ),
                   ),
@@ -70,10 +81,19 @@ class _AppDrawerState extends State<AppDrawer> {
                     height: 30,
                   ),
                   ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    selectedColor: Colors.white,
+                    selectedTileColor: const Color.fromARGB(255, 174, 183, 254),
+                    selected: widget.currentIndex == 1, //
                     leading: SvgPicture.asset(
                       'assets/profile.svg',
                       height: 15.0,
                       width: 30.0,
+                      color: widget.currentIndex == 1
+                          ? Colors.white
+                          : Colors.black,
                     ),
                     title: const Text(
                       'Profile',
@@ -81,21 +101,36 @@ class _AppDrawerState extends State<AppDrawer> {
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                         fontFamily: "Comfortaa",
-                        color: Color.fromARGB(255, 75, 73, 70),
                       ),
                     ),
                     onTap: () {
-                      Navigator.pop(context);
+                      setState(() {
+                        _currentScreenIndex = 1;
+                      });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProfileScreen()),
+                      );
                     },
                   ),
                   const SizedBox(
                     height: 30,
                   ),
                   ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    selectedColor: Colors.white,
+                    selectedTileColor: const Color.fromARGB(255, 174, 183, 254),
+                    selected: widget.currentIndex == 2, //
                     leading: SvgPicture.asset(
                       'assets/bookmark.svg',
                       height: 15.0,
                       width: 30.0,
+                      color: widget.currentIndex == 2
+                          ? Colors.white
+                          : Colors.black,
                     ),
                     title: const Text(
                       'Bookmark',
@@ -103,21 +138,35 @@ class _AppDrawerState extends State<AppDrawer> {
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                         fontFamily: "Comfortaa",
-                        color: Color.fromARGB(255, 75, 73, 70),
                       ),
                     ),
                     onTap: () {
-                      Navigator.pop(context);
+                      setState(() {
+                        _currentScreenIndex = 2;
+                      });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Saved()),
+                      );
                     },
                   ),
                   const SizedBox(
                     height: 30,
                   ),
                   ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    selectedColor: Colors.white,
+                    selectedTileColor: const Color.fromARGB(255, 174, 183, 254),
+                    selected: widget.currentIndex == 3, //
                     leading: SvgPicture.asset(
                       'assets/task.svg',
                       height: 15.0,
                       width: 30.0,
+                      color: widget.currentIndex == 3
+                          ? Colors.white
+                          : Colors.black,
                     ),
                     title: const Text(
                       'Tasks',
@@ -125,11 +174,17 @@ class _AppDrawerState extends State<AppDrawer> {
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                         fontFamily: "Comfortaa",
-                        color: Color.fromARGB(255, 75, 73, 70),
                       ),
                     ),
                     onTap: () {
-                      Navigator.pop(context);
+                      setState(() {
+                        _currentScreenIndex = 3;
+                      });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CalendarScreen(context)),
+                      );
                     },
                   ),
                   Center(
