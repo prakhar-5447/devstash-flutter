@@ -6,12 +6,13 @@ import (
 
 	"github.com/prakhar-5447/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (q *Queries) FindUserByUsername(ctx context.Context, username string) (*User, error) {
+func (store *MongoDBStore) FindUserByUsername(ctx context.Context, username string) (*User, error) {
 	var user User
-	err := q.usersCollection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
+	err := store.GetCollection("users").FindOne(ctx, bson.M{"username": username}).Decode(&user)
 	if err != nil {
 		return nil, err
 	}
@@ -78,4 +79,26 @@ func (store *MongoDBStore) FindByUsernameOrEmail(ctx context.Context, usernameOr
 	}
 
 	return user, nil
+}
+
+func (store *MongoDBStore) GetUserFavoritesByID(ctx context.Context, userID primitive.ObjectID) (*Favorite, error) {
+	var favorite Favorite
+	filter := bson.M{"userId": userID}
+	err := store.GetCollection("favorite").FindOne(ctx, filter).Decode(&favorite)
+	if err != nil {
+		return nil, err
+	}
+
+	return &favorite, nil
+}
+
+func (store *MongoDBStore) GetUserBookmarksByID(ctx context.Context, userID primitive.ObjectID) (*Bookmark, error) {
+	var bookmark Bookmark
+	filter := bson.M{"userId": userID}
+	err := store.GetCollection("bookmark").FindOne(ctx, filter).Decode(&bookmark)
+	if err != nil {
+		return nil, err
+	}
+
+	return &bookmark, nil
 }

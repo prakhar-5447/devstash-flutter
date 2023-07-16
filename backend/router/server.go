@@ -45,7 +45,9 @@ func (server *Server) setupRouter() {
 	router.PUT("/updateProject/:id", server.UpdateProjectByID)
 	router.DELETE("/deleteproject/:id", server.DeleteProject)
 	router.GET("/images/:filename", server.handleImage)
+	router.GET("/favorite", server.GetUserFavoritesByID)
 	router.PUT("/favorite", server.AddOrRemoveUserFromFavorite)
+	router.GET("/bookmark", server.GetUserBookmarksByID)
 	router.PUT("/bookmark", server.AddOrRemoveUserFromBookmark)
 	server.router = router
 }

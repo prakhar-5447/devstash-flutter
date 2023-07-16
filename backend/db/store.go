@@ -36,6 +36,8 @@ type Store interface {
 	UpdateProject(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID, update models.ProjectRequest) (*Project, error)
 	GetProjectsByUserID(ctx context.Context, userID primitive.ObjectID) ([]*Project, error)
 	DeleteProjectByUserID(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID) error
+	GetUserFavoritesByID(ctx context.Context, userID primitive.ObjectID) (*Favorite, error)
+	GetUserBookmarksByID(ctx context.Context, userID primitive.ObjectID) (*Bookmark, error)
 }
 
 type MongoDBStore struct {
