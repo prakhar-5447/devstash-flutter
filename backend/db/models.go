@@ -35,3 +35,13 @@ type Project struct {
 	ProjectType     ProjectType          `bson:"projectType"`
 	Hashtags        []string             `bson:"hashtags"`
 }
+
+type Favorite struct {
+	UserId     primitive.ObjectID   `bson:"userId"`
+	ProjectIds []primitive.ObjectID `bson:"projectIds"`
+}
+
+type Bookmark struct {
+	UserId       primitive.ObjectID   `bson:"userId"`
+	OtherUserIds []primitive.ObjectID `bson:"otherUserIds"`
+}

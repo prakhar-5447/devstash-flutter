@@ -1,11 +1,11 @@
 package models
 
 type CreateUserRequest struct {
-	Name        string `bson:"name"`
-	Avatar      string `bson:"avatar"`
-	Username    string `bson:"username"`
-	Password    string `bson:"password"`
-	Email       string `bson:"email"`
-	Phone       string `bson:"phone"`
-	Description string `bson:"description"`
+	Name        string `json:"name"`
+	Avatar      string `json:"avatar"`
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	Email       string `json:"email"`
+	Phone       string `json:"phone"`
+	Description string `json:"description"`
 }
