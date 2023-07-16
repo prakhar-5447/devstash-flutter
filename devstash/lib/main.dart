@@ -10,6 +10,7 @@ import 'package:devstash/screens/projectDetailScreen.dart';
 import 'package:devstash/screens/welcome.dart';
 import 'package:devstash/screens/HomeScreen.dart';
 import 'package:devstash/screens/ProfileScreen.dart';
+import 'package:devstash/screens/CalendarScreen.dart';
 
 // services
 import 'package:devstash/services/projectServices.dart';
@@ -56,7 +57,8 @@ class _MyAppState extends State<MyApp> {
           // '/': (context) => const Project(),
           // '/': (context) => const Saved(),
           // '/': (context) => MyHomePage(title: "hello"),
-          '/': (context) => const HomeScreen(),
+          '/': (context) => HomeScreen(),
+          '/calendar': (context) => CalendarScreen(context),
           // '/': (context) => const ProfileScreen(),
         });
   }

@@ -10,7 +10,9 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: AppDrawer(),
+        drawer: const AppDrawer(
+          currentIndex: 0,
+        ),
         body: Container(
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -102,7 +104,7 @@ class HomeScreen extends StatelessWidget {
                           BoxShadow(
                             color: Color.fromARGB(255, 255, 255, 255),
                             spreadRadius: -10.0,
-                            blurRadius: 15,
+                            blurRadius: 20,
                           ),
                         ],
                       ),
@@ -156,7 +158,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ]),
             ),
-            const Expanded(
+            Expanded(
               child: WeekdayTaskScreen(),
             ),
           ]),
