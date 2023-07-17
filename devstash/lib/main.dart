@@ -1,3 +1,5 @@
+import 'package:devstash/models/request/projectRequest.dart';
+import 'package:devstash/models/request/signupRequest.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer';
 
@@ -16,7 +18,11 @@ import 'package:devstash/services/favoriteServices.dart';
 import 'package:devstash/services/projectServices.dart';
 import 'package:devstash/services/userServices.dart';
 
-// models
+// request models
+import 'package:devstash/models/request/bookmarkRequest.dart';
+import 'package:devstash/models/request/favoriteRequest.dart';
+
+// response models
 import 'package:devstash/models/response/bookmarkResponse.dart';
 import 'package:devstash/models/response/favoriteResponse.dart';
 import 'package:devstash/models/response/userResponse.dart';
@@ -34,7 +40,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late dynamic _project;
+  late dynamic data;
+  final SignupRequest userData = SignupRequest('', '', 'pratham-0094', '',
+      'sahupratham022003@gmail.com', '9981028157', 'hello everyone');
 
   @override
   void initState() {
@@ -43,9 +51,9 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _getData() async {
-    _project = (await PrjectServices().daleteProject('64ad8bff6f609ba2ebb7b49d'));
+    data = (await UserServices().updateProfile(userData));
     Future.delayed(const Duration(seconds: 1)).then((value) => setState(() {
-          log(_project.toString());
+          log(data.toString());
         }));
   }
 

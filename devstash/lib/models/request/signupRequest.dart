@@ -21,4 +21,16 @@ class SignupRequest {
   String toString() {
     return 'ProjectResponse{name: $_Name, avatar: $_Avatar, username: $_Username, password: $_Password, email: $_Email, phone: $_Phone, description: $_Description}';
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': _Name,
+      'avatar': _Avatar,
+      'username': _Username,
+      'password': _Password,
+      'email': _Email,
+      'phone': _Phone,
+      'description': _Description,
+    };
+  }
 }
