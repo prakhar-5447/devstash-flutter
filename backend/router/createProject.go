@@ -64,10 +64,7 @@ func (server *Server) CreateProject(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Project created successfully",
-		"project": createdProject,
-	})
+	c.JSON(http.StatusOK, createdProject)
 }
 
 func convertToProjectType(projectType string) db.ProjectType {
@@ -120,10 +117,7 @@ func (server *Server) UpdateProjectByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Project updated successfully",
-		"project": updatedProject,
-	})
+	c.JSON(http.StatusOK, updatedProject)
 }
 
 func (server *Server) GetProjectsByUser(c *gin.Context) {
@@ -151,7 +145,7 @@ func (server *Server) GetProjectsByUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"projects": projects})
+	c.JSON(http.StatusOK, projects)
 }
 
 func (server *Server) DeleteProject(c *gin.Context) {

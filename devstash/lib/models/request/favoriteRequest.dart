@@ -11,4 +11,11 @@ class FavoriteRequest {
   String toString() {
     return 'ProjectResponse{action: $_Action, projectId: $_ProjectId}';
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'action': _Action,
+      'projectId': _ProjectId,
+    };
+  }
 }

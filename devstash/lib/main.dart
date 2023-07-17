@@ -1,9 +1,9 @@
-import 'package:devstash/models/response/userResponse.dart';
+import 'package:devstash/models/request/projectRequest.dart';
+import 'package:devstash/models/request/signupRequest.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer';
 
 // screens
-import 'package:devstash/models/response/projectResponse.dart';
 import 'package:devstash/screens/saved.dart';
 import 'package:devstash/screens/project.dart';
 import 'package:devstash/screens/projectDetailScreen.dart';
@@ -13,8 +13,20 @@ import 'package:devstash/screens/ProfileScreen.dart';
 import 'package:devstash/screens/CalendarScreen.dart';
 
 // services
+import 'package:devstash/services/bookmarkServices.dart';
+import 'package:devstash/services/favoriteServices.dart';
 import 'package:devstash/services/projectServices.dart';
 import 'package:devstash/services/userServices.dart';
+
+// request models
+import 'package:devstash/models/request/bookmarkRequest.dart';
+import 'package:devstash/models/request/favoriteRequest.dart';
+
+// response models
+import 'package:devstash/models/response/bookmarkResponse.dart';
+import 'package:devstash/models/response/favoriteResponse.dart';
+import 'package:devstash/models/response/userResponse.dart';
+import 'package:devstash/models/response/projectResponse.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,7 +40,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late UserResponse? _user;
+  late dynamic data;
+  final SignupRequest userData = SignupRequest('', '', 'pratham-0094', '',
+      'sahupratham022003@gmail.com', '9981028157', 'hello everyone');
 
   @override
   void initState() {
@@ -37,9 +51,9 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _getData() async {
-    _user = (await UserServices().getUser());
+    data = (await UserServices().updateProfile(userData));
     Future.delayed(const Duration(seconds: 1)).then((value) => setState(() {
-          log(_user.toString());
+          log(data.toString());
         }));
   }
 
