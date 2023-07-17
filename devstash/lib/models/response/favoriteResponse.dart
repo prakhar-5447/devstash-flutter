@@ -1,14 +1,14 @@
 class FavoriteResponse {
   String _UserId;
-  List<String> _OtherUserIds;
+  List<String> _ProjectIds;
 
   FavoriteResponse(
     this._UserId,
-    this._OtherUserIds,
+    this._ProjectIds,
   );
 
   @override
   String toString() {
-    return 'ProjectResponse{userId: $_UserId, otherUserIds: $_OtherUserIds}';
+    return 'ProjectResponse{userId: $_UserId, projectIds: $_ProjectIds}';
   }
-} 
+}

@@ -1,14 +1,14 @@
 class BookmarkResponse {
   String _UserId;
-  List<String> _ProjectIds;
+  List<String> _OtherUserIds;
 
   BookmarkResponse(
     this._UserId,
-    this._ProjectIds,
+    this._OtherUserIds,
   );
 
   @override
   String toString() {
-    return 'ProjectResponse{userId: $_UserId, projectIds: $_ProjectIds}';
+    return 'ProjectResponse{userId: $_UserId, otherUserIds: $_OtherUserIds}';
   }
 }

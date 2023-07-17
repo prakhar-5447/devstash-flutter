@@ -40,12 +40,15 @@ func (server *Server) setupRouter() {
 	router.GET("/getuser", server.GetUser)
 	router.PUT("/profile", server.UpdateProfile)
 	router.POST("/upload", server.handleFileUpload)
+	router.GET("/images/:filename", server.handleImage)
+	router.DELETE("/images/:filename", server.deleteImage)
 	router.POST("/createProject", server.CreateProject)
 	router.GET("/getprojects", server.GetProjectsByUser)
 	router.PUT("/updateProject/:id", server.UpdateProjectByID)
 	router.DELETE("/deleteproject/:id", server.DeleteProject)
-	router.GET("/images/:filename", server.handleImage)
+	router.GET("/favorite", server.GetUserFavoritesByID)
 	router.PUT("/favorite", server.AddOrRemoveUserFromFavorite)
+	router.GET("/bookmark", server.GetUserBookmarksByID)
 	router.PUT("/bookmark", server.AddOrRemoveUserFromBookmark)
 	server.router = router
 }

@@ -21,4 +21,16 @@ class ProjectRequest {
   String toString() {
     return 'ProjectResponse{image: $_Image, title: $_Title, description: $_Description, technologies: $_Technologies, collaboratorsID: $_CollaboratorsID, projectType: $_ProjectType, hashtags: $_Hashtags}';
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'image': _Image,
+      'title': _Title,
+      'description': _Description,
+      'technologies': _Technologies,
+      'collaboratorsID': _CollaboratorsID,
+      'projectType': _ProjectType,
+      'hashtags': _Hashtags,
+    };
+  }
 }
