@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> {
           // '/': (context) => const Project(),
           // '/': (context) => const Saved(),
           // '/': (context) => MyHomePage(title: "hello"),
-          '/': (context) => HomeScreen(),
+          '/': (context) => WelcomeScreen(title: "welcome"),
           '/calendar': (context) => CalendarScreen(context),
           // '/': (context) => const ProfileScreen(),
         });
