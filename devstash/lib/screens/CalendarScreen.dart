@@ -86,8 +86,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
   DateTime _lastDay = DateTime.utc(2023, 12, 31);
   List<Event> _events = [];
   late DateTime _selectedDate;
-  TextEditingController _titleController = TextEditingController();
-  TextEditingController _descriptionController = TextEditingController();
 
   @override
   void initState() {
@@ -98,8 +96,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
     super.dispose();
   }
 

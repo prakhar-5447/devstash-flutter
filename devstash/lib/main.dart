@@ -1,4 +1,5 @@
 import 'package:devstash/models/response/userResponse.dart';
+import 'package:devstash/providers/AuthProvider.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer';
 
@@ -15,6 +16,7 @@ import 'package:devstash/screens/CalendarScreen.dart';
 // services
 import 'package:devstash/services/projectServices.dart';
 import 'package:devstash/services/userServices.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -45,21 +47,24 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Devstash',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        routes: {
-          // '/': (context) => const WelcomeScreen(title: "hello"),
-          // '/': (context) => const ProjectDetailScreen(),
-          // '/': (context) => const Project(),
-          // '/': (context) => const Saved(),
-          // '/': (context) => MyHomePage(title: "hello"),
-          '/': (context) => WelcomeScreen(title: "welcome"),
-          '/calendar': (context) => CalendarScreen(context),
-          // '/': (context) => const ProfileScreen(),
-        });
+    return ChangeNotifierProvider(
+      create: (context) => AuthProvider(),
+      child: MaterialApp(
+          title: 'Devstash',
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            useMaterial3: true,
+          ),
+          routes: {
+            // '/': (context) => const WelcomeScreen(title: "hello"),
+            // '/': (context) => const ProjectDetailScreen(),
+            // '/': (context) => const Project(),
+            // '/': (context) => const Saved(),
+            // '/': (context) => MyHomePage(title: "hello"),
+            '/': (context) => WelcomeScreen(title: "welcome"),
+            '/calendar': (context) => CalendarScreen(context),
+            // '/': (context) => const ProfileScreen(),
+          }),
+    );
   }
 }

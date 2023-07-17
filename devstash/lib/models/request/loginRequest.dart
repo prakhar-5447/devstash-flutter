@@ -11,4 +11,11 @@ class LoginRequest {
   String toString() {
     return 'ProjectResponse{usernameOrEmail: $_UsernameOrEmail, password: $_Password}';
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'usernameOrEmail': _UsernameOrEmail,
+      'password': _Password,
+    };
+  }
 }

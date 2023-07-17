@@ -1,14 +1,25 @@
+import 'dart:developer';
+
+import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/ProfileScreen.dart';
 import 'package:devstash/widgets/AppDrawer.dart';
 import 'package:devstash/widgets/WeekdayTaskScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final token = authProvider.token;
+
+    if (token != null) {
+      log(token);
+    }
+
     return Scaffold(
         drawer: const AppDrawer(
           currentIndex: 0,
