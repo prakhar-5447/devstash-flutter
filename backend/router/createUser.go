@@ -58,9 +58,17 @@ func (server *Server) CreateUser(c *gin.Context) {
 		return
 	}
 
+	LoggedInuser, err := server.store.FindUserByUsername(c.Request.Context(), req.Username)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "User created successfully",
 		"token":   token,
+		"user":    LoggedInuser,
 	})
 }
 
@@ -111,7 +119,14 @@ func (server *Server) Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": token})
+	LoggedInuser, err := server.store.FindUserByUsername(c.Request.Context(), req.UsernameOrEmail)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"token": token, "user": LoggedInuser})
 }
 
 func (server *Server) UpdateProfile(c *gin.Context) {

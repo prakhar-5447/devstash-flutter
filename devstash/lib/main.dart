@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _getData();
+    // _getData();
   }
 
   void _getData() async {
@@ -69,14 +69,16 @@ class _MyAppState extends State<MyApp> {
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,
-          ),
+          ),        initialRoute: '/',
+
           routes: {
             // '/': (context) => const WelcomeScreen(title: "hello"),
             // '/': (context) => const ProjectDetailScreen(),
             // '/': (context) => const Project(),
             // '/': (context) => const Saved(),
             // '/': (context) => MyHomePage(title: "hello"),
-            '/': (context) => WelcomeScreen(title: "welcome"),
+            '/': (context) => HomeScreen(),
+            '/auth': (context) => WelcomeScreen(title: "welcome"),
             '/calendar': (context) => CalendarScreen(context),
             // '/': (context) => const ProfileScreen(),
           }),

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:devstash/models/response/userResponse.dart';
 import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/ProfileScreen.dart';
 import 'package:devstash/widgets/AppDrawer.dart';
@@ -15,9 +16,12 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final token = authProvider.token;
+    UserResponse? user = authProvider.user;
 
-    if (token != null) {
-      log(token);
+    if (token == null) {
+      WidgetsBinding.instance!.addPostFrameCallback((_) {
+        Navigator.pushReplacementNamed(context, '/auth');
+      });
     }
 
     return Scaffold(
@@ -41,22 +45,22 @@ class HomeScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Padding(
+                    child: Padding(
                       padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            "PRAKHAR SAHU",
-                            style: TextStyle(
+                            user?.Name ?? '',
+                            style: const TextStyle(
                               fontFamily: 'Comfortaa',
                               fontWeight: FontWeight.w600,
                               fontSize: 12,
                             ),
                           ),
                           Text(
-                            "@prakhar-5447",
-                            style: TextStyle(
+                            user?.Username ?? '',
+                            style: const TextStyle(
                               fontFamily: 'Comfortaa',
                               fontWeight: FontWeight.w600,
                               fontSize: 10,

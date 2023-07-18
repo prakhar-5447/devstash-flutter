@@ -1,10 +1,11 @@
 import 'dart:developer';
 
 import 'package:devstash/models/request/loginRequest.dart';
+import 'package:devstash/models/response/LoginResponse.dart';
 import 'package:devstash/providers/AuthProvider.dart';
-import 'package:devstash/screens/HomeScreen.dart';
 import 'package:devstash/services/AuthServices.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class LoginModal extends StatefulWidget {
@@ -20,6 +21,8 @@ class _LoginModalState extends State<LoginModal> {
   TextEditingController _usernameOrEmail = TextEditingController();
   TextEditingController _password = TextEditingController();
   AuthServices _authServices = AuthServices();
+  bool _isLoading = false;
+  String _errorMessage = '';
 
   @override
   void dispose() {
@@ -225,47 +228,25 @@ class _LoginModalState extends State<LoginModal> {
                     Padding(
                       padding: const EdgeInsets.only(top: 30, bottom: 15),
                       child: ElevatedButton(
-                          style: const ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll<Color>(
-                                  Color.fromARGB(255, 33, 149, 221))),
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              final usernameOrEmail = _usernameOrEmail.text;
-                              final password = _password.text;
-                              LoginRequest loginData =
-                                  LoginRequest(usernameOrEmail, password);
-                              dynamic _user =
-                                  (await _authServices.loginUser(loginData));
-                              Future.delayed(const Duration(seconds: 1))
-                                  .then((value) => setState(
-                                        () {
-                                          log(_user.toString());
-                                          final authProvider =
-                                              Provider.of<AuthProvider>(context,
-                                                  listen: false);
-                                          authProvider
-                                              .setToken(_user.toString());
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    HomeScreen()),
-                                          );
-                                        },
-                                      ));
-                            }
-                          },
-                          child: const Padding(
-                              padding: EdgeInsets.only(
-                                  left: 50, top: 12, right: 50, bottom: 12),
-                              child: Text(
-                                "REGISTER",
-                                style: TextStyle(
-                                    color: Color.fromARGB(221, 221, 215, 215),
-                                    fontFamily: 'Comfortaa',
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 22),
-                              ))),
+                        style: const ButtonStyle(
+                            backgroundColor: MaterialStatePropertyAll<Color>(
+                                Color.fromARGB(255, 33, 149, 221))),
+                        onPressed: _isLoading ? null : _performLogin,
+                        child: _isLoading
+                            ? const CircularProgressIndicator()
+                            : const Padding(
+                                padding: EdgeInsets.only(
+                                    left: 50, top: 12, right: 50, bottom: 12),
+                                child: Text(
+                                  "REGISTER",
+                                  style: TextStyle(
+                                      color: Color.fromARGB(221, 221, 215, 215),
+                                      fontFamily: 'Comfortaa',
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 22),
+                                ),
+                              ),
+                      ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -307,5 +288,50 @@ class _LoginModalState extends State<LoginModal> {
         ],
       ),
     );
+  }
+
+  void _performLogin() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = '';
+      });
+    }
+
+    final usernameOrEmail = _usernameOrEmail.text;
+    final password = _password.text;
+    LoginRequest loginData = LoginRequest(usernameOrEmail, password);
+
+    try {
+      dynamic _user = await _authServices.loginUser(loginData);
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      authProvider.setToken(_user.token);
+      authProvider.setUser(_user.user);
+      Fluttertoast.showToast(
+        msg: "Successfully Login",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+      );
+      Navigator.pushReplacementNamed(context, '/');
+    } catch (error) {
+      setState(() {
+        _errorMessage = 'Invalid username or password';
+        _usernameOrEmail.clear();
+        _password.clear();
+        _isLoading =
+            false; // Set isLoading to false here to stop the loading indicator
+      });
+      Fluttertoast.showToast(
+        msg: _errorMessage,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    }
   }
 }
