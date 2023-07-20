@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _getData();
+    // _getData();
   }
 
   void _getData() async {

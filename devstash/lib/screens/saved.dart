@@ -1,5 +1,10 @@
+import 'dart:developer';
 import 'package:devstash/models/Bookmarks.dart';
 import 'package:devstash/models/ProjectList.dart';
+import 'package:devstash/models/response/favoriteResponse.dart';
+import 'package:devstash/models/response/projectResponse.dart';
+import 'package:devstash/services/favoriteServices.dart';
+import 'package:devstash/services/projectServices.dart';
 import 'package:flutter/material.dart';
 
 class Saved extends StatefulWidget {
@@ -12,10 +17,6 @@ class Saved extends StatefulWidget {
 class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final List<String> _tabs = ['Favourites', 'Bookmarks'];
-  final List<ProjectList> project = [
-    ProjectList("assets/todo.png"),
-    ProjectList("assets/firstmy.jpg")
-  ];
   final List<Bookmarks> bookmark = [
     Bookmarks("PRATHAM SAHU", "assets/google.png"),
     Bookmarks("PRAKHAR SAHU", "assets/google.png"),
@@ -25,12 +26,30 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
+    _getData();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  late FavoriteResponse? favoriteData;
+  late ProjectResponse? projectData;
+
+  Future<List<ProjectList>> _getData() async {
+    final List<ProjectList> project = [];
+
+    favoriteData = await FavoriteServices().getFavorite();
+
+    for (var i = 0; i < favoriteData!.projectLength; i++) {
+      projectData =
+          await ProjectServices().getProjectById(favoriteData!.projectIds[i]);
+      project.add(ProjectList(projectData!.image));
+    }
+
+    return project;
   }
 
   @override
@@ -96,41 +115,45 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
             controller: _tabController,
             children: [
               SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 5, left: 25, right: 25),
-                  child: GridView.builder(
-                    shrinkWrap:
-                        true, // Allow the GridView to take only the necessary height
-                    physics:
-                        const NeverScrollableScrollPhysics(), // Disable GridView's scrolling
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2, // Number of columns in the grid
-                      crossAxisSpacing: 25,
-                      mainAxisSpacing: 25,
-                    ),
-                    itemCount: project.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                              colorFilter: ColorFilter.mode(
-                                const Color.fromARGB(255, 165, 165, 165)
-                                    .withOpacity(0.25),
-                                BlendMode.darken,
+                  child: Padding(
+                padding: const EdgeInsets.only(top: 5, left: 25, right: 25),
+                child: FutureBuilder<List<ProjectList>>(
+                  future: _getData(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<ProjectList>> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      return GridView.count(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 25,
+                        mainAxisSpacing: 25,
+                        children: snapshot.data!.map((projectList) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                colorFilter: ColorFilter.mode(
+                                  const Color.fromARGB(255, 165, 165, 165)
+                                      .withOpacity(0.25),
+                                  BlendMode.darken,
+                                ),
+                                image: NetworkImage('http://192.168.1.113:8080/images/'+projectList.image),
+                                fit: BoxFit.cover,
                               ),
-                              image: AssetImage(
-                                project[index].image,
-                              ),
-                              fit: BoxFit.cover,
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(11)),
                             ),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(11))),
+                          );
+                        }).toList(),
                       );
-                    },
-                  ),
+                    }
+                  },
                 ),
-              ),
+              )),
               Padding(
                   padding: const EdgeInsets.only(top: 5, left: 25, right: 25),
                   child: ListView.builder(

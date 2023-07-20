@@ -45,6 +45,7 @@ func (server *Server) setupRouter() {
 	router.POST("/createProject", server.CreateProject)
 	router.GET("/getprojects", server.GetProjectsByUser)
 	router.PUT("/updateProject/:id", server.UpdateProjectByID)
+	router.GET("/getprojectbyid/:id", server.GetProjectByID)
 	router.DELETE("/deleteproject/:id", server.DeleteProject)
 	router.GET("/favorite", server.GetUserFavoritesByID)
 	router.PUT("/favorite", server.AddOrRemoveUserFromFavorite)

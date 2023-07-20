@@ -8,6 +8,7 @@ class ApiConstants {
   static String createProjectEndpoint = "/createProject";
   static String getProjectsEndpoint = "/getprojects";
   static String updateProjectEndpoint = "/updateProject/";
+  static String getProjectByIdEndpoint = "/getprojectbyid/";
   static String deleteProjectEndpoint = "/deleteproject/";
   static String imagesEndpoint = "/images/";
   static String favoriteEndpoint = "/favorite";

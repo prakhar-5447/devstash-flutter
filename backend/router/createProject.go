@@ -148,6 +148,21 @@ func (server *Server) GetProjectsByUser(c *gin.Context) {
 	c.JSON(http.StatusOK, projects)
 }
 
+func (server *Server) GetProjectByID(c *gin.Context) {
+	// Retrieve the project ID from the request parameters
+	projectID := c.Param("id")
+
+	// Call the GetProjectByID method passing the project ID and token
+	project, err := server.store.GetProjectByID(c.Request.Context(), projectID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve project"})
+		return
+	}
+
+	// Handle the retrieved project as needed
+	c.JSON(http.StatusOK, project)
+}
+
 func (server *Server) DeleteProject(c *gin.Context) {
 	token := c.GetHeader("Authorization")
 	if token == "" {

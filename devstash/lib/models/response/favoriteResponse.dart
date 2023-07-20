@@ -11,4 +11,8 @@ class FavoriteResponse {
   String toString() {
     return 'ProjectResponse{userId: $_UserId, projectIds: $_ProjectIds}';
   }
+
+  String get userId => _UserId;
+  List<String> get projectIds => _ProjectIds;
+  int get projectLength => _ProjectIds.length;
 }
