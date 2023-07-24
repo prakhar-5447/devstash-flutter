@@ -7,12 +7,11 @@ import 'package:http/http.dart' as http;
 import 'package:devstash/constants.dart';
 
 class BookmarkServices {
-  Future<BookmarkResponse?> getBookmark() async {
+  Future<BookmarkResponse?> getBookmark(String token) async {
     try {
       var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.bookmarkEndpoint);
       var headers = {
-        'Authorization':
-            'v2.local.Gdj7OTm8jFjgmU6D-Mqoy4YboGlJA6CC1ytk2jMQsoORoBVdR-iIGx-MW4Xd603RkHbpQFDRtB1tNXRnETyiD4FyirXUuExgZGC2lHvRlb-AlcUikcWsd1_AiBm7cwYBY0tggGJeB7qsf-HsjrvggDZjSP9H276i3mBIAiyYmvtDu7WOE8mi1Em-uEPLNt1vOK5ABCnNSylZiz42wzhiI7oO3m6Wbu_AOQgeydBkesx0-4pCu0wNWBgbg_fTzxcc0fJpyKf0tee_sbfu2Pw90s0SyLr2mnoiStv5dkAfEJlu_I29cD1sMzF1VJLUsBCw.bnVsbA',
+        'Authorization': token,
       };
 
       var response = await http.get(url, headers: headers);

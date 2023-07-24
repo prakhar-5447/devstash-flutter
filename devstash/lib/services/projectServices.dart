@@ -120,10 +120,10 @@ ProjectResponse projectFromJson(String json) {
   ProjectResponse project = ProjectResponse(
     id,
     userID,
+    createdDate,
     image,
     title,
     description,
-    createdDate,
     technologies,
     collaboratorsID,
     projectType,

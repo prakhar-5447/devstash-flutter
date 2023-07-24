@@ -1,11 +1,17 @@
 import 'dart:developer';
 import 'package:devstash/models/Bookmarks.dart';
 import 'package:devstash/models/ProjectList.dart';
+import 'package:devstash/models/response/bookmarkResponse.dart';
 import 'package:devstash/models/response/favoriteResponse.dart';
 import 'package:devstash/models/response/projectResponse.dart';
+import 'package:devstash/models/response/userResponse.dart';
+import 'package:devstash/providers/AuthProvider.dart';
+import 'package:devstash/services/bookmarkServices.dart';
 import 'package:devstash/services/favoriteServices.dart';
 import 'package:devstash/services/projectServices.dart';
+import 'package:devstash/services/userServices.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Saved extends StatefulWidget {
   const Saved({super.key});
@@ -17,16 +23,11 @@ class Saved extends StatefulWidget {
 class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final List<String> _tabs = ['Favourites', 'Bookmarks'];
-  final List<Bookmarks> bookmark = [
-    Bookmarks("PRATHAM SAHU", "assets/google.png"),
-    Bookmarks("PRAKHAR SAHU", "assets/google.png"),
-  ];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
-    _getData();
   }
 
   @override
@@ -36,20 +37,54 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
   }
 
   late FavoriteResponse? favoriteData;
-  late ProjectResponse? projectData;
+  late BookmarkResponse? bookmarkData;
 
-  Future<List<ProjectList>> _getData() async {
-    final List<ProjectList> project = [];
+  final List<ProjectList> project = [];
+  final List<Bookmarks> bookmark = [];
 
-    favoriteData = await FavoriteServices().getFavorite();
+  Future<List<ProjectList>> _getfavorite() async {
+    late ProjectResponse? projectData;
 
-    for (var i = 0; i < favoriteData!.projectLength; i++) {
-      projectData =
-          await ProjectServices().getProjectById(favoriteData!.projectIds[i]);
-      project.add(ProjectList(projectData!.image));
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+    String? token = auth.token;
+    if (token != null) {
+      favoriteData = await FavoriteServices().getFavorite(token);
+
+      if (favoriteData?.projectLength != null &&
+          favoriteData!.projectLength > 0) {
+        for (var i = 0; i < favoriteData!.projectLength; i++) {
+          projectData = await ProjectServices()
+              .getProjectById(favoriteData!.projectIds[i]);
+          if (projectData != null) {
+            project.add(ProjectList(
+                "http://192.168.1.105:8080/images/" + projectData.image));
+          }
+        }
+      }
     }
-
     return project;
+  }
+
+  Future<List<Bookmarks>> _bookmarkData() async {
+    late UserResponse? userData;
+
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+    String? token = auth.token;
+    if (token != null) {
+      bookmarkData = await BookmarkServices().getBookmark(token);
+
+      if (bookmarkData?.userLength != null && bookmarkData!.userLength > 0) {
+        for (var i = 0; i < bookmarkData!.userLength; i++) {
+          userData =
+              await UserServices().getUserById(bookmarkData!.otherUserIds[i]);
+          if (userData != null) {
+            bookmark.add(Bookmarks(userData.name,
+                "http://192.168.1.105:8080/images/" + userData.avatar));
+          }
+        }
+      }
+    }
+    return bookmark;
   }
 
   @override
@@ -117,22 +152,28 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
               SingleChildScrollView(
                   child: Padding(
                 padding: const EdgeInsets.only(top: 5, left: 25, right: 25),
-                child: FutureBuilder<List<ProjectList>>(
-                  future: _getData(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<List<ProjectList>> snapshot) {
+                child: FutureBuilder<void>(
+                  future: _getfavorite(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<void> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else {
-                      return GridView.count(
+                      return GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 25,
-                        mainAxisSpacing: 25,
-                        children: snapshot.data!.map((projectList) {
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 25,
+                          mainAxisSpacing: 25,
+                        ),
+                        itemCount: project.length,
+                        itemBuilder: (BuildContext context, int index) {
                           return Container(
                             decoration: BoxDecoration(
                               image: DecorationImage(
@@ -141,14 +182,14 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
                                       .withOpacity(0.25),
                                   BlendMode.darken,
                                 ),
-                                image: NetworkImage('http://192.168.1.113:8080/images/'+projectList.image),
+                                image: NetworkImage(project[index].image),
                                 fit: BoxFit.cover,
                               ),
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(11)),
                             ),
                           );
-                        }).toList(),
+                        },
                       );
                     }
                   },
@@ -156,72 +197,109 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
               )),
               Padding(
                   padding: const EdgeInsets.only(top: 5, left: 25, right: 25),
-                  child: ListView.builder(
-                      itemCount: bookmark.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(
-                              left: 15, right: 15, bottom: 30),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
+                  child: FutureBuilder<void>(
+                      future:
+                          _bookmarkData(), // Replace is_bookmarkData with the function to fetch bookmark data
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          // While data is loading, show a loading indicator
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          // If there was an error while fetching data, show an error message
+                          return Center(
+                              child: Text('Error: ${snapshot.error}'));
+                        } else {
+                          // If data was fetched successfully, display the ListView
+                          return ListView.builder(
+                            itemCount: bookmark.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 15, right: 15, bottom: 30),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Container(
-                                      width: 60,
-                                      height: 60,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(color: Colors.black),
-                                        borderRadius: BorderRadius.circular(30),
-                                        color: Colors.white,
-                                      ),
-                                      child: Image.asset(
-                                        bookmark[index].avatar,
-                                        fit: BoxFit.contain,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 15),
-                                      child: Text(bookmark[index].name,
-                                          style: const TextStyle(
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 60,
+                                          height: 60,
+                                          decoration: BoxDecoration(
+                                            border:
+                                                Border.all(color: Colors.black),
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                            color: Colors.white,
+                                          ),
+                                          child: ClipOval(
+                                            child: Image.network(
+                                              bookmark[index].avatar,
+                                              fit: BoxFit.cover,
+                                              width: 60,
+                                              height: 60,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 15),
+                                          child: Text(
+                                            bookmark[index].name,
+                                            style: const TextStyle(
                                               color: Color.fromARGB(
                                                   255, 75, 73, 70),
                                               fontFamily: 'Comfortaa',
                                               fontWeight: FontWeight.w400,
-                                              fontSize: 14)),
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 30,
-                                  child: ElevatedButton(
-                                      style: ButtonStyle(
+                                    SizedBox(
+                                      height: 30,
+                                      child: ElevatedButton(
+                                        style: ButtonStyle(
                                           shape: MaterialStateProperty.all<
-                                                  RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(3),
-                                                  side: const BorderSide(
-                                                      color: Color.fromARGB(255,
-                                                          117, 140, 253)))),
+                                              RoundedRectangleBorder>(
+                                            RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(3),
+                                              side: const BorderSide(
+                                                color: Color.fromARGB(
+                                                    255, 117, 140, 253),
+                                              ),
+                                            ),
+                                          ),
                                           backgroundColor:
-                                              const MaterialStatePropertyAll<Color>(
-                                                  Color.fromARGB(
-                                                      255, 117, 140, 253))),
-                                      onPressed: () => {},
-                                      child: const Text(
-                                        "Remove",
-                                        style: TextStyle(
+                                              MaterialStateProperty.all<Color>(
+                                            const Color.fromARGB(
+                                                255, 117, 140, 253),
+                                          ),
+                                        ),
+                                        onPressed: () => {},
+                                        child: const Text(
+                                          "Remove",
+                                          style: TextStyle(
                                             color: Color.fromARGB(
                                                 255, 234, 228, 228),
                                             fontFamily: 'Comfortaa',
                                             fontWeight: FontWeight.w300,
-                                            fontSize: 14),
-                                      )),
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ]),
-                        );
-                      })),
+                              );
+                            },
+                          );
+                        }
+                      }))
             ],
           ),
         ),

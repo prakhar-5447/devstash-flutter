@@ -11,4 +11,8 @@ class BookmarkResponse {
   String toString() {
     return 'ProjectResponse{userId: $_UserId, otherUserIds: $_OtherUserIds}';
   }
+
+  String get userId => _UserId;
+  List<String> get otherUserIds => _OtherUserIds;
+  int get userLength => otherUserIds.length;
 }

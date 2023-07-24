@@ -41,6 +41,21 @@ class UserServices {
       log(e.toString());
     }
   }
+
+  Future<UserResponse?> getUserById(String id) async {
+    try {
+      var url = Uri.parse(
+          ApiConstants.baseUrl + ApiConstants.getUserByIdEndpoint + id);
+
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        UserResponse user = userFromJson(response.body);
+        return user;
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
 }
 
 UserResponse userFromJson(String json) {

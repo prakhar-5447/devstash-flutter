@@ -19,6 +19,15 @@ class UserResponse {
     this._Description,
   );
 
+  String get iD => _ID;
+  String get name => _Name;
+  String get avatar => _Avatar;
+  String get username => _Username;
+  String get password => _Password;
+  String get email => _Email;
+  String get phone => _Phone;
+  String get description => _Description;
+
   @override
   String toString() {
     return 'ProjectResponse{iD: $_ID, name: $_Name, avatar: $_Avatar, username: $_Username, password: $_Password, email: $_Email, phone: $_Phone, description: $_Description}';
