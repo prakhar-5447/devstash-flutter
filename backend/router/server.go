@@ -38,6 +38,7 @@ func (server *Server) setupRouter() {
 	router.POST("/signup", server.CreateUser)
 	router.POST("/login", server.Login)
 	router.GET("/getuser", server.GetUser)
+	router.GET("/getuser/:id", server.getUserByID)
 	router.PUT("/profile", server.UpdateProfile)
 	router.POST("/upload", server.handleFileUpload)
 	router.GET("/images/:filename", server.handleImage)

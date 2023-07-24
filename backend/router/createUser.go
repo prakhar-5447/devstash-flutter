@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/prakhar-5447/db"
 	"github.com/prakhar-5447/models"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (server *Server) CreateUser(c *gin.Context) {
@@ -86,6 +87,29 @@ func (server *Server) GetUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, user)
 }
+
+func (server *Server) getUserByID(c *gin.Context) {
+	// Get the user ID from the URL parameter
+	userID := c.Param("id")
+
+	// Convert the user ID to a MongoDB ObjectID
+	objID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	// Retrieve the user from the database using the ObjectID
+	user, err := server.store.GetUserByID(c.Request.Context(), objID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user"})
+		return
+	}
+
+	// Return the user in the response
+	c.JSON(http.StatusOK, user)
+}
+
 
 func (server *Server) Login(c *gin.Context) {
 	var req models.LoginRequest

@@ -102,3 +102,20 @@ func (store *MongoDBStore) GetUserBookmarksByID(ctx context.Context, userID prim
 
 	return &bookmark, nil
 }
+
+func (store *MongoDBStore) GetUserByID(ctx context.Context, userID primitive.ObjectID) (*User, error) {
+	var user User
+
+	// Get the user from the users collection using the provided userID
+	err := store.GetCollection("users").FindOne(ctx, bson.M{"_id": userID}).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			// User not found
+			return nil, err
+		}
+		// Other error occurred
+		return nil, err
+	}
+
+	return &user, nil
+}
