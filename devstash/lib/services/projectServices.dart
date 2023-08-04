@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:devstash/models/request/projectRequest.dart';
+import 'package:devstash/models/response/CollaboratorResponse.dart';
 import 'package:devstash/models/response/projectResponse.dart';
 import 'package:http/http.dart' as http;
 import 'package:devstash/constants.dart';
@@ -26,13 +27,12 @@ class ProjectServices {
     }
   }
 
-  Future<List<ProjectResponse>?> getProjects() async {
+  Future<List<ProjectResponse>?> getProjects(String token) async {
     try {
       var url =
           Uri.parse(ApiConstants.baseUrl + ApiConstants.getProjectsEndpoint);
       var headers = {
-        'Authorization':
-            'v2.local.S37Eml_mUkboZ5CrtS2P_HKAUj0SW-BNbCTpewVZLAxWTRR_utI1yOrx12oTiyEXgXtcc69jxgy6J0rSNPmSoZEDncgAD5Vqqx3QeQ3cVGDY0L7DGfY3DHhJG5M4OiqS-oZDHoHFgg8pi-SrumigpJfpAe_V3NZS884Dg8Ky9IqtY8WqdKk_a67V-aejYt81lxhFnhVOnAbEUFDN1JdYXZH1xxoTNkhGdmCS45O1Rvw1TTFk1_A1QUHmI0T4MNvwpLA5wId2cfr2xUwiqpFPVQMpvvzxEDetABuG3DvQuJs0QEbGrz3UgRyw1dBxT06D.bnVsbA',
+        'Authorization': token,
       };
 
       var response = await http.get(url, headers: headers);
@@ -61,7 +61,23 @@ class ProjectServices {
     }
   }
 
-  Future<dynamic> daleteProject(String projectid) async {
+  Future<List<CollaboratorResponse>?> getCollaboratorUsers(
+      List<String> userid) async {
+    try {
+      var url = Uri.parse(
+          ApiConstants.baseUrl + ApiConstants.getCollaboratorUsersEndpoint);
+
+      var response = await http.post(url, body: jsonEncode(userid));
+      if (response.statusCode == 200) {
+        List<CollaboratorResponse> users = userFromJson(response.body);
+        return users;
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  Future<dynamic> deleteProject(String projectid) async {
     try {
       var url = Uri.parse(ApiConstants.baseUrl +
           ApiConstants.deleteProjectEndpoint +
@@ -102,6 +118,18 @@ class ProjectServices {
   }
 }
 
+List<CollaboratorResponse> userFromJson(String json) {
+  final userData = jsonDecode(json);
+  List<CollaboratorResponse> collaboratorUsers = [];
+
+  for (var user in userData) {
+    CollaboratorResponse userInfo =
+        CollaboratorResponse(user['userId'], user['avatar'], user['name']);
+    collaboratorUsers.add(userInfo);
+  }
+  return collaboratorUsers;
+}
+
 ProjectResponse projectFromJson(String json) {
   final projectData = jsonDecode(json);
 
@@ -109,6 +137,7 @@ ProjectResponse projectFromJson(String json) {
   String id = projectData['ID'];
   String image = projectData['Image'];
   String title = projectData['Title'];
+  String url = projectData['Url'];
   String description = projectData['Description'];
   String createdDate = projectData['CreatedDate'];
   List<String> technologies = List<String>.from(projectData['Technologies']);
@@ -118,11 +147,12 @@ ProjectResponse projectFromJson(String json) {
   List<String> hashtags = List<String>.from(projectData['Hashtags']);
 
   ProjectResponse project = ProjectResponse(
-    id,
     userID,
+    id,
     createdDate,
     image,
     title,
+    url,
     description,
     technologies,
     collaboratorsID,
@@ -142,6 +172,7 @@ List<ProjectResponse> projectsFromJson(String json) {
     String id = projectData['ID'];
     String image = projectData['Image'];
     String title = projectData['Title'];
+    String url = projectData['Url'];
     String description = projectData['Description'];
     String createdDate = projectData['CreatedDate'];
     List<String> technologies = List<String>.from(projectData['Technologies']);
@@ -151,12 +182,13 @@ List<ProjectResponse> projectsFromJson(String json) {
     List<String> hashtags = List<String>.from(projectData['Hashtags']);
 
     ProjectResponse project = ProjectResponse(
-      id,
       userID,
+      id,
+      createdDate,
       image,
       title,
+      url,
       description,
-      createdDate,
       technologies,
       collaboratorsID,
       projectType,
