@@ -12,6 +12,7 @@ import 'package:devstash/services/projectServices.dart';
 import 'package:devstash/services/userServices.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:devstash/constants.dart';
 
 class Saved extends StatefulWidget {
   const Saved({super.key});
@@ -57,7 +58,7 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
               .getProjectById(favoriteData!.projectIds[i]);
           if (projectData != null) {
             project.add(ProjectList(
-                "http://192.168.1.105:8080/images/" + projectData.image));
+                "${ApiConstants.baseUrl}/images/" + projectData.image));
           }
         }
       }
@@ -79,7 +80,7 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
               await UserServices().getUserById(bookmarkData!.otherUserIds[i]);
           if (userData != null) {
             bookmark.add(Bookmarks(userData.name,
-                "http://192.168.1.105:8080/images/" + userData.avatar));
+                "${ApiConstants.baseUrl}/images/" + userData.avatar));
           }
         }
       }
@@ -198,20 +199,16 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
               Padding(
                   padding: const EdgeInsets.only(top: 5, left: 25, right: 25),
                   child: FutureBuilder<void>(
-                      future:
-                          _bookmarkData(), // Replace is_bookmarkData with the function to fetch bookmark data
+                      future: _bookmarkData(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          // While data is loading, show a loading indicator
                           return const Center(
                               child: CircularProgressIndicator());
                         } else if (snapshot.hasError) {
-                          // If there was an error while fetching data, show an error message
                           return Center(
                               child: Text('Error: ${snapshot.error}'));
                         } else {
-                          // If data was fetched successfully, display the ListView
                           return ListView.builder(
                             itemCount: bookmark.length,
                             itemBuilder: (BuildContext context, int index) {
