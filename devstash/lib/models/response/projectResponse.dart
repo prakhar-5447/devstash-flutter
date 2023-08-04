@@ -3,6 +3,7 @@ class ProjectResponse {
   String _ID;
   String _Image;
   String _Title;
+  String _Url;
   String _Description;
   String _CreatedDate;
   List<String> _Technologies;
@@ -16,6 +17,7 @@ class ProjectResponse {
     this._CreatedDate,
     this._Image,
     this._Title,
+    this._Url,
     this._Description,
     this._Technologies,
     this._CollaboratorsID,
@@ -27,6 +29,7 @@ class ProjectResponse {
   String get id => _ID;
   String get image => _Image;
   String get title => _Title;
+  String get url => _Url;
   String get description => _Description;
   String get createdDate => _CreatedDate;
   List<String> get technologies => _Technologies;
@@ -36,6 +39,6 @@ class ProjectResponse {
 
   @override
   String toString() {
-    return 'ProjectResponse{userId: $_UserID, id: $_ID, image: $_Image, title: $_Title, description: $_Description, createdDate: $_CreatedDate, technologies: $_Technologies, collaboratorsID: $_CollaboratorsID, projectType: $_ProjectType, hashtags: $_Hashtags}';
+    return 'ProjectResponse{userId: $_UserID, id: $_ID, image: $_Image, title: $_Title, url: $_Url, description: $_Description, createdDate: $_CreatedDate, technologies: $_Technologies, collaboratorsID: $_CollaboratorsID, projectType: $_ProjectType, hashtags: $_Hashtags}';
   }
 }
