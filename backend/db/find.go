@@ -119,3 +119,44 @@ func (store *MongoDBStore) GetUserByID(ctx context.Context, userID primitive.Obj
 
 	return &user, nil
 }
+
+func (store *MongoDBStore) CheckValueInArray(ctx context.Context, userID primitive.ObjectID, arrayField string, value primitive.ObjectID) bool {
+	switch arrayField {
+	case "favorite":
+		var user Favorite
+		filter := bson.M{"userId": userID}
+		err := store.GetCollection("favorite").FindOne(ctx, filter).Decode(&user)
+		if err != nil {
+			if err == mongo.ErrNoDocuments {
+				return false
+			}
+			return false
+		}
+
+		for _, fav := range user.ProjectIds {
+			if fav == value {
+				return true
+			}
+		}
+	case "bookmark":
+		var user Bookmark
+		filter := bson.M{"userId": userID}
+		err := store.GetCollection("bookmark").FindOne(ctx, filter).Decode(&user)
+		if err != nil {
+			if err == mongo.ErrNoDocuments {
+				return false
+			}
+			return false
+		}
+
+		for _, bm := range user.OtherUserIds {
+			if bm == value {
+				return true
+			}
+		}
+	default:
+		return false
+	}
+
+	return false
+}

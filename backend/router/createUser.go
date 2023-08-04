@@ -216,3 +216,37 @@ func (server *Server) UpdateProfile(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "Failed to update profile"})
 	}
 }
+
+func (server *Server) FetchUsers(c *gin.Context) {
+	var req []string
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var userResponses []models.FetchCollaborator
+
+	for _, userIDStr := range req {
+		userID, err := primitive.ObjectIDFromHex(userIDStr)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID"})
+			return
+		}
+
+		user, err := server.store.GetUserByID(c.Request.Context(), userID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch user"})
+			return
+		}
+
+		userResponse := models.FetchCollaborator{
+			UserId:          user.ID.Hex(),
+			Name:        user.Name,
+			Avatar:      user.Avatar,
+		}
+
+		userResponses = append(userResponses, userResponse)
+	}
+
+	c.JSON(http.StatusOK, userResponses)
+}
