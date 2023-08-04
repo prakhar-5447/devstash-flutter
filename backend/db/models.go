@@ -28,6 +28,7 @@ type Project struct {
 	ID              primitive.ObjectID   `bson:"_id,omitempty"`
 	Image           string               `bson:"image"`
 	Title           string               `bson:"title"`
+	Url             string               `bson:"url"`
 	Description     string               `bson:"description"`
 	CreatedDate     primitive.DateTime   `bson:"createdDate"`
 	Technologies    []string             `bson:"technologies"`

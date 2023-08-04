@@ -49,6 +49,7 @@ func (server *Server) CreateProject(c *gin.Context) {
 
 	project := &db.Project{
 		Title:           req.Title,
+		Url:           req.Url,
 		Description:     req.Description,
 		Technologies:    req.Technologies,
 		CreatedDate:     primitive.NewDateTimeFromTime(time.Now().UTC()),

@@ -39,6 +39,7 @@ type Store interface {
 	GetUserFavoritesByID(ctx context.Context, userID primitive.ObjectID) (*Favorite, error)
 	GetUserBookmarksByID(ctx context.Context, userID primitive.ObjectID) (*Bookmark, error)
 	GetUserByID(ctx context.Context, userID primitive.ObjectID) (*User, error)
+	CheckValueInArray(ctx context.Context, userID primitive.ObjectID, arrayField string, value primitive.ObjectID) bool
 }
 
 type MongoDBStore struct {
