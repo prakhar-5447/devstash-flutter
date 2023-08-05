@@ -6,6 +6,7 @@ import 'package:devstash/models/response/favoriteResponse.dart';
 import 'package:devstash/models/response/projectResponse.dart';
 import 'package:devstash/models/response/userResponse.dart';
 import 'package:devstash/providers/AuthProvider.dart';
+import 'package:devstash/screens/projectDetailScreen.dart';
 import 'package:devstash/services/bookmarkServices.dart';
 import 'package:devstash/services/favoriteServices.dart';
 import 'package:devstash/services/projectServices.dart';
@@ -39,16 +40,29 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
 
   late FavoriteResponse? favoriteData;
   late BookmarkResponse? bookmarkData;
+  bool isFavoriteDataLoaded = false;
+  bool isBookmarkDataLoaded = false;
 
   final List<ProjectList> project = [];
   final List<Bookmarks> bookmark = [];
+
+  void onDelete(int indexToDelete) {
+    if (indexToDelete >= 0 && indexToDelete < project.length) {
+      setState(() {
+        project.removeAt(indexToDelete);
+      });
+      log('Item at index $indexToDelete has been deleted.');
+    } else {
+      log('Invalid index: $indexToDelete');
+    }
+  }
 
   Future<List<ProjectList>> _getfavorite() async {
     late ProjectResponse? projectData;
 
     final auth = Provider.of<AuthProvider>(context, listen: false);
     String? token = auth.token;
-    if (token != null) {
+    if (token != null && !isFavoriteDataLoaded) {
       favoriteData = await FavoriteServices().getFavorite(token);
 
       if (favoriteData?.projectLength != null &&
@@ -57,7 +71,7 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
           projectData = await ProjectServices()
               .getProjectById(favoriteData!.projectIds[i]);
           if (projectData != null) {
-            project.add(ProjectList(
+            project.add(ProjectList(projectData.id,
                 "${ApiConstants.baseUrl}/images/" + projectData.image));
           }
         }
@@ -71,7 +85,7 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
 
     final auth = Provider.of<AuthProvider>(context, listen: false);
     String? token = auth.token;
-    if (token != null) {
+    if (token != null && !isBookmarkDataLoaded) {
       bookmarkData = await BookmarkServices().getBookmark(token);
 
       if (bookmarkData?.userLength != null && bookmarkData!.userLength > 0) {
@@ -84,6 +98,10 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
           }
         }
       }
+      setState(() {
+        isFavoriteDataLoaded = true;
+        isBookmarkDataLoaded = true;
+      });
     }
     return bookmark;
   }
@@ -175,19 +193,32 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
                         ),
                         itemCount: project.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                colorFilter: ColorFilter.mode(
-                                  const Color.fromARGB(255, 165, 165, 165)
-                                      .withOpacity(0.25),
-                                  BlendMode.darken,
+                          return GestureDetector(
+                            onTap: () => {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProjectDetailScreen(
+                                          id: project[index].id,
+                                          onDelete: onDelete,
+                                          index: index,
+                                        )),
+                              )
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  colorFilter: ColorFilter.mode(
+                                    const Color.fromARGB(255, 165, 165, 165)
+                                        .withOpacity(0.25),
+                                    BlendMode.darken,
+                                  ),
+                                  image: NetworkImage(project[index].image),
+                                  fit: BoxFit.cover,
                                 ),
-                                image: NetworkImage(project[index].image),
-                                fit: BoxFit.cover,
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(11)),
                               ),
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(11)),
                             ),
                           );
                         },

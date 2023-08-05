@@ -171,10 +171,16 @@ class _ProjectState extends State<Project> {
                                                           Navigator.push(
                                                             context,
                                                             MaterialPageRoute(
-                                                                builder: (context) =>
-                                                                    ProjectDetailScreen(
-                                                                        id: item
-                                                                            .id)),
+                                                                builder:
+                                                                    (context) =>
+                                                                        ProjectDetailScreen(
+                                                                          id: item
+                                                                              .id,
+                                                                          index:
+                                                                              -1,
+                                                                          onDelete:
+                                                                              (int) {},
+                                                                        )),
                                                           )
                                                         },
                                                         child: SvgPicture.asset(

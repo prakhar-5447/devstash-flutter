@@ -19,7 +19,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class ProjectDetailScreen extends StatelessWidget {
   final String id;
-  const ProjectDetailScreen({super.key, required this.id});
+  final Function(int) onDelete;
+  final int index;
+  const ProjectDetailScreen(
+      {super.key,
+      required this.id,
+      required this.onDelete,
+      required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +71,6 @@ class ProjectDetailScreen extends StatelessWidget {
         }
       }
     }
-
 
     return Scaffold(
       body: FutureBuilder<void>(
@@ -471,9 +476,10 @@ class ProjectDetailScreen extends StatelessWidget {
                           borderRadius: BorderRadius.all(Radius.circular(11)),
                         ),
                         child: FavoriteButton(
-                          id: projectDetail.id,
-                          found: found,
-                        )),
+                            id: projectDetail.id,
+                            found: found,
+                            index: index,
+                            onDelete: onDelete)),
                   ),
                 ],
               );

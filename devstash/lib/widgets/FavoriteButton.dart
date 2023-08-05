@@ -6,9 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class FavoriteButton extends StatefulWidget {
-  String id;
   bool found;
-  FavoriteButton({required this.id, required this.found}) {}
+  final String id;
+  final int index;
+  final Function(int) onDelete;
+  FavoriteButton(
+      {required this.id,
+      required this.found,
+      required this.onDelete,
+      required this.index});
 
   @override
   _FavoriteButtonState createState() => _FavoriteButtonState();
@@ -18,6 +24,12 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   void toggleFound() {
     setState(() {
       widget.found = !widget.found;
+      if (widget.onDelete != null) {
+        if (!widget.found) {
+          widget.onDelete(widget.index);
+          Navigator.pop(context);
+        }
+      }
     });
   }
 
@@ -32,7 +44,6 @@ class _FavoriteButtonState extends State<FavoriteButton> {
       await FavoriteServices()
           .updateFavorite(FavoriteRequest(action, widget.id), token)
           .then((value) => {toggleFound()});
-      widget.found = await FavoriteServices().checkFavorite(token, widget.id);
     }
   }
 
