@@ -1,12 +1,16 @@
 class ProjectInfo {
+  String _id;
   String _name;
   String _image;
   String _date;
   String _url;
   String _description;
 
-  ProjectInfo(
-      this._name, this._image, this._date, this._url, this._description);
+  ProjectInfo(this._id, this._name, this._image, this._date, this._url,
+      this._description);
+
+  String get id => _id;
+  set id(String value) => _id = value;
 
   String get name => _name;
   set name(String value) => _name = value;

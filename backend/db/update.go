@@ -31,6 +31,12 @@ func (store *MongoDBStore) UpdateUserProfile(ctx context.Context, user *User) bo
 	if user.Name != "" {
 		update["name"] = user.Name
 	}
+	if user.Avatar != "" {
+		update["avatar"] = user.Avatar
+	}
+	if user.Username != "" {
+		update["username"] = user.Username
+	}
 	if user.Email != "" {
 		update["email"] = user.Email
 	}

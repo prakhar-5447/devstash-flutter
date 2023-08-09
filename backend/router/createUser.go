@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/prakhar-5447/db"
 	"github.com/prakhar-5447/models"
-	// "go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (server *Server) CreateUser(c *gin.Context) {
@@ -112,6 +112,29 @@ func (server *Server) GetUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, user)
 }
+
+func (server *Server) getUserByID(c *gin.Context) {
+	// Get the user ID from the URL parameter
+	userID := c.Param("id")
+
+	// Convert the user ID to a MongoDB ObjectID
+	objID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	// Retrieve the user from the database using the ObjectID
+	user, err := server.store.GetUserByID(c.Request.Context(), objID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user"})
+		return
+	}
+
+	// Return the user in the response
+	c.JSON(http.StatusOK, user)
+}
+
 
 func (server *Server) Login(c *gin.Context) {
 	var req models.LoginRequest
@@ -218,6 +241,40 @@ func (server *Server) UpdateProfile(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": "Failed to update profile"})
 	}
+}
+
+func (server *Server) FetchUsers(c *gin.Context) {
+	var req []string
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var userResponses []models.FetchCollaborator
+
+	for _, userIDStr := range req {
+		userID, err := primitive.ObjectIDFromHex(userIDStr)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID"})
+			return
+		}
+
+		user, err := server.store.GetUserByID(c.Request.Context(), userID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch user"})
+			return
+		}
+
+		userResponse := models.FetchCollaborator{
+			UserId:          user.ID.Hex(),
+			Name:        user.Name,
+			Avatar:      user.Avatar,
+		}
+
+		userResponses = append(userResponses, userResponse)
+	}
+
+	c.JSON(http.StatusOK, userResponses)
 }
 
 // func (server *Server) SaveProfile(c *gin.Context) {

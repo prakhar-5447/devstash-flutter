@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:devstash/models/response/userResponse.dart';
 import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/ProfileScreen.dart';
+import 'package:devstash/screens/project.dart';
 import 'package:devstash/widgets/AppDrawer.dart';
 import 'package:devstash/widgets/WeekdayTaskScreen.dart';
 import 'package:flutter/material.dart';
@@ -123,52 +124,61 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.fromLTRB(0, 0, 55, 4),
-                            width: double.infinity,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const Text(
-                                  '12',
-                                  style: TextStyle(
-                                    fontFamily: 'Comfortaa',
-                                    fontSize: 35,
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.115,
-                                    color: Color(0xfff1f2f6),
+                      child: GestureDetector(
+                        onTap: () => {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Project()),
+                          )
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.fromLTRB(0, 0, 55, 4),
+                              width: double.infinity,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    '12',
+                                    style: TextStyle(
+                                      fontFamily: 'Comfortaa',
+                                      fontSize: 35,
+                                      fontWeight: FontWeight.w500,
+                                      height: 1.115,
+                                      color: Color(0xfff1f2f6),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                SvgPicture.asset(
-                                  'assets/arrow.svg',
-                                  height: 15.0,
-                                  width: 30.0,
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            constraints: const BoxConstraints(
-                              maxWidth: 122,
-                            ),
-                            child: const Text(
-                              'PROJECTS COMPLETED',
-                              style: TextStyle(
-                                fontFamily: 'Comfortaa',
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400,
-                                height: 1.115,
-                                color: Color(0xfff1f2f6),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  SvgPicture.asset(
+                                    'assets/arrow.svg',
+                                    height: 15.0,
+                                    width: 30.0,
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                        ],
+                            Container(
+                              constraints: const BoxConstraints(
+                                maxWidth: 122,
+                              ),
+                              child: const Text(
+                                'PROJECTS COMPLETED',
+                                style: TextStyle(
+                                  fontFamily: 'Comfortaa',
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w400,
+                                  height: 1.115,
+                                  color: Color(0xfff1f2f6),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ]),
