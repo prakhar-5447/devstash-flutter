@@ -2,6 +2,7 @@ class ProjectRequest {
   String _Image;
   String _Title;
   String _Description;
+  String _Url;
   List<String> _Technologies;
   List<String> _CollaboratorsID;
   String _ProjectType;
@@ -10,6 +11,7 @@ class ProjectRequest {
   ProjectRequest(
     this._Image,
     this._Title,
+    this._Url,
     this._Description,
     this._Technologies,
     this._CollaboratorsID,
@@ -19,13 +21,14 @@ class ProjectRequest {
 
   @override
   String toString() {
-    return 'ProjectResponse{image: $_Image, title: $_Title, description: $_Description, technologies: $_Technologies, collaboratorsID: $_CollaboratorsID, projectType: $_ProjectType, hashtags: $_Hashtags}';
+    return 'ProjectResponse{image: $_Image, title: $_Title, url: $_Url,description: $_Description, technologies: $_Technologies, collaboratorsID: $_CollaboratorsID, projectType: $_ProjectType, hashtags: $_Hashtags}';
   }
 
   Map<String, dynamic> toJson() {
     return {
       'image': _Image,
       'title': _Title,
+      'url': _Url,
       'description': _Description,
       'technologies': _Technologies,
       'collaboratorsID': _CollaboratorsID,
