@@ -487,6 +487,4 @@ class ProjectDetailScreen extends StatelessWidget {
           }),
     );
   }
-
-  void setState(Null Function() param0) {}
 }
