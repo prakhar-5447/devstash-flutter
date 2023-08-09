@@ -43,22 +43,11 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late dynamic data;
-  final SignupRequest userData = SignupRequest('', '', 'pratham-0094', '',
-      'sahupratham022003@gmail.com', '9981028157', 'hello everyone');
-
   @override
   void initState() {
     super.initState();
-    // _getData();
   }
 
-  void _getData() async {
-    data = (await UserServices().updateProfile(userData));
-    Future.delayed(const Duration(seconds: 1)).then((value) => setState(() {
-          log(data.toString());
-        }));
-  }
 
   @override
   Widget build(BuildContext context) {

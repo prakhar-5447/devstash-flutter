@@ -20,6 +20,16 @@ func (store *MongoDBStore) GetCollection(collectionName string) *mongo.Collectio
 		return store.favoriteCollection
 	case "bookmark":
 		return store.bookmarkCollection
+	case "socials":
+		return store.socialsCollection
+	case "educations":
+		return store.educationCollection
+	case "userimage":
+		return store.userimageCollection
+	case "contact":
+		return store.contactCollection
+	case "skills":
+		return store.skillsCollection
 	default:
 		return nil
 	}

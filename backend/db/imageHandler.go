@@ -14,25 +14,25 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/connstring"
 )
 
-func (store *MongoDBStore) UploadFileToGridFS(file multipart.File, handler *multipart.FileHeader) error {
-	bucket, err := gridfs.NewBucket(store.database)
-	if err != nil {
-		return fmt.Errorf("error creating GridFS bucket: %w", err)
-	}
+	func (store *MongoDBStore) UploadFileToGridFS(file multipart.File, handler *multipart.FileHeader) error {
+		bucket, err := gridfs.NewBucket(store.database)
+		if err != nil {
+			return fmt.Errorf("error creating GridFS bucket: %w", err)
+		}
 
-	uploadStream, err := bucket.OpenUploadStream(handler.Filename)
-	if err != nil {
-		return fmt.Errorf("error opening upload stream: %w", err)
-	}
-	defer uploadStream.Close()
+		uploadStream, err := bucket.OpenUploadStream(handler.Filename)
+		if err != nil {
+			return fmt.Errorf("error opening upload stream: %w", err)
+		}
+		defer uploadStream.Close()
 
-	_, err = io.Copy(uploadStream, file)
-	if err != nil {
-		return fmt.Errorf("error uploading file to GridFS: %w", err)
-	}
+		_, err = io.Copy(uploadStream, file)
+		if err != nil {
+			return fmt.Errorf("error uploading file to GridFS: %w", err)
+		}
 
-	return nil
-}
+		return nil
+	}
 
 func (store *MongoDBStore) GetImageURL(filename string) (string, error) {
 	var fileInfo struct {

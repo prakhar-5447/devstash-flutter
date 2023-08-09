@@ -18,8 +18,8 @@ class LoginModal extends StatefulWidget {
 
 class _LoginModalState extends State<LoginModal> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController _usernameOrEmail = TextEditingController();
-  TextEditingController _password = TextEditingController();
+  TextEditingController _usernameOrEmail = TextEditingController(text: "test");
+  TextEditingController _password = TextEditingController(text: "test");
   AuthServices _authServices = AuthServices();
   bool _isLoading = false;
   String _errorMessage = '';
@@ -317,6 +317,7 @@ class _LoginModalState extends State<LoginModal> {
       );
       Navigator.pushReplacementNamed(context, '/');
     } catch (error) {
+      log(error.toString());
       setState(() {
         _errorMessage = 'Invalid username or password';
         _usernameOrEmail.clear();

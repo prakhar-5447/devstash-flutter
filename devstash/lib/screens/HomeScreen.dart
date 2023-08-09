@@ -88,9 +88,9 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Hello,\nPRAKHAR",
-                      style: TextStyle(
+                    Text(
+                      'Hello,\n${user?.Name ?? ""}',
+                      style: const TextStyle(
                         fontSize: 40,
                         fontFamily: 'Comfortaa',
                         fontWeight: FontWeight.w800,

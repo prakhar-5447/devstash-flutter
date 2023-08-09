@@ -40,11 +40,11 @@ UserResponse userFromJson(String jsonData) {
 
   String id = json['ID'];
   String name = json['Name'];
-  String avatar = json['Avatar'];
+  String avatar = "";
   String username = json['Username'];
   String password = json['Password'];
   String email = json['Email'];
-  String phone = json['Phone'];
+  String phone = "";
   String description = json['Description'];
 
   UserResponse user = UserResponse(
