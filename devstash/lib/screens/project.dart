@@ -1,10 +1,13 @@
 import 'package:devstash/models/response/projectResponse.dart';
 import 'package:devstash/providers/AuthProvider.dart';
+import 'package:devstash/screens/ProjectAddScreen.dart';
+import 'package:devstash/screens/ProjectEditScreen.dart';
 import 'package:devstash/screens/projectDetailScreen.dart';
 import 'package:devstash/services/projectServices.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:devstash/models/ProjectInfo.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:devstash/constants.dart';
 import 'package:provider/provider.dart';
 
@@ -16,111 +19,140 @@ class Project extends StatefulWidget {
 }
 
 class _ProjectState extends State<Project> {
-  @override
-  Widget build(BuildContext context) {
-    final List<ProjectInfo> project = [];
-    late List<ProjectResponse>? projectData = [];
-    int _selectedProjectIndex = -1;
+  final List<ProjectInfo> project = [];
+  bool isDataLoaded = false;
+  late List<ProjectResponse>? projectData = [];
+  int _selectedProjectIndex = -1;
 
-    Future<List<ProjectInfo>> _getProject() async {
-      final auth = Provider.of<AuthProvider>(context, listen: false);
-      String? token = auth.token;
-      if (token != null) {
-        projectData = await ProjectServices().getProjects(token);
+  Future<List<ProjectInfo>> _getProject() async {
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+    String? token = auth.token;
+    if (token != null && !isDataLoaded) {
+      projectData = await ProjectServices().getProjects(token);
 
-        if (projectData != null) {
-          for (var i = 0; i < projectData!.length; i++) {
-            var currentProject = projectData!.elementAt(i);
-
-            project.add(ProjectInfo(
-              currentProject.id,
-              currentProject.title,
-              "${ApiConstants.baseUrl}/images/" + currentProject.image,
-              currentProject.createdDate,
-              currentProject.url,
-              currentProject.description,
-            ));
-          }
+      if (projectData != null) {
+        for (var i = 0; i < projectData!.length; i++) {
+          var currentProject = projectData!.elementAt(i);
+          String dateString = currentProject.createdDate;
+          DateTime dateTime = DateTime.parse(dateString);
+          String formattedDate = DateFormat.yMMMMd().format(dateTime);
+          project.add(ProjectInfo(
+            currentProject.id,
+            currentProject.title,
+            "${ApiConstants.baseUrl}/images/${currentProject.image}",
+            formattedDate,
+            currentProject.url,
+            currentProject.description,
+          ));
         }
       }
-      return project;
-    }
-
-    Future<void> _removeProject(int index) async {
       setState(() {
-        project.removeAt(index);
-        _selectedProjectIndex = -1;
+        isDataLoaded = true;
       });
     }
+    return project;
+  }
 
+  void _addProject(ProjectResponse projectResponse) {
+    String dateString = projectResponse.createdDate;
+    DateTime dateTime = DateTime.parse(dateString);
+    String formattedDate = DateFormat.yMMMMd().format(dateTime);
+
+    ProjectInfo newProject = ProjectInfo(
+      projectResponse.id,
+      projectResponse.title,
+      "${ApiConstants.baseUrl}/images/${projectResponse.image}",
+      formattedDate,
+      projectResponse.url,
+      projectResponse.description,
+    );
+
+    setState(() {
+      project.add(newProject);
+    });
+  }
+
+  Future<void> _removeProject(String id, int index) async {
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+    String? token = auth.token;
+    if (token != null) {
+      await ProjectServices().deleteProject(token, id).then((value) => {
+            if (value['deleted'])
+              {
+                setState(() {
+                  project.removeAt(index);
+                  _selectedProjectIndex = -1;
+                })
+              }
+          });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 3,
-                blurRadius: 10,
-                offset: const Offset(0, 2),
+      body: Stack(
+        children: [
+          Column(children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 3,
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: const Padding(
-            padding: EdgeInsets.only(top: 40, left: 25, right: 25, bottom: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Icon(
-                  Icons.arrow_back,
-                  size: 40,
-                  color: Color.fromARGB(255, 0, 0, 0),
+              child: const Padding(
+                padding:
+                    EdgeInsets.only(top: 40, left: 25, right: 25, bottom: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Icon(
+                      Icons.arrow_back,
+                      size: 40,
+                      color: Color.fromARGB(255, 0, 0, 0),
+                    ),
+                    Text("PROJECTS",
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 165, 165, 165),
+                            fontFamily: 'Comfortaa',
+                            fontWeight: FontWeight.w400,
+                            fontSize: 20)),
+                  ],
                 ),
-                Text("PROJECTS",
-                    style: TextStyle(
-                        color: Color.fromARGB(255, 165, 165, 165),
-                        fontFamily: 'Comfortaa',
-                        fontWeight: FontWeight.w400,
-                        fontSize: 20)),
-              ],
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25),
-            child: SingleChildScrollView(
+            Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: FutureBuilder<void>(
-                  future: _getProject(),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<void> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else {
-                      return Column(
-                        children: [
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: project.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              var item = project[index];
-                              return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 20),
-                                  child: GestureDetector(
-                                    onLongPress: () {
-                                      setState(() {
-                                        _selectedProjectIndex = index;
-                                      });
-                                    },
+                padding: const EdgeInsets.symmetric(horizontal: 25),
+                child: SingleChildScrollView(
+                  child: FutureBuilder<void>(
+                    future: _getProject(),
+                    builder:
+                        (BuildContext context, AsyncSnapshot<void> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        return Column(
+                          children: [
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: project.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                var item = project[index];
+                                return Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 10, bottom: 20),
                                     child: Container(
                                       decoration: BoxDecoration(
                                         border: Border(
@@ -166,27 +198,35 @@ class _ProjectState extends State<Project> {
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment.end,
                                                     children: [
-                                                      GestureDetector(
-                                                        onTap: () => {
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        ProjectDetailScreen(
-                                                                          id: item
-                                                                              .id,
-                                                                          index:
-                                                                              -1,
-                                                                          onDelete:
-                                                                              (int) {},
-                                                                        )),
-                                                          )
-                                                        },
-                                                        child: SvgPicture.asset(
-                                                          "assets/redirect.svg",
-                                                          height: 25,
-                                                        ),
+                                                      Row(
+                                                        children: [
+                                                          GestureDetector(
+                                                            onTap: () => {
+                                                              _removeProject(
+                                                                  item.id,
+                                                                  index)
+                                                            },
+                                                            child: const Icon(
+                                                              Icons.delete,
+                                                              size: 20,
+                                                              color: Colors.red,
+                                                            ),
+                                                          ),
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                      builder: (context) =>
+                                                                          ProjectEditScreen(
+                                                                              id: item.id)));
+                                                            },
+                                                            child: const Icon(
+                                                              Icons.edit,
+                                                              size: 20,
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
                                                       Column(
                                                         crossAxisAlignment:
@@ -256,20 +296,42 @@ class _ProjectState extends State<Project> {
                                           ],
                                         ),
                                       ),
-                                    ),
-                                  ));
-                            },
-                          ),
-                        ],
-                      );
-                    }
-                  },
+                                    ));
+                              },
+                            ),
+                          ],
+                        );
+                      }
+                    },
+                  ),
                 ),
               ),
+            )
+          ]),
+          Positioned(
+            bottom: 25,
+            right: 25,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            ProjectAddScreen(addProject: _addProject)));
+              },
+              child: Container(
+                  width: 60,
+                  height: 60,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(11)),
+                    color: Color.fromARGB(255, 255, 161, 54),
+                  ),
+                  child: const Icon(Icons.add,
+                      color: Color.fromARGB(255, 255, 255, 255), size: 40)),
             ),
           ),
-        )
-      ]),
+        ],
+      ),
     );
   }
 }

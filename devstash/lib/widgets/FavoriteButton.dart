@@ -59,7 +59,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
         Icons.star_rounded,
         color: widget.found
             ? const Color.fromARGB(255, 254, 237, 89)
-            : Color.fromARGB(223, 223, 220, 220),
+            : const Color.fromARGB(223, 223, 220, 220),
         size: 40,
       ),
     );
