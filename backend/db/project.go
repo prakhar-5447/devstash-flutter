@@ -109,7 +109,7 @@ func (store *MongoDBStore) UpdateProject(ctx context.Context, projectID primitiv
 	return updatedProject, nil
 }
 
-func (store *MongoDBStore) DeleteProjectByUserID(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID) error {
+func (store *MongoDBStore) DeleteProjectByUserID(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID) (bool, error) {
 	filter := bson.M{
 		"userID": userID,
 		"_id":    projectID,
@@ -117,12 +117,12 @@ func (store *MongoDBStore) DeleteProjectByUserID(ctx context.Context, projectID 
 
 	result, err := store.projectsCollection.DeleteOne(ctx, filter)
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	if result.DeletedCount == 0 {
-		return fmt.Errorf("project not found or unauthorized access")
+		return false, fmt.Errorf("project not found or unauthorized access")
 	}
 
-	return nil
+	return true, nil
 }

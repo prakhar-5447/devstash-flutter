@@ -35,7 +35,7 @@ type Store interface {
 	RemoveUserFromBookmark(ctx context.Context, userID primitive.ObjectID, otherUserID primitive.ObjectID) (bool, error)
 	UpdateProject(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID, update models.ProjectRequest) (*Project, error)
 	GetProjectsByUserID(ctx context.Context, userID primitive.ObjectID) ([]*Project, error)
-	DeleteProjectByUserID(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID) error
+	DeleteProjectByUserID(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID) (bool, error)
 	GetUserFavoritesByID(ctx context.Context, userID primitive.ObjectID) (*Favorite, error)
 	GetUserBookmarksByID(ctx context.Context, userID primitive.ObjectID) (*Bookmark, error)
 	GetUserByID(ctx context.Context, userID primitive.ObjectID) (*User, error)

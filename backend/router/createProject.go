@@ -48,8 +48,9 @@ func (server *Server) CreateProject(c *gin.Context) {
 	}
 
 	project := &db.Project{
+		Image:           req.Image,
 		Title:           req.Title,
-		Url:           req.Url,
+		Url:             req.Url,
 		Description:     req.Description,
 		Technologies:    req.Technologies,
 		CreatedDate:     primitive.NewDateTimeFromTime(time.Now().UTC()),
@@ -156,7 +157,7 @@ func (server *Server) GetProjectByID(c *gin.Context) {
 	// Call the GetProjectByID method passing the project ID and token
 	project, err := server.store.GetProjectByID(c.Request.Context(), projectID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve project"})
+		c.JSON(http.StatusInternalServerError, gin.H{"deleted": false, "error": "Failed to retrieve project"})
 		return
 	}
 
@@ -167,33 +168,33 @@ func (server *Server) GetProjectByID(c *gin.Context) {
 func (server *Server) DeleteProject(c *gin.Context) {
 	token := c.GetHeader("Authorization")
 	if token == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
+		c.JSON(http.StatusUnauthorized, gin.H{"deleted": false, "error": "Authorization token required"})
 		return
 	}
 
 	payload, err := server.tokenMaker.VerifyToken(token)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"deleted": false, "error": "Invalid token"})
 		return
 	}
 
 	projectID := c.Param("id")
 	pID, err := primitive.ObjectIDFromHex(projectID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"deleted": false, "error": err.Error()})
 		return
 	}
 	userID, err := primitive.ObjectIDFromHex(payload.UserID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"deleted": false, "error": err.Error()})
 		return
 	}
 
-	err = server.store.DeleteProjectByUserID(c.Request.Context(), pID, userID)
+	deleted, err := server.store.DeleteProjectByUserID(c.Request.Context(), pID, userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"deleted": deleted, "error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Project deleted successfully"})
+	c.JSON(http.StatusOK, gin.H{"deleted": deleted, "message": "Project deleted successfully"})
 }
