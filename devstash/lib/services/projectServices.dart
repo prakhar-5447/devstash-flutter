@@ -8,13 +8,13 @@ import 'package:http/http.dart' as http;
 import 'package:devstash/constants.dart';
 
 class ProjectServices {
-  Future<ProjectResponse?> addProject(ProjectRequest project) async {
+  Future<ProjectResponse?> addProject(
+      String token, ProjectRequest project) async {
     try {
       var url =
           Uri.parse(ApiConstants.baseUrl + ApiConstants.createProjectEndpoint);
       var headers = {
-        'Authorization':
-            'v2.local.S37Eml_mUkboZ5CrtS2P_HKAUj0SW-BNbCTpewVZLAxWTRR_utI1yOrx12oTiyEXgXtcc69jxgy6J0rSNPmSoZEDncgAD5Vqqx3QeQ3cVGDY0L7DGfY3DHhJG5M4OiqS-oZDHoHFgg8pi-SrumigpJfpAe_V3NZS884Dg8Ky9IqtY8WqdKk_a67V-aejYt81lxhFnhVOnAbEUFDN1JdYXZH1xxoTNkhGdmCS45O1Rvw1TTFk1_A1QUHmI0T4MNvwpLA5wId2cfr2xUwiqpFPVQMpvvzxEDetABuG3DvQuJs0QEbGrz3UgRyw1dBxT06D.bnVsbA',
+        'Authorization': token,
       };
       var response = await http.post(url,
           headers: headers, body: jsonEncode(project.toJson()));
@@ -77,14 +77,13 @@ class ProjectServices {
     }
   }
 
-  Future<dynamic> deleteProject(String projectid) async {
+  Future<dynamic> deleteProject(String token, String projectid) async {
     try {
       var url = Uri.parse(ApiConstants.baseUrl +
           ApiConstants.deleteProjectEndpoint +
           projectid);
       var headers = {
-        'Authorization':
-            'v2.local.S37Eml_mUkboZ5CrtS2P_HKAUj0SW-BNbCTpewVZLAxWTRR_utI1yOrx12oTiyEXgXtcc69jxgy6J0rSNPmSoZEDncgAD5Vqqx3QeQ3cVGDY0L7DGfY3DHhJG5M4OiqS-oZDHoHFgg8pi-SrumigpJfpAe_V3NZS884Dg8Ky9IqtY8WqdKk_a67V-aejYt81lxhFnhVOnAbEUFDN1JdYXZH1xxoTNkhGdmCS45O1Rvw1TTFk1_A1QUHmI0T4MNvwpLA5wId2cfr2xUwiqpFPVQMpvvzxEDetABuG3DvQuJs0QEbGrz3UgRyw1dBxT06D.bnVsbA',
+        'Authorization': token,
       };
 
       var response = await http.delete(url, headers: headers);
@@ -97,14 +96,13 @@ class ProjectServices {
   }
 
   Future<ProjectResponse?> updateProject(
-      ProjectRequest project, String projectId) async {
+      String token, ProjectRequest project, String projectId) async {
     try {
       var url = Uri.parse(ApiConstants.baseUrl +
           ApiConstants.updateProjectEndpoint +
           projectId);
       var headers = {
-        'Authorization':
-            'v2.local.S37Eml_mUkboZ5CrtS2P_HKAUj0SW-BNbCTpewVZLAxWTRR_utI1yOrx12oTiyEXgXtcc69jxgy6J0rSNPmSoZEDncgAD5Vqqx3QeQ3cVGDY0L7DGfY3DHhJG5M4OiqS-oZDHoHFgg8pi-SrumigpJfpAe_V3NZS884Dg8Ky9IqtY8WqdKk_a67V-aejYt81lxhFnhVOnAbEUFDN1JdYXZH1xxoTNkhGdmCS45O1Rvw1TTFk1_A1QUHmI0T4MNvwpLA5wId2cfr2xUwiqpFPVQMpvvzxEDetABuG3DvQuJs0QEbGrz3UgRyw1dBxT06D.bnVsbA',
+        'Authorization': token,
       };
       var response = await http.put(url,
           headers: headers, body: jsonEncode(project.toJson()));
