@@ -13,7 +13,7 @@ import (
 
 type Store interface {
 	FindUserByUsername(ctx context.Context, username string) (*User, error)
-	CreateUser(ctx context.Context, user *User) error
+	CreateUser(ctx context.Context, user *User) (primitive.ObjectID, error)
 	UpdateUser(ctx context.Context, user *User) error
 	UpdateUserProfile(ctx context.Context, user *User) bool
 	DeleteUser(ctx context.Context, userID string) error
@@ -22,6 +22,7 @@ type Store interface {
 	FindByUsernameOrEmail(ctx context.Context, usernameOrEmail string, password string) (*User, error)
 	UploadFileToGridFS(file multipart.File, handler *multipart.FileHeader) error
 	GetImageURL(filename string) (string, error)
+	UpdateAvatar(ctx context.Context, avatar string, userID primitive.ObjectID) error
 	GetClient() *mongo.Client
 	GetConnectionString() string
 	GetDatabase() *mongo.Database
@@ -40,6 +41,19 @@ type Store interface {
 	GetUserBookmarksByID(ctx context.Context, userID primitive.ObjectID) (*Bookmark, error)
 	GetUserByID(ctx context.Context, userID primitive.ObjectID) (*User, error)
 	CheckValueInArray(ctx context.Context, userID primitive.ObjectID, arrayField string, value primitive.ObjectID) bool
+	CreateSocials(ctx context.Context, socials *Socials) error
+	FindSocialsByUserID(ctx context.Context, userID primitive.ObjectID) (*Socials, error)
+	UpdateSocialsByUserID(ctx context.Context, userID primitive.ObjectID, socials Socials) error
+	FindEducationByUserID(ctx context.Context, userID primitive.ObjectID) ([]Education, error)
+	CreateEducation(ctx context.Context, education Education) error
+	UpdateEducationByUserID(ctx context.Context, userID primitive.ObjectID, educationList Education) error
+	AddSkillToList(ctx context.Context, userID primitive.ObjectID, skill string) error
+	DeleteSkillFromList(ctx context.Context, userID primitive.ObjectID, skill string) error
+	FindSkillsByUserID(ctx context.Context, userID primitive.ObjectID) (*Skills, error)
+	DeleteEducationByID(ctx context.Context, educationID primitive.ObjectID) error
+	UpdateContact(ctx context.Context, ID primitive.ObjectID, contact Contact) error
+	FindContact(ctx context.Context, userID primitive.ObjectID) (Contact, error)
+	CreateContact(ctx context.Context, contact Contact) error
 }
 
 type MongoDBStore struct {

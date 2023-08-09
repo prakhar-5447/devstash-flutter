@@ -15,6 +15,13 @@ func (store *MongoDBStore) UpdateUser(ctx context.Context, user *User) error {
 	return err
 }
 
+func (store *MongoDBStore) UpdateAvatar(ctx context.Context, avatar string, userID primitive.ObjectID) error {
+	filter := bson.M{"_id": userID}
+	update := bson.M{"$set": bson.M{"avatar": avatar}} // Update the "avatar" field with the new value
+	_, err := store.GetCollection("users").UpdateOne(ctx, filter, update)
+	return err
+}
+
 // Implement other update-related query methods here
 func (store *MongoDBStore) UpdateUserProfile(ctx context.Context, user *User) bool {
 	filter := bson.M{"_id": user.ID}
@@ -33,11 +40,11 @@ func (store *MongoDBStore) UpdateUserProfile(ctx context.Context, user *User) bo
 	if user.Email != "" {
 		update["email"] = user.Email
 	}
-	if user.Phone != "" {
-		update["phone"] = user.Phone
-	}
 	if user.Description != "" {
 		update["description"] = user.Description
+	}
+	if user.Username != "" {
+		update["username"] = user.Username
 	}
 
 	result, err := store.GetCollection("users").UpdateOne(ctx, filter, bson.M{"$set": update})

@@ -19,14 +19,29 @@ class UserResponse {
     this._Description,
   );
 
-  String get iD => _ID;
-  String get name => _Name;
-  String get avatar => _Avatar;
-  String get username => _Username;
-  String get password => _Password;
-  String get email => _Email;
-  String get phone => _Phone;
-  String get description => _Description;
+  String get ID => _ID;
+  set ID(String value) => _ID = value;
+
+  String get Name => _Name;
+  set Name(String value) => _Name = value;
+
+  String get Avatar => _Avatar;
+  set Avatar(String value) => _Avatar = value;
+
+  String get Username => _Username;
+  set Username(String value) => _Username = value;
+
+  String get Password => _Password;
+  set Password(String value) => _Password = value;
+
+  String get Email => _Email;
+  set Email(String value) => _Email = value;
+
+  String get Phone => _Phone;
+  set Phone(String value) => _Phone = value;
+
+  String get Description => _Description;
+  set Description(String value) => _Description = value;
 
   @override
   String toString() {

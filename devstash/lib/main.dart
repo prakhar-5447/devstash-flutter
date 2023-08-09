@@ -43,22 +43,11 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late dynamic data;
-  final SignupRequest userData = SignupRequest('', '', 'pratham-0094', '',
-      'sahupratham022003@gmail.com', '9981028157', 'hello everyone');
-
   @override
   void initState() {
     super.initState();
-    // _getData();
   }
 
-  void _getData() async {
-    data = (await UserServices().updateProfile(userData));
-    Future.delayed(const Duration(seconds: 1)).then((value) => setState(() {
-          log(data.toString());
-        }));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,14 +58,16 @@ class _MyAppState extends State<MyApp> {
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,
-          ),
+          ),        initialRoute: '/',
+
           routes: {
             // '/': (context) => const WelcomeScreen(title: "hello"),
             // '/': (context) => const ProjectDetailScreen(),
             // '/': (context) => const Project(),
             // '/': (context) => const Saved(),
             // '/': (context) => MyHomePage(title: "hello"),
-            '/': (context) => WelcomeScreen(title: "welcome"),
+            '/': (context) => HomeScreen(),
+            '/auth': (context) => WelcomeScreen(title: "welcome"),
             '/calendar': (context) => CalendarScreen(context),
             // '/': (context) => const ProfileScreen(),
           }),

@@ -46,6 +46,59 @@ func (server *Server) handleFileUpload(c *gin.Context) {
 
 }
 
+func (server *Server) uploadAvatar(c *gin.Context) {
+	err := c.Request.ParseMultipartForm(32 << 20)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Error parsing form data"})
+		return
+	}
+
+	file, handler, err := c.Request.FormFile("image")
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Error retrieving file"})
+		return
+	}
+	defer file.Close()
+
+	err = server.store.UploadFileToGridFS(file, handler)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error uploading file"})
+		return
+	}
+
+	// imageURL, err := server.store.GetImageURL(handler.Filename)
+	// if err != nil {
+	// 	// Handle error
+	// 	c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error retrieving image URL"})
+	// 	return
+	// }
+
+	token := c.GetHeader("Authorization")
+	if token == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
+		return
+	}
+
+	payload, err := server.tokenMaker.VerifyToken(token)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		return
+	}
+
+	userID := payload.UserID
+	ID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	imageURL := handler.Filename
+	err = server.store.UpdateAvatar(c.Request.Context(), imageURL, ID)
+	// Success response
+	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully", "image_url": imageURL})
+
+}
+
 func (server *Server) handleImage(c *gin.Context) {
 	filename := c.Param("filename")
 
