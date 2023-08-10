@@ -1,9 +1,10 @@
+import 'package:devstash/screens/auth/welcome_screen.dart';
 import 'package:devstash/widgets/PasswordStrengthBar.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SignupModal extends StatelessWidget {
-  final Function(bool) changeForm;
-  SignupModal({super.key, required this.changeForm});
+  SignupModal({super.key});
   double _passwordStrength = 0.5;
 
   @override
@@ -235,7 +236,7 @@ class SignupModal extends StatelessWidget {
                         ),
                         GestureDetector(
                           onTap: () {
-                            changeForm(true);
+                            Get.find<ModalController>().changeForm(true);
                           },
                           child: const Text(
                             "Login here",

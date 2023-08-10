@@ -3,12 +3,12 @@ import 'dart:developer';
 
 import 'package:devstash/models/request/UserProfile.dart';
 import 'package:devstash/models/request/signupRequest.dart';
-import 'package:devstash/models/response/userResponse.dart';
+import 'package:devstash/models/response/user_state.dart';
 import 'package:http/http.dart' as http;
 import 'package:devstash/constants.dart';
 
 class UserServices {
-  Future<UserResponse?> getUser(String? authToken) async {
+  Future<UserState?> getUser(String? authToken) async {
     try {
       var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.getUserEndpoint);
       var headers = {
@@ -17,7 +17,7 @@ class UserServices {
 
       var response = await http.get(url, headers: headers);
       if (response.statusCode == 200) {
-        UserResponse user = userFromJson(response.body);
+        UserState user = userFromJson(response.body);
         return user;
       }
     } catch (e) {
@@ -43,14 +43,14 @@ class UserServices {
     }
   }
 
-  Future<UserResponse?> getUserById(String id) async {
+  Future<UserState?> getUserById(String id) async {
     try {
       var url = Uri.parse(
           ApiConstants.baseUrl + ApiConstants.getUserByIdEndpoint + id);
 
       var response = await http.get(url);
       if (response.statusCode == 200) {
-        UserResponse user = userFromJson(response.body);
+        UserState user = userFromJson(response.body);
         return user;
       }
     } catch (e) {
@@ -59,26 +59,22 @@ class UserServices {
   }
 }
 
-UserResponse userFromJson(String json) {
+UserState userFromJson(String json) {
   final userData = jsonDecode(json);
 
   String id = userData['ID'];
   String name = userData['Name'];
-  String avatar = "";
+  String avatar = userData['Avatar'];
   String username = userData['Username'];
-  String password = userData['Password'];
   String email = userData['Email'];
-  String phone = "";
   String description = userData['Description'];
 
-  UserResponse user = UserResponse(
+  UserState user = UserState(
     id,
     name,
     avatar,
     username,
-    password,
     email,
-    phone,
     description,
   );
 

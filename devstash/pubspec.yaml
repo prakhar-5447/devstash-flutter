@@ -47,6 +47,10 @@ dependencies:
   fluttertoast: ^8.2.2
   flutter_typeahead: ^4.6.2
   image_picker: ^0.8.4
+  connectivity_plus: ^2.2.1
+  get: ^4.6.5
+  shared_preferences: ^2.2.0
+
 
   # The following adds the Cupertino Icons font to your application.
 
@@ -108,3 +112,4 @@ flutter:
 
   assets:
     - assets/
+    - assets/splash.png

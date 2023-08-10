@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:devstash/models/response/userResponse.dart';
+import 'package:devstash/models/response/user_state.dart';
 import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/ProfileScreen.dart';
 import 'package:devstash/screens/project.dart';
@@ -17,11 +17,14 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final token = authProvider.token;
-    UserResponse? user = authProvider.user;
+    UserState? user = authProvider.user;
 
     if (token == null) {
       WidgetsBinding.instance!.addPostFrameCallback((_) {
-        Navigator.pushReplacementNamed(context, '/auth');
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
       });
     }
 
@@ -52,7 +55,7 @@ class HomeScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            user?.Name ?? '',
+                            user?.name ?? '',
                             style: const TextStyle(
                               fontFamily: 'Comfortaa',
                               fontWeight: FontWeight.w600,
@@ -60,7 +63,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            user?.Username ?? '',
+                            user?.username ?? '',
                             style: const TextStyle(
                               fontFamily: 'Comfortaa',
                               fontWeight: FontWeight.w600,
@@ -90,7 +93,7 @@ class HomeScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Hello,\n${user?.Name ?? ""}',
+                      'Hello,\n${user?.name ?? ""}',
                       style: const TextStyle(
                         fontSize: 40,
                         fontFamily: 'Comfortaa',

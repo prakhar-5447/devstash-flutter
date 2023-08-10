@@ -3,14 +3,17 @@ import 'dart:developer';
 import 'package:devstash/models/request/loginRequest.dart';
 import 'package:devstash/models/response/LoginResponse.dart';
 import 'package:devstash/providers/AuthProvider.dart';
+import 'package:devstash/screens/HomeScreen.dart';
+import 'package:devstash/screens/auth/welcome_screen.dart';
 import 'package:devstash/services/AuthServices.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginModal extends StatefulWidget {
-  final Function(bool) changeForm;
-  LoginModal({super.key, required this.changeForm});
+  LoginModal({super.key});
 
   @override
   State<LoginModal> createState() => _LoginModalState();
@@ -264,7 +267,7 @@ class _LoginModalState extends State<LoginModal> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            widget.changeForm(false);
+                            Get.find<ModalController>().changeForm(false);
                           },
                           child: const Text(
                             "Register here",
@@ -315,7 +318,12 @@ class _LoginModalState extends State<LoginModal> {
         backgroundColor: Colors.green,
         textColor: Colors.white,
       );
-      Navigator.pushReplacementNamed(context, '/');
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', _user.token);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
     } catch (error) {
       log(error.toString());
       setState(() {

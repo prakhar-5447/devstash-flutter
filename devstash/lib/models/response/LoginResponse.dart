@@ -1,16 +1,16 @@
-import 'package:devstash/models/response/userResponse.dart';
+import 'package:devstash/models/response/user_state.dart';
 
 class LoginResponse {
   String _token;
-  UserResponse _user;
+  UserState _user;
 
   LoginResponse(this._token, this._user);
 
   String get token => _token;
   set token(String value) => _token = value;
 
-  UserResponse get user => _user;
-  set user(UserResponse value) => _user = value;
+  UserState get user => _user;
+  set user(UserState value) => _user = value;
 
   @override
   String toString() {

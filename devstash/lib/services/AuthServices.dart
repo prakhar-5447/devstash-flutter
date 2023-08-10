@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:devstash/models/request/loginRequest.dart';
 import 'package:devstash/models/response/LoginResponse.dart';
-import 'package:devstash/models/response/userResponse.dart';
+import 'package:devstash/models/response/user_state.dart';
 import 'package:http/http.dart' as http;
 import 'package:devstash/constants.dart';
 
@@ -29,25 +29,23 @@ LoginResponse dataFromJson(String json) {
   final authData = jsonDecode(json);
 
   String token = authData['token'];
-  UserResponse userId = userFromJson(json);
+  UserState userId = userFromJson(json);
 
   LoginResponse user = LoginResponse(token, userId);
   return user;
 }
 
-UserResponse userFromJson(String jsonData) {
+UserState userFromJson(String jsonData) {
   final json = jsonDecode(jsonData)['user'];
 
   String id = json['ID'];
   String name = json['Name'];
   String avatar = "";
   String username = json['Username'];
-  String password = json['Password'];
   String email = json['Email'];
-  String phone = "";
   String description = json['Description'];
 
-  UserResponse user = UserResponse(
-      id, name, avatar, username, password, email, phone, description);
+  UserState user = UserState(
+      id, name, avatar, username, email, description);
   return user;
 }

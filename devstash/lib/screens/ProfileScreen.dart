@@ -5,7 +5,7 @@ import 'package:devstash/models/response/contactResponse.dart';
 import 'package:devstash/models/response/education.dart';
 import 'package:devstash/models/response/skillResponse.dart';
 import 'package:devstash/models/response/socialsResponse.dart';
-import 'package:devstash/models/response/userResponse.dart';
+import 'package:devstash/models/response/user_state.dart';
 import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/EditProfile.dart';
 import 'package:devstash/screens/SkillEditScreen.dart';
@@ -29,7 +29,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    UserResponse? user = authProvider.user;
+    UserState? user = authProvider.user;
     final date = DateTime.now();
     List<EducationResponse>? educations;
     SkillResponse? tech;
@@ -157,14 +157,14 @@ class ProfileScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          user?.Name ?? '',
+                          user?.name ?? '',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
                         Text(
-                          user?.Username ?? '',
+                          user?.username ?? '',
                           style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w300,
@@ -176,7 +176,7 @@ class ProfileScreen extends StatelessWidget {
                         Padding(
                           padding: EdgeInsets.fromLTRB(10, 0, 10, 25),
                           child: Text(
-                            user?.Description ?? '',
+                            user?.description ?? '',
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                                 fontSize: 12,

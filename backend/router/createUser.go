@@ -135,7 +135,6 @@ func (server *Server) getUserByID(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-
 func (server *Server) Login(c *gin.Context) {
 	var req models.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -250,7 +249,7 @@ func (server *Server) FetchUsers(c *gin.Context) {
 		return
 	}
 
-	var userResponses []models.FetchCollaborator
+	var UserStates []models.FetchCollaborator
 
 	for _, userIDStr := range req {
 		userID, err := primitive.ObjectIDFromHex(userIDStr)
@@ -265,16 +264,16 @@ func (server *Server) FetchUsers(c *gin.Context) {
 			return
 		}
 
-		userResponse := models.FetchCollaborator{
-			UserId:          user.ID.Hex(),
-			Name:        user.Name,
-			Avatar:      user.Avatar,
+		UserState := models.FetchCollaborator{
+			UserId: user.ID.Hex(),
+			Name:   user.Name,
+			Avatar: user.Avatar,
 		}
 
-		userResponses = append(userResponses, userResponse)
+		UserStates = append(UserStates, UserState)
 	}
 
-	c.JSON(http.StatusOK, userResponses)
+	c.JSON(http.StatusOK, UserStates)
 }
 
 // func (server *Server) SaveProfile(c *gin.Context) {

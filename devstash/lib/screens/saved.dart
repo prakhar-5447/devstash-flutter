@@ -4,7 +4,7 @@ import 'package:devstash/models/ProjectList.dart';
 import 'package:devstash/models/response/bookmarkResponse.dart';
 import 'package:devstash/models/response/favoriteResponse.dart';
 import 'package:devstash/models/response/projectResponse.dart';
-import 'package:devstash/models/response/userResponse.dart';
+import 'package:devstash/models/response/user_state.dart';
 import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/projectDetailScreen.dart';
 import 'package:devstash/services/bookmarkServices.dart';
@@ -81,7 +81,7 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
   }
 
   Future<List<Bookmarks>> _bookmarkData() async {
-    late UserResponse? userData;
+    late UserState? userData;
 
     final auth = Provider.of<AuthProvider>(context, listen: false);
     String? token = auth.token;
@@ -93,8 +93,8 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
           userData =
               await UserServices().getUserById(bookmarkData!.otherUserIds[i]);
           if (userData != null) {
-            bookmark.add(Bookmarks(userData.Name,
-                "${ApiConstants.baseUrl}/images/" + userData.Avatar));
+            bookmark.add(Bookmarks(userData.name,
+                "${ApiConstants.baseUrl}/images/" + userData.avatar));
           }
         }
       }

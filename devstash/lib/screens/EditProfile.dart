@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:devstash/models/request/UserProfile.dart';
-import 'package:devstash/models/response/userResponse.dart';
+import 'package:devstash/models/response/user_state.dart';
 import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/ProfileScreen.dart';
 import 'package:devstash/screens/socialsEdit.dart';
@@ -29,11 +29,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     // Fetch user details from the provider and set them in the text controllers
     final provider = Provider.of<AuthProvider>(context, listen: false);
     if (provider.user != null) {
-      _nameController.text = provider.user!.Name;
-      _usernameController.text = provider.user!.Username;
-      _descriptionController.text = provider.user!.Description;
-      _phoneController.text = provider.user!.Phone;
-      _emailController.text = provider.user!.Email;
+      _nameController.text = provider.user!.name;
+      _usernameController.text = provider.user!.username;
+      _descriptionController.text = provider.user!.description;
+      _emailController.text = provider.user!.email;
     }
   }
 
@@ -122,7 +121,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           await _userServices.updateProfile(userprofile, provider.token);
       log(_user.toString());
       if (provider.token != null) {
-        UserResponse? _userData = await _userServices.getUser(provider.token);
+        UserState? _userData = await _userServices.getUser(provider.token);
         provider.setUser(_userData);
       }
       Navigator.push(
