@@ -6,6 +6,8 @@ import (
 
 	"github.com/aead/chacha20poly1305"
 	"github.com/o1egl/paseto"
+	"github.com/prakhar-5447/util"
+	"github.com/rs/zerolog/log"
 )
 
 type PasetoMaker struct {
@@ -26,8 +28,14 @@ func NewPasetoMaker(symmetricKey string) (Maker, error) {
 	return maker, nil
 }
 
-func (maker *PasetoMaker) CreateToken(username string, userID string, duration time.Duration) (string, error) {
-	payload, err := NewPayload(username, userID, duration)
+func (maker *PasetoMaker) CreateToken(userID string) (string, error) {
+	config, err := util.LoadConfig(".")
+	if err != nil {
+		log.Fatal().Err(err).Msg("cannot load config")
+	}
+
+	// Create the token with the user's username and document object ID
+	payload, err := NewPayload(userID, time.Hour*time.Duration(config.TOKEN_EXPIRATION))
 	if err != nil {
 		return "", err
 	}

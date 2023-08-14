@@ -12,63 +12,66 @@ import (
 )
 
 type Store interface {
-	FindUserByUsername(ctx context.Context, username string) (*User, error)
-	CreateUser(ctx context.Context, user *User) (primitive.ObjectID, error)
-	UpdateUser(ctx context.Context, user *User) error
-	UpdateUserProfile(ctx context.Context, user *User) bool
-	DeleteUser(ctx context.Context, userID string) error
-	CheckUserByEmail(ctx context.Context, email string) (bool, error)
-	CheckUserByUsername(ctx context.Context, username string) (bool, error)
-	FindByUsernameOrEmail(ctx context.Context, usernameOrEmail string, password string) (*User, error)
+	Create_User(ctx context.Context, user *User) (primitive.ObjectID, error)
+	Find_User_By_UserId(ctx context.Context, userId string) (*User, error)
+	Get_User_By_Id(ctx context.Context, userID primitive.ObjectID) (*User, error)
+	Check_User_By_Email(ctx context.Context, email string) (bool, error)
+	Check_User_By_Username(ctx context.Context, username string) (bool, error)
+	Find_User_By_Username_Or_Email(ctx context.Context, usernameOrEmail string, password string) (*User, error)
+	Update_User(ctx context.Context, user *User) error
+	Update_Avatar(ctx context.Context, avatar string, userID primitive.ObjectID) error
+	Update_User_Profile(ctx context.Context, user *User) bool
+	Delete_User(ctx context.Context, userID string) error
+
+	Add_Favorite(ctx context.Context, userID primitive.ObjectID, projectID primitive.ObjectID) (bool, error)
+	Remove_Favorite(ctx context.Context, userID primitive.ObjectID, projectID primitive.ObjectID) (bool, error)
+	Get_Favorite_By_Id(ctx context.Context, userID primitive.ObjectID) (*Favorite, error)
+
+	Add_Bookmark(ctx context.Context, userID primitive.ObjectID, otherUserID primitive.ObjectID) (bool, error)
+	Remove_Bookmark(ctx context.Context, userID primitive.ObjectID, otherUserID primitive.ObjectID) (bool, error)
+	Get_Bookmark_By_Id(ctx context.Context, userID primitive.ObjectID) (*Bookmark, error)
+	Check_Value_In_Array(ctx context.Context, userID primitive.ObjectID, arrayField string, value primitive.ObjectID) bool
+
+	Create_Project(ctx context.Context, project *Project) (*Project, error)
+	Update_Project(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID, update models.ProjectRequest) (*Project, error)
+	Delete_Project(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID) (bool, error)
+	Get_Projects_By_UserId(ctx context.Context, userID primitive.ObjectID) ([]*Project, error)
+	Get_Project_By_Id(ctx context.Context, projectID string) (*Project, error)
+
 	UploadFileToGridFS(file multipart.File, handler *multipart.FileHeader) error
 	GetImageURL(filename string) (string, error)
-	UpdateAvatar(ctx context.Context, avatar string, userID primitive.ObjectID) error
 	GetClient() *mongo.Client
 	GetConnectionString() string
 	GetDatabase() *mongo.Database
 	GetCollection(collectionName string) *mongo.Collection
 	GetFileByID(fileID primitive.ObjectID) (io.ReadCloser, string, error)
-	CreateProject(ctx context.Context, project *Project) (*Project, error)
-	GetProjectByID(ctx context.Context, projectID string) (*Project, error)
-	AddFavorite(ctx context.Context, userID primitive.ObjectID, projectID primitive.ObjectID) (bool, error)
-	RemoveFavorite(ctx context.Context, userID primitive.ObjectID, projectID primitive.ObjectID) (bool, error)
-	AddUserToBookmark(ctx context.Context, userID primitive.ObjectID, otherUserID primitive.ObjectID) (bool, error)
-	RemoveUserFromBookmark(ctx context.Context, userID primitive.ObjectID, otherUserID primitive.ObjectID) (bool, error)
-	UpdateProject(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID, update models.ProjectRequest) (*Project, error)
-	GetProjectsByUserID(ctx context.Context, userID primitive.ObjectID) ([]*Project, error)
-	DeleteProjectByUserID(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID) (bool, error)
-	GetUserFavoritesByID(ctx context.Context, userID primitive.ObjectID) (*Favorite, error)
-	GetUserBookmarksByID(ctx context.Context, userID primitive.ObjectID) (*Bookmark, error)
-	GetUserByID(ctx context.Context, userID primitive.ObjectID) (*User, error)
-	CheckValueInArray(ctx context.Context, userID primitive.ObjectID, arrayField string, value primitive.ObjectID) bool
-	CreateSocials(ctx context.Context, socials *Socials) error
-	FindSocialsByUserID(ctx context.Context, userID primitive.ObjectID) (*Socials, error)
-	UpdateSocialsByUserID(ctx context.Context, userID primitive.ObjectID, socials Socials) error
-	FindEducationByUserID(ctx context.Context, userID primitive.ObjectID) ([]Education, error)
-	CreateEducation(ctx context.Context, education Education) error
-	UpdateEducationByUserID(ctx context.Context, userID primitive.ObjectID, educationList Education) error
-	AddSkillToList(ctx context.Context, userID primitive.ObjectID, skill string) error
-	DeleteSkillFromList(ctx context.Context, userID primitive.ObjectID, skill string) error
-	FindSkillsByUserID(ctx context.Context, userID primitive.ObjectID) (*Skills, error)
-	DeleteEducationByID(ctx context.Context, educationID primitive.ObjectID) error
-	UpdateContact(ctx context.Context, ID primitive.ObjectID, contact Contact) error
-	FindContact(ctx context.Context, userID primitive.ObjectID) (Contact, error)
-	CreateContact(ctx context.Context, contact Contact) error
+
+	Create_Contact(ctx context.Context, contact Contact) error
+	Update_Contact(ctx context.Context, ID primitive.ObjectID, contact Contact) error
+	Find_Contact(ctx context.Context, userID primitive.ObjectID) (Contact, error)
+
+	Create_Education(ctx context.Context, education Education) error
+	Find_Education_By_UserId(ctx context.Context, userID primitive.ObjectID) ([]Education, error)
+	Update_Education_By_UserId(ctx context.Context, userID primitive.ObjectID, educationList Education) error
+	Delete_Education_By_Id(ctx context.Context, educationID primitive.ObjectID) error
+
+	Add_Skill_To_List(ctx context.Context, userID primitive.ObjectID, skill string) error
+	Delete_Skill_From_List(ctx context.Context, userID primitive.ObjectID, skill string) error
+	Find_Skills_By_UserId(ctx context.Context, userID primitive.ObjectID) (*Skills, error)
+
+	Create_Socials(ctx context.Context, socials *Socials) error
+	Find_Socials_By_UserId(ctx context.Context, userID primitive.ObjectID) (*Socials, error)
+	Update_Socials_By_UserId(ctx context.Context, userID primitive.ObjectID, socials Socials) error
 }
 
 type MongoDBStore struct {
-	client   *mongo.Client
-	database *mongo.Database
-	// usersCollection    *mongo.Collection
-	// projectsCollection *mongo.Collection
-	// favoriteCollection *mongo.Collection
-	// imagesCollection   *mongo.Collection
-	// bookmarkCollection   *mongo.Collection
+	client           *mongo.Client
+	database         *mongo.Database
 	connectionString string
 	*Queries
 }
 
-func NewStore(connectionString string, databaseName string, collectionName string) (Store, error) {
+func NewStore(connectionString string, databaseName string) (Store, error) {
 	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(connectionString))
 	if err != nil {
 		return nil, err
@@ -76,19 +79,9 @@ func NewStore(connectionString string, databaseName string, collectionName strin
 
 	database := client.Database(databaseName)
 	queries := NewQueries(database)
-	// usersCollection := database.Collection("users")
-	// projectsCollection := database.Collection("projects")
-	// imagesCollection := database.Collection("fs.files")
-	// favoriteCollection := database.Collection("favorite")
-	// bookmarkCollection := database.Collection("bookmark")
 	return &MongoDBStore{
-		client:   client,
-		database: database,
-		// usersCollection:    usersCollection,
-		// projectsCollection: projectsCollection,
-		// imagesCollection:   imagesCollection,
-		// favoriteCollection: favoriteCollection,
-		// bookmarkCollection:   bookmarkCollection
+		client:           client,
+		database:         database,
 		connectionString: connectionString,
 		Queries:          queries,
 	}, nil

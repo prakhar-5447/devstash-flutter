@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (server *Server) CreateProject(c *gin.Context) {
+func (server *Server) create_project(c *gin.Context) {
 	token := c.GetHeader("Authorization")
 	if token == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
@@ -54,13 +54,13 @@ func (server *Server) CreateProject(c *gin.Context) {
 		Description:     req.Description,
 		Technologies:    req.Technologies,
 		CreatedDate:     primitive.NewDateTimeFromTime(time.Now().UTC()),
-		ProjectType:     convertToProjectType(req.ProjectType),
+		ProjectType:     convert_to_projectType(req.ProjectType),
 		CollaboratorsID: collaboratorsID,
 		Hashtags:        req.Hashtags,
 		UserID:          ID,
 	}
 
-	createdProject, err := server.store.CreateProject(c.Request.Context(), project)
+	createdProject, err := server.store.Create_Project(c.Request.Context(), project)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -69,7 +69,7 @@ func (server *Server) CreateProject(c *gin.Context) {
 	c.JSON(http.StatusOK, createdProject)
 }
 
-func convertToProjectType(projectType string) db.ProjectType {
+func convert_to_projectType(projectType string) db.ProjectType {
 	switch projectType {
 	case "Web":
 		return db.Web
@@ -80,7 +80,7 @@ func convertToProjectType(projectType string) db.ProjectType {
 	}
 }
 
-func (server *Server) UpdateProjectByID(c *gin.Context) {
+func (server *Server) update_project(c *gin.Context) {
 	token := c.GetHeader("Authorization")
 	if token == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
@@ -113,7 +113,7 @@ func (server *Server) UpdateProjectByID(c *gin.Context) {
 		return
 	}
 
-	updatedProject, err := server.store.UpdateProject(c.Request.Context(), pID, userID, req)
+	updatedProject, err := server.store.Update_Project(c.Request.Context(), pID, userID, req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -122,50 +122,7 @@ func (server *Server) UpdateProjectByID(c *gin.Context) {
 	c.JSON(http.StatusOK, updatedProject)
 }
 
-func (server *Server) GetProjectsByUser(c *gin.Context) {
-	token := c.GetHeader("Authorization")
-	if token == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
-		return
-	}
-
-	payload, err := server.tokenMaker.VerifyToken(token)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-		return
-	}
-
-	userID, err := primitive.ObjectIDFromHex(payload.UserID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	projects, err := server.store.GetProjectsByUserID(c.Request.Context(), userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, projects)
-}
-
-func (server *Server) GetProjectByID(c *gin.Context) {
-	// Retrieve the project ID from the request parameters
-	projectID := c.Param("id")
-
-	// Call the GetProjectByID method passing the project ID and token
-	project, err := server.store.GetProjectByID(c.Request.Context(), projectID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"deleted": false, "error": "Failed to retrieve project"})
-		return
-	}
-
-	// Handle the retrieved project as needed
-	c.JSON(http.StatusOK, project)
-}
-
-func (server *Server) DeleteProject(c *gin.Context) {
+func (server *Server) delete_project(c *gin.Context) {
 	token := c.GetHeader("Authorization")
 	if token == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"deleted": false, "error": "Authorization token required"})
@@ -190,11 +147,51 @@ func (server *Server) DeleteProject(c *gin.Context) {
 		return
 	}
 
-	deleted, err := server.store.DeleteProjectByUserID(c.Request.Context(), pID, userID)
+	deleted, err := server.store.Delete_Project(c.Request.Context(), pID, userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"deleted": deleted, "error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"deleted": deleted, "message": "Project deleted successfully"})
+}
+
+func (server *Server) get_projects_by_userId(c *gin.Context) {
+	token := c.GetHeader("Authorization")
+	if token == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
+		return
+	}
+
+	payload, err := server.tokenMaker.VerifyToken(token)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		return
+	}
+
+	userID, err := primitive.ObjectIDFromHex(payload.UserID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	projects, err := server.store.Get_Projects_By_UserId(c.Request.Context(), userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, projects)
+}
+
+func (server *Server) get_project_by_id(c *gin.Context) {
+	projectID := c.Param("id")
+
+	project, err := server.store.Get_Project_By_Id(c.Request.Context(), projectID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"deleted": false, "error": "Failed to retrieve project"})
+		return
+	}
+
+	c.JSON(http.StatusOK, project)
 }

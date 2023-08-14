@@ -13,7 +13,7 @@ func main() {
 		log.Fatal().Err(err).Msg("cannot load config")
 	}
 
-	store, err := db.NewStore(config.MONGODB_URI, config.DATABASE_NAME,config.COLLECTION_NAME)
+	store, err := db.NewStore(config.MONGODB_URI, config.DATABASE_NAME)
 	if err != nil {
 		log.Fatal().Msgf("cannot create MongoDB store: %v", err)
 	}

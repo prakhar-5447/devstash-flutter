@@ -93,8 +93,8 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
           userData =
               await UserServices().getUserById(bookmarkData!.otherUserIds[i]);
           if (userData != null) {
-            bookmark.add(Bookmarks(userData.name,
-                "${ApiConstants.baseUrl}/images/" + userData.avatar));
+            bookmark.add(Bookmarks(userData.Name,
+                "${ApiConstants.baseUrl}/images/" + userData.Avatar));
           }
         }
       }

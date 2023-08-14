@@ -1,7 +1,7 @@
 package models
 
 type ContactRequest struct {
-	UserId      string `json:"userid"`
+	UserId      string `json:"userId"`
 	City        string `json:"city"`
 	State       string `json:"state"`
 	Country     string `json:"country"`
