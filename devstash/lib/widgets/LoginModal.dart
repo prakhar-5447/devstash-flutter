@@ -1,6 +1,7 @@
 import 'dart:developer';
 
-import 'package:devstash/models/request/loginRequest.dart';
+import 'package:devstash/models/request/signinRequest.dart';
+import 'package:devstash/models/request/signupRequest.dart';
 import 'package:devstash/models/response/LoginResponse.dart';
 import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/services/AuthServices.dart';
@@ -18,11 +19,11 @@ class LoginModal extends StatefulWidget {
 
 class _LoginModalState extends State<LoginModal> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController _usernameOrEmail = TextEditingController(text: "test");
-  TextEditingController _password = TextEditingController(text: "test");
+  TextEditingController _usernameOrEmail =
+      TextEditingController(text: "qwerty1234");
+  TextEditingController _password = TextEditingController(text: "qwerty1234");
   AuthServices _authServices = AuthServices();
   bool _isLoading = false;
-  String _errorMessage = '';
 
   @override
   void dispose() {
@@ -294,39 +295,40 @@ class _LoginModalState extends State<LoginModal> {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
-        _errorMessage = '';
       });
     }
 
     final usernameOrEmail = _usernameOrEmail.text;
     final password = _password.text;
-    LoginRequest loginData = LoginRequest(usernameOrEmail, password);
+    SigninRequest signinData = SigninRequest(usernameOrEmail, password);
 
     try {
-      dynamic _user = await _authServices.loginUser(loginData);
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      authProvider.setToken(_user.token);
-      authProvider.setUser(_user.user);
+      dynamic res = await _authServices.signinUser(signinData);
+      if (res["success"]) {
+        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+        authProvider.setToken(res["data"].token);
+        authProvider.setUser(res["data"].user);
+        Navigator.pushReplacementNamed(context, '/');
+      }
       Fluttertoast.showToast(
-        msg: "Successfully Login",
+        msg: res["msg"],
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
+        backgroundColor: res["success"] ? Colors.green : Colors.red,
         textColor: Colors.white,
       );
-      Navigator.pushReplacementNamed(context, '/');
-    } catch (error) {
-      log(error.toString());
       setState(() {
-        _errorMessage = 'Invalid username or password';
+        _isLoading = false;
+      });
+    } catch (error) {
+      setState(() {
         _usernameOrEmail.clear();
         _password.clear();
-        _isLoading =
-            false; // Set isLoading to false here to stop the loading indicator
+        _isLoading = false;
       });
       Fluttertoast.showToast(
-        msg: _errorMessage,
+        msg: error.toString(),
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,

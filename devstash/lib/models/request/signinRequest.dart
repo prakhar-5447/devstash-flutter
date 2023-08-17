@@ -1,8 +1,8 @@
-class LoginRequest {
+class SigninRequest {
   String _UsernameOrEmail;
   String _Password;
 
-  LoginRequest(
+  SigninRequest(
     this._UsernameOrEmail,
     this._Password,
   );

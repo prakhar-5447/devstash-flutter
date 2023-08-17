@@ -12,6 +12,7 @@ import 'package:devstash/services/favoriteServices.dart';
 import 'package:devstash/services/projectServices.dart';
 import 'package:devstash/services/userServices.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:devstash/constants.dart';
 
@@ -63,18 +64,45 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
     final auth = Provider.of<AuthProvider>(context, listen: false);
     String? token = auth.token;
     if (token != null && !isFavoriteDataLoaded) {
-      favoriteData = await FavoriteServices().getFavorite(token);
-
-      if (favoriteData?.projectLength != null &&
-          favoriteData!.projectLength > 0) {
-        for (var i = 0; i < favoriteData!.projectLength; i++) {
-          projectData = await ProjectServices()
-              .getProjectById(favoriteData!.projectIds[i]);
-          if (projectData != null) {
-            project.add(ProjectList(projectData.id,
-                "${ApiConstants.baseUrl}/images/" + projectData.image));
+      dynamic res = await FavoriteServices().getFavorite(token);
+      if (res['success']) {
+        favoriteData = res['data'];
+        if (favoriteData?.projectLength != null &&
+            favoriteData!.projectLength > 0) {
+          int errCount = 0;
+          for (var i = 0; i < favoriteData!.projectLength; i++) {
+            dynamic res = await ProjectServices()
+                .getProjectById(favoriteData!.projectIds[i]);
+            if (res['success']) {
+              projectData = res["data"];
+              if (projectData != null) {
+                project.add(ProjectList(projectData.id,
+                    "${ApiConstants.baseUrl}/images/" + projectData.image));
+              }
+            } else {
+              errCount = errCount + 1;
+            }
+          }
+          if (errCount > 0) {
+            Fluttertoast.showToast(
+              msg: "Unexpected error occur",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: res["success"] ? Colors.green : Colors.red,
+              textColor: Colors.white,
+            );
           }
         }
+      } else {
+        Fluttertoast.showToast(
+          msg: res["msg"],
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: res["success"] ? Colors.green : Colors.red,
+          textColor: Colors.white,
+        );
       }
     }
     return project;
@@ -86,22 +114,49 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
     final auth = Provider.of<AuthProvider>(context, listen: false);
     String? token = auth.token;
     if (token != null && !isBookmarkDataLoaded) {
-      bookmarkData = await BookmarkServices().getBookmark(token);
-
-      if (bookmarkData?.userLength != null && bookmarkData!.userLength > 0) {
-        for (var i = 0; i < bookmarkData!.userLength; i++) {
-          userData =
-              await UserServices().getUserById(bookmarkData!.otherUserIds[i]);
-          if (userData != null) {
-            bookmark.add(Bookmarks(userData.Name,
-                "${ApiConstants.baseUrl}/images/" + userData.Avatar));
+      dynamic res = await BookmarkServices().getBookmark(token);
+      if (res['success']) {
+        bookmarkData = res['data'];
+        if (bookmarkData?.userLength != null && bookmarkData!.userLength > 0) {
+          int errCount = 0;
+          for (var i = 0; i < bookmarkData!.userLength; i++) {
+            dynamic res =
+                await UserServices().getUserById(bookmarkData!.otherUserIds[i]);
+            if (res['success']) {
+              userData = res["data"];
+              if (userData != null) {
+                bookmark.add(Bookmarks(userData.Name,
+                    "${ApiConstants.baseUrl}/images/" + userData.Avatar));
+              }
+            } else {
+              errCount = errCount + 1;
+            }
+          }
+          if (errCount > 0) {
+            Fluttertoast.showToast(
+              msg: "Unexpected error occur",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: res["success"] ? Colors.green : Colors.red,
+              textColor: Colors.white,
+            );
           }
         }
+        setState(() {
+          isFavoriteDataLoaded = true;
+          isBookmarkDataLoaded = true;
+        });
+      } else {
+        Fluttertoast.showToast(
+          msg: res["msg"],
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: res["success"] ? Colors.green : Colors.red,
+          textColor: Colors.white,
+        );
       }
-      setState(() {
-        isFavoriteDataLoaded = true;
-        isBookmarkDataLoaded = true;
-      });
     }
     return bookmark;
   }

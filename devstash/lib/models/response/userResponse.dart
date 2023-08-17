@@ -5,7 +5,6 @@ class UserResponse {
   String _Username;
   String _Password;
   String _Email;
-  String _Phone;
   String _Description;
 
   UserResponse(
@@ -15,7 +14,6 @@ class UserResponse {
     this._Username,
     this._Password,
     this._Email,
-    this._Phone,
     this._Description,
   );
 
@@ -37,14 +35,11 @@ class UserResponse {
   String get Email => _Email;
   set Email(String value) => _Email = value;
 
-  String get Phone => _Phone;
-  set Phone(String value) => _Phone = value;
-
   String get Description => _Description;
   set Description(String value) => _Description = value;
 
   @override
   String toString() {
-    return 'ProjectResponse{iD: $_ID, name: $_Name, avatar: $_Avatar, username: $_Username, password: $_Password, email: $_Email, phone: $_Phone, description: $_Description}';
+    return 'ProjectResponse{iD: $_ID, name: $_Name, avatar: $_Avatar, username: $_Username, password: $_Password, email: $_Email, description: $_Description}';
   }
 }

@@ -26,13 +26,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // Fetch user details from the provider and set them in the text controllers
     final provider = Provider.of<AuthProvider>(context, listen: false);
     if (provider.user != null) {
       _nameController.text = provider.user!.Name;
       _usernameController.text = provider.user!.Username;
       _descriptionController.text = provider.user!.Description;
-      _phoneController.text = provider.user!.Phone;
       _emailController.text = provider.user!.Email;
     }
   }
@@ -106,39 +104,42 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     String email = _emailController.text;
     String username = _usernameController.text;
 
-    log('Name: $name');
-    log('Description: $description');
-    log('Phone Number: $phone');
-    log('Email: $email');
     UserProfile userprofile = UserProfile(
-        name: name,
-        username: username,
-        description: description,
-        phone: phone,
-        email: email);
+        name: name, username: username, description: description, email: email);
     try {
       final provider = Provider.of<AuthProvider>(context, listen: false);
-      dynamic _user =
-          await _userServices.updateProfile(userprofile, provider.token);
-      log(_user.toString());
-      if (provider.token != null) {
-        UserResponse? _userData = await _userServices.getUser(provider.token);
-        provider.setUser(_userData);
+      String? token = provider.token;
+      if (token != null) {
+        dynamic res = await _userServices.updateProfile(userprofile, token);
+        dynamic userResponse = await _userServices.getUser(token);
+        if (res["success"]) {
+          if (userResponse["success"]) {
+            provider.setUser(userResponse["data"]);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProfileScreen()),
+            );
+          }
+          Fluttertoast.showToast(
+            msg: userResponse["msg"],
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor:
+                userResponse["success"] ? Colors.green : Colors.red,
+            textColor: Colors.white,
+          );
+        }
+        Fluttertoast.showToast(
+          msg: res["msg"],
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: res["success"] ? Colors.green : Colors.red,
+          textColor: Colors.white,
+        );
       }
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ProfileScreen()),
-      );
-      Fluttertoast.showToast(
-        msg: "Successfully Save Details",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-      );
     } catch (error) {
-      log(error.toString());
       Fluttertoast.showToast(
         msg: error.toString(),
         toastLength: Toast.LENGTH_SHORT,
