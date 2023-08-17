@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:devstash/constants.dart';
 
 class BookmarkServices {
-  Future<BookmarkResponse?> getBookmark(String token) async {
+  dynamic getBookmark(String token) async {
     try {
       var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.bookmarkEndpoint);
       var headers = {
@@ -15,10 +15,7 @@ class BookmarkServices {
       };
 
       var response = await http.get(url, headers: headers);
-      if (response.statusCode == 200) {
-        BookmarkResponse bookmark = bookmarkFromJson(response.body);
-        return bookmark;
-      }
+      return dataFromJson(response.body);
     } catch (e) {
       log(e.toString());
     }
@@ -43,8 +40,20 @@ class BookmarkServices {
   }
 }
 
+dynamic dataFromJson(String json) {
+  final authData = jsonDecode(json);
+  bool success = authData['success'];
+  String msg = authData['msg'];
+  if (success) {
+    BookmarkResponse bookmark = bookmarkFromJson(json);
+    return {"success": success, "msg": msg, "data": bookmark};
+  }
+
+  return {"success": success, "msg": msg, "data": {}};
+}
+
 BookmarkResponse bookmarkFromJson(String json) {
-  final bookmarkData = jsonDecode(json);
+  final bookmarkData = jsonDecode(json)['bookmark'];
 
   String userId = bookmarkData['UserId'];
   List<String> otherUserIds = List<String>.from(bookmarkData['OtherUserIds']);

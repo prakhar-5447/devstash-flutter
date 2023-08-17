@@ -3,7 +3,6 @@ class UserProfile {
   String username;
   String description;
   // String address;
-  String phone;
   String email;
   // List<String> skills;
   // List<Map<String, String?>> socials; // Updated to allow nullable strings
@@ -14,7 +13,6 @@ class UserProfile {
     required this.username,
     required this.description,
     // required this.address,
-    required this.phone,
     required this.email,
     // required this.skills,
     // required this.socials,
@@ -45,7 +43,6 @@ class UserProfile {
       'username': username,
       'description': description,
       // 'address': address,
-      'phone': phone,
       'email': email,
       // 'skills': skills,
       // 'socials': socialsList,

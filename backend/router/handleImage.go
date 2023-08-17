@@ -93,7 +93,7 @@ func (server *Server) uploadAvatar(c *gin.Context) {
 	}
 
 	imageURL := handler.Filename
-	err = server.store.UpdateAvatar(c.Request.Context(), imageURL, ID)
+	err = server.store.Update_Avatar(c.Request.Context(), imageURL, ID)
 	// Success response
 	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully", "image_url": imageURL})
 
