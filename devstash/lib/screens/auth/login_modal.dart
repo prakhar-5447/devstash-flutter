@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:devstash/controllers/auth_controller.dart';
-import 'package:devstash/models/request/loginRequest.dart';
+import 'package:devstash/models/request/signinRequest.dart';
 import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/HomeScreen.dart';
 import 'package:devstash/services/AuthServices.dart';
@@ -21,8 +21,9 @@ class LoginModalContent extends StatefulWidget {
 class _LoginModalState extends State<LoginModalContent> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameOrEmail =
-      TextEditingController(text: "test");
-  final TextEditingController _password = TextEditingController(text: "test");
+      TextEditingController(text: "qwerty1234");
+  final TextEditingController _password =
+      TextEditingController(text: "qwerty1234");
   final AuthServices _authServices = AuthServices();
   bool _isLoading = false;
   String _errorMessage = '';
@@ -192,38 +193,39 @@ class _LoginModalState extends State<LoginModalContent> {
 
     final usernameOrEmail = _usernameOrEmail.text;
     final password = _password.text;
-    LoginRequest loginData = LoginRequest(usernameOrEmail, password);
+    SigninRequest signinData = SigninRequest(usernameOrEmail, password);
 
     try {
-      dynamic _user = await _authServices.loginUser(loginData);
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      authProvider.setToken(_user.token);
-      authProvider.setUser(_user.user);
+      dynamic res = await _authServices.signinUser(signinData);
+      if (res["success"]) {
+        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+        authProvider.setToken(res["data"].token);
+        authProvider.setUser(res["data"].user);
+        Navigator.pushReplacementNamed(context, '/');
+      }
       Fluttertoast.showToast(
-        msg: "Successfully Login",
+        msg: res["msg"],
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
+        backgroundColor: res["success"] ? Colors.green : Colors.red,
         textColor: Colors.white,
       );
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', _user.token);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+      await prefs.setString('token', res["data"].token);
+      Get.off(HomeScreen());
+      setState(() {
+        _isLoading = false;
+      });
     } catch (error) {
-      log(error.toString());
       setState(() {
         _errorMessage = 'Invalid username or password';
         _usernameOrEmail.clear();
         _password.clear();
-        _isLoading =
-            false; // Set isLoading to false here to stop the loading indicator
+        _isLoading = false;
       });
       Fluttertoast.showToast(
-        msg: _errorMessage,
+        msg: error.toString(),
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,

@@ -39,20 +39,12 @@ dynamic dataFromJson(String json) {
   String msg = authData['msg'];
   if (success) {
     String token = authData['token'];
-    UserResponse userId = userFromJson(json);
+    UserState userId = userFromJson(json);
     LoginResponse user = LoginResponse(token, userId);
     return {"success": success, "msg": msg, "data": user};
   }
 
-<<<<<<< HEAD
-  String token = authData['token'];
-  UserState userId = userFromJson(json);
-
-  LoginResponse user = LoginResponse(token, userId);
-  return user;
-=======
   return {"success": success, "msg": msg, "data": {}};
->>>>>>> fcdd3faa197ea6a6d4b0c5fbae6d3d4a3a11e17c
 }
 
 UserState userFromJson(String jsonData) {
@@ -65,12 +57,6 @@ UserState userFromJson(String jsonData) {
   String email = json['Email'];
   String description = json['Description'];
 
-<<<<<<< HEAD
-  UserState user = UserState(
-      id, name, avatar, username, email, description);
-=======
-  UserResponse user =
-      UserResponse(id, name, avatar, username, password, email, description);
->>>>>>> fcdd3faa197ea6a6d4b0c5fbae6d3d4a3a11e17c
+  UserState user = UserState(id, name, avatar, username, email, description);
   return user;
 }

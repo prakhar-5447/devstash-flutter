@@ -28,17 +28,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.initState();
     final provider = Provider.of<AuthProvider>(context, listen: false);
     if (provider.user != null) {
-<<<<<<< HEAD
       _nameController.text = provider.user!.name;
       _usernameController.text = provider.user!.username;
       _descriptionController.text = provider.user!.description;
       _emailController.text = provider.user!.email;
-=======
-      _nameController.text = provider.user!.Name;
-      _usernameController.text = provider.user!.Username;
-      _descriptionController.text = provider.user!.Description;
-      _emailController.text = provider.user!.Email;
->>>>>>> fcdd3faa197ea6a6d4b0c5fbae6d3d4a3a11e17c
     }
   }
 
@@ -115,14 +108,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         name: name, username: username, description: description, email: email);
     try {
       final provider = Provider.of<AuthProvider>(context, listen: false);
-<<<<<<< HEAD
-      dynamic _user =
-          await _userServices.updateProfile(userprofile, provider.token);
-      log(_user.toString());
-      if (provider.token != null) {
-        UserState? _userData = await _userServices.getUser(provider.token);
-        provider.setUser(_userData);
-=======
       String? token = provider.token;
       if (token != null) {
         dynamic res = await _userServices.updateProfile(userprofile, token);
@@ -153,7 +138,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           backgroundColor: res["success"] ? Colors.green : Colors.red,
           textColor: Colors.white,
         );
->>>>>>> fcdd3faa197ea6a6d4b0c5fbae6d3d4a3a11e17c
       }
     } catch (error) {
       Fluttertoast.showToast(

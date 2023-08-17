@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:devstash/controllers/auth_controller.dart';
+import 'package:devstash/models/request/signinRequest.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +10,6 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:devstash/controllers/password_controller.dart';
-import 'package:devstash/models/request/loginRequest.dart';
 import 'package:devstash/widgets/PasswordStrengthBar.dart';
 
 class SignupModalContent extends StatelessWidget {
@@ -250,7 +250,7 @@ class SignupModalContent extends StatelessWidget {
 
     final usernameOrEmail = _username.text;
     final password = _password.text;
-    LoginRequest loginData = LoginRequest(usernameOrEmail, password);
+    SigninRequest loginData = SigninRequest(usernameOrEmail, password);
     try {
       // dynamic _user = await _authServices.loginUser(loginData);
       // final authProvider = Provider.of<AuthProvider>(context, listen: false);
