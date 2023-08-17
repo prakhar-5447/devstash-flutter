@@ -1,7 +1,7 @@
+import 'package:devstash/controllers/auth_controller.dart';
+import 'package:devstash/screens/auth/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:devstash/screens/auth/login_modal.dart';
-import 'package:devstash/screens/auth/signup_modal.dart';
 
 class WelcomeScreen extends StatelessWidget {
   final ModalController _controller = Get.put(ModalController());
@@ -20,7 +20,8 @@ class WelcomeScreen extends StatelessWidget {
               fit: BoxFit.contain,
             ),
             Padding(
-              padding: EdgeInsets.only(left: 0, top: 50, right: 0, bottom: 80),
+              padding:
+                  const EdgeInsets.only(left: 0, top: 50, right: 0, bottom: 80),
               child: Column(
                 children: [
                   const Text(
@@ -47,11 +48,9 @@ class WelcomeScreen extends StatelessWidget {
             ),
             const Spacer(),
             ElevatedButton(
-              onLongPress: () {
-                _showModal();
-              },
+              onLongPress: () {},
               onPressed: () {
-                _showModal();
+                Get.off(AuthScreen());
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -87,35 +86,5 @@ class WelcomeScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void _showModal() {
-    Get.bottomSheet(
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      barrierColor: Colors.transparent,
-      Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.elliptical(50, 50),
-            topRight: Radius.elliptical(50, 50),
-          ),
-          color: Color.fromARGB(255, 241, 242, 246),
-        ),
-        child: Obx(() {
-          return _controller.showLoginModal.value
-              ? LoginModal()
-              : SignupModal();
-        }),
-      ),
-    );
-  }
-}
-
-class ModalController extends GetxController {
-  var showLoginModal = false.obs;
-
-  void changeForm(bool value) {
-    showLoginModal.value = value;
   }
 }

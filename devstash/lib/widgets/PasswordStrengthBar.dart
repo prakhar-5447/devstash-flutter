@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-
 class PasswordStrengthBar extends StatelessWidget {
-  final double strength; // Strength value between 0 and 1
-
+  late double strength;
   PasswordStrengthBar({Key? key, required this.strength}) : super(key: key);
 
   @override
@@ -15,7 +13,6 @@ class PasswordStrengthBar extends StatelessWidget {
     } else {
       color = Colors.green;
     }
-
     return LinearProgressIndicator(
       value: strength,
       backgroundColor: Colors.grey[300],

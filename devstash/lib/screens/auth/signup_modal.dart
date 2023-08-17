@@ -1,264 +1,303 @@
-import 'package:devstash/screens/auth/welcome_screen.dart';
-import 'package:devstash/widgets/PasswordStrengthBar.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'dart:developer';
 
-class SignupModal extends StatelessWidget {
-  SignupModal({super.key});
-  double _passwordStrength = 0.5;
+import 'package:devstash/controllers/auth_controller.dart';
+import 'package:email_validator/email_validator.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:devstash/controllers/password_controller.dart';
+import 'package:devstash/models/request/loginRequest.dart';
+import 'package:devstash/widgets/PasswordStrengthBar.dart';
+
+class SignupModalContent extends StatelessWidget {
+  SignupModalContent({Key? key}) : super(key: key);
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  final TextEditingController _username = TextEditingController();
+  final TextEditingController _name = TextEditingController();
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  final PasswordController _controller = Get.put(PasswordController());
+  final formatter = SingleSpaceInputFormatter();
+  bool _isLoading = false;
+  String _errorMessage = '';
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.elliptical(50, 50),
-            topRight: Radius.elliptical(50, 50)),
-        color: Color.fromARGB(255, 241, 242, 246),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(
-              top: 25,
-              bottom: 25,
-            ),
-            child: Text(
-              "Create new account",
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              "Create\nAccount",
               style: TextStyle(
                 color: Color.fromARGB(255, 82, 81, 81),
                 fontFamily: 'Comfortaa',
-                fontWeight: FontWeight.w400,
-                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                height: 1.2,
+                fontSize: 30,
               ),
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.left,
             ),
-          ),
-          Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.elliptical(50, 50),
-                topRight: Radius.elliptical(50, 50),
-              ),
+            const SizedBox(
+              height: 25,
             ),
-            child: Padding(
-              padding: const EdgeInsets.only(
-                top: 20,
-                bottom: 30,
-                left: 40,
-                right: 40,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Form(
+                  key: _formKey,
+                  child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 40),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              width: 45,
-                              height: 45,
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
-                                borderRadius: BorderRadius.circular(30),
-                                color: Colors.white,
-                              ),
-                              child: Image.asset(
-                                'assets/google.png',
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                            Container(
-                              width: 45,
-                              height: 45,
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
-                                borderRadius: BorderRadius.circular(30),
-                                color: Colors.white,
-                              ),
-                              child: Image.asset(
-                                'assets/github.png',
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                            Container(
-                              width: 45,
-                              height: 45,
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black),
-                                borderRadius: BorderRadius.circular(30),
-                                color: Colors.white,
-                              ),
-                              child: Image.asset(
-                                'assets/linkedin.png',
-                                fit: BoxFit.contain,
-                              ),
-                            )
-                          ],
+                      TextFormField(
+                        keyboardType: TextInputType.text,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp('[a-zA-Z0-9]'),
+                          ),
+                          formatter
+                        ],
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'enter valid username';
+                          }
+                          return null;
+                        },
+                        controller: _username,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Username',
                         ),
                       ),
-                      const Padding(
-                        padding: EdgeInsets.only(
-                          top: 15,
-                          bottom: 18,
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                                child: Divider(
-                              color: Color.fromARGB(197, 144, 144, 144),
-                              height: 25,
-                              thickness: 1,
-                              indent: 5,
-                              endIndent: 5,
-                            )),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-                              child: Text(
-                                "or",
-                                style: TextStyle(
-                                  color: Color.fromARGB(197, 144, 144, 144),
-                                  fontFamily: 'Comfortaa',
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 20,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Divider(
-                                color: Color.fromARGB(197, 144, 144, 144),
-                                height: 25,
-                                thickness: 1,
-                                indent: 5,
-                                endIndent: 5,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      const TextField(
-                        decoration: InputDecoration(
+                      const SizedBox(height: 15),
+                      TextFormField(
+                        keyboardType: TextInputType.text,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp('[a-zA-Z ]'),
+                          ),
+                          formatter
+                        ],
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'enter your name';
+                          }
+                          return null;
+                        },
+                        controller: _name,
+                        decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Name',
                         ),
                       ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      const TextField(
-                        decoration: InputDecoration(
+                      const SizedBox(height: 15),
+                      TextFormField(
+                        keyboardType: TextInputType.text,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp('[a-zA-Z0-9@.]'),
+                          ),
+                          formatter
+                        ],
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'enter valid ${_name.text}';
+                          }
+                          if (value.contains('@') &&
+                              value.indexOf('@') == value.lastIndexOf('@')) {
+                            if (!EmailValidator.validate(value)) {
+                              return 'invalid email';
+                            }
+                          } else {
+                            return 'invalid email';
+                          }
+                          return null;
+                        },
+                        controller: _email,
+                        decoration: const InputDecoration(
                           border: OutlineInputBorder(),
-                          // hintText: 'Enter Password',
                           labelText: 'Email',
                         ),
                       ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      const TextField(
+                      const SizedBox(height: 15),
+                      TextFormField(
                         obscureText: true,
-                        decoration: InputDecoration(
+                        keyboardType: TextInputType.text,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp('[a-zA-Z0-9@]'),
+                          ),
+                          formatter
+                        ],
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'enter strong password';
+                          }
+                          if (_controller.passwordStrength < 0.5) {
+                            return 'password is too weak';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          _controller.updatePasswordStrength(_password.text);
+                        },
+                        controller: _password,
+                        decoration: const InputDecoration(
                           border: OutlineInputBorder(),
-                          // hintText: 'Enter Password',
+                          hintText: 'Enter Password',
                           labelText: 'Password',
                         ),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Medium',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 117, 140, 253),
-                              fontSize: 12,
-                              fontFamily: 'Comfortaa',
-                              fontWeight: FontWeight.w500,
-                            ),
-                            textAlign: TextAlign.right,
-                          ),
-                          Container(
-                              width: 150,
-                              child: PasswordStrengthBar(
-                                strength: _passwordStrength,
+                      const SizedBox(height: 10),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: SizedBox(
+                          width: 150,
+                          child: Obx(() => PasswordStrengthBar(
+                                strength: _controller.passwordStrength.value,
                               )),
-                        ],
+                        ),
                       ),
+                      const SizedBox(height: 15),
                     ],
                   ),
-                  Column(children: [
+                ),
+                Column(
+                  children: [
                     Padding(
-                      padding: const EdgeInsets.only(top: 30, bottom: 15),
+                      padding: const EdgeInsets.only(top: 10, bottom: 15),
                       child: ElevatedButton(
-                          style: const ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll<Color>(
-                                  Color.fromARGB(255, 33, 149, 221))),
-                          onPressed: () => Navigator.pop(context),
-                          child: const Padding(
-                              padding: EdgeInsets.only(
-                                  left: 50, top: 12, right: 50, bottom: 12),
-                              child: Text(
-                                "REGISTER",
-                                style: TextStyle(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                              const Color.fromARGB(255, 33, 149, 221)),
+                        ),
+                        onPressed: _isLoading ? null : _performLogin,
+                        child: _isLoading
+                            ? const CircularProgressIndicator()
+                            : const Padding(
+                                padding: EdgeInsets.only(
+                                  left: 50,
+                                  top: 12,
+                                  right: 50,
+                                  bottom: 12,
+                                ),
+                                child: Text(
+                                  "REGISTER",
+                                  style: TextStyle(
                                     color: Color.fromARGB(221, 221, 215, 215),
                                     fontFamily: 'Comfortaa',
                                     fontWeight: FontWeight.w400,
-                                    fontSize: 22),
-                              ))),
+                                    fontSize: 22,
+                                  ),
+                                ),
+                              ),
+                      ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
-                          "Already have an account?",
+                          "Don't have an account?",
                           style: TextStyle(
-                              color: Color.fromARGB(197, 144, 144, 144),
-                              fontFamily: 'Comfortaa',
-                              fontWeight: FontWeight.w400,
-                              fontSize: 15),
+                            color: Color.fromARGB(197, 144, 144, 144),
+                            fontFamily: 'Comfortaa',
+                            fontWeight: FontWeight.w400,
+                            fontSize: 15,
+                          ),
                         ),
-                        const SizedBox(
-                          width: 5,
-                        ),
+                        const SizedBox(width: 5),
                         GestureDetector(
                           onTap: () {
                             Get.find<ModalController>().changeForm(true);
                           },
                           child: const Text(
-                            "Login here",
+                            "Register here",
                             style: TextStyle(
-                                color: Color.fromARGB(255, 24, 178, 250),
-                                fontFamily: 'Comfortaa',
-                                fontWeight: FontWeight.w400,
-                                fontSize: 15),
+                              color: Color.fromARGB(255, 24, 178, 250),
+                              fontFamily: 'Comfortaa',
+                              fontWeight: FontWeight.w400,
+                              fontSize: 15,
+                            ),
                           ),
                         )
                       ],
                     ),
-                    const SizedBox(
-                      height: 10,
-                    )
-                  ]),
-                ],
-              ),
+                  ],
+                ),
+              ],
             ),
-          )
-        ],
+          ],
+        ),
       ),
+    );
+  }
+
+  void _performLogin() async {
+    if (_formKey.currentState!.validate()) {
+      _isLoading = true;
+      _errorMessage = '';
+    }
+
+    final usernameOrEmail = _username.text;
+    final password = _password.text;
+    LoginRequest loginData = LoginRequest(usernameOrEmail, password);
+    try {
+      // dynamic _user = await _authServices.loginUser(loginData);
+      // final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      // authProvider.setToken(_user.token);
+      // authProvider.setUser(_user.user);
+      Fluttertoast.showToast(
+        msg: "Successfully Login",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+      );
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      // await prefs.setString('token', _user.token);
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => const HomeScreen()),
+      // );
+    } catch (error) {
+      log(error.toString());
+      _errorMessage = 'Invalid username or password';
+      _username.clear();
+      _password.clear();
+      _isLoading = false;
+      Fluttertoast.showToast(
+        msg: _errorMessage,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    }
+  }
+}
+
+class SingleSpaceInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    // Replace any sequence of spaces with a single space
+    final trimmedValue = newValue.text.replaceAll(RegExp(r'\s+'), ' ');
+
+    return TextEditingValue(
+      text: trimmedValue,
+      selection: TextSelection.collapsed(offset: trimmedValue.length),
     );
   }
 }

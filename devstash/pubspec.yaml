@@ -50,7 +50,7 @@ dependencies:
   connectivity_plus: ^2.2.1
   get: ^4.6.5
   shared_preferences: ^2.2.0
-
+  email_validator: ^2.1.17
 
   # The following adds the Cupertino Icons font to your application.
 
