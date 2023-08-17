@@ -189,9 +189,9 @@ func (server *Server) get_project_by_id(c *gin.Context) {
 
 	project, err := server.store.Get_Project_By_Id(c.Request.Context(), projectID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"deleted": false, "error": "Failed to retrieve project"})
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": "Failed to retrieve project"})
 		return
 	}
 
-	c.JSON(http.StatusOK, project)
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Retrieve project successfully", "project": project})
 }

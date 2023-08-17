@@ -66,13 +66,13 @@ func (server *Server) update_favorite(c *gin.Context) {
 func (server *Server) get_user_favorite_by_id(c *gin.Context) {
 	token := c.GetHeader("Authorization")
 	if token == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Authorization token required"})
 		return
 	}
 
 	payload, err := server.tokenMaker.VerifyToken(token)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Invalid token"})
 		return
 	}
 
@@ -80,17 +80,17 @@ func (server *Server) get_user_favorite_by_id(c *gin.Context) {
 
 	objectID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 
 	favorites, err := server.store.Get_Favorite_By_Id(c.Request.Context(), objectID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, favorites)
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Retrieved successfully", "favorite": favorites})
 }
 
 func (server *Server) check_favorite(c *gin.Context) {
@@ -126,7 +126,7 @@ func (server *Server) check_favorite(c *gin.Context) {
 	c.JSON(http.StatusOK, favorite)
 }
 
-func (server *Server) upadte_bookmark(c *gin.Context) {
+func (server *Server) update_bookmark(c *gin.Context) {
 	token := c.GetHeader("Authorization")
 	if token == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
@@ -184,13 +184,13 @@ func (server *Server) upadte_bookmark(c *gin.Context) {
 func (server *Server) get_user_bookmark_by_id(c *gin.Context) {
 	token := c.GetHeader("Authorization")
 	if token == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Authorization token required"})
 		return
 	}
 
 	payload, err := server.tokenMaker.VerifyToken(token)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Invalid token"})
 		return
 	}
 
@@ -198,29 +198,29 @@ func (server *Server) get_user_bookmark_by_id(c *gin.Context) {
 
 	objectID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 
 	bookmarks, err := server.store.Get_Bookmark_By_Id(c.Request.Context(), objectID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, bookmarks)
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Retrieved successfully", "bookmark": bookmarks})
 }
 
 func (server *Server) check_boookmark(c *gin.Context) {
 	token := c.GetHeader("Authorization")
 	if token == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Authorization token required"})
 		return
 	}
 
 	payload, err := server.tokenMaker.VerifyToken(token)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Invalid token"})
 		return
 	}
 
@@ -229,19 +229,19 @@ func (server *Server) check_boookmark(c *gin.Context) {
 
 	objectID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 
 	projectId, err := primitive.ObjectIDFromHex(req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 
 	bookmark := server.store.Check_Value_In_Array(c.Request.Context(), objectID, "bookmark", projectId)
 
-	c.JSON(http.StatusOK, bookmark)
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Retrieved successfully", "bookmark": bookmark})
 }
 
 func (server *Server) fetch_users_by_collaboratorId(c *gin.Context) {
@@ -269,7 +269,6 @@ func (server *Server) fetch_users_by_collaboratorId(c *gin.Context) {
 		userResponse := models.FetchCollaborator{
 			UserId: user.ID.Hex(),
 			Name:   user.Name,
-			Avatar: user.Avatar,
 		}
 
 		userResponses = append(userResponses, userResponse)
