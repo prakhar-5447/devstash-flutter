@@ -45,17 +45,14 @@ class ProjectServices {
     }
   }
 
-  Future<ProjectResponse?> getProjectById(String projectId) async {
+  dynamic getProjectById(String projectId) async {
     try {
       var url = Uri.parse(ApiConstants.baseUrl +
           ApiConstants.getProjectByIdEndpoint +
           projectId);
 
       var response = await http.get(url);
-      if (response.statusCode == 200) {
-        ProjectResponse project = projectFromJson(response.body);
-        return project;
-      }
+      return dataFromJson(response.body);
     } catch (e) {
       log(e.toString());
     }
@@ -128,8 +125,20 @@ List<CollaboratorResponse> userFromJson(String json) {
   return collaboratorUsers;
 }
 
+dynamic dataFromJson(String json) {
+  final authData = jsonDecode(json);
+  bool success = authData['success'];
+  String msg = authData['msg'];
+  if (success) {
+    ProjectResponse project = projectFromJson(json);
+    return {"success": success, "msg": msg, "data": project};
+  }
+
+  return {"success": success, "msg": msg, "data": {}};
+}
+
 ProjectResponse projectFromJson(String json) {
-  final projectData = jsonDecode(json);
+  final projectData = jsonDecode(json)['project'];
 
   String userID = projectData['UserID'];
   String id = projectData['ID'];

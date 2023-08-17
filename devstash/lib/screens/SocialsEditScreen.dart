@@ -538,20 +538,10 @@ class _SocialsEditScreen2State extends State<SocialsEditScreen2> {
     String phone = _phoneController.text;
     String email = _emailController.text;
 
-    log('Name: $name');
-
-    log('Description: $description');
-    log('Address: $address');
-    log('Phone Number: $phone');
-    log('Email: $email');
-    log('Selected Skills: $_selectedSkills');
-    log('Socials: $_socialsList');
-    log('Education: $_educationList');
     UserProfile userprofile = UserProfile(
         name: name,
         username: name,
         description: description,
-        phone: phone,
         email: email);
     try {
       final provider = Provider.of<AuthProvider>(context, listen: false);

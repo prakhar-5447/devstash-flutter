@@ -35,37 +35,46 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 func (server *Server) setupRouter() {
 	router := gin.Default()
 
-	router.POST("/signup", server.CreateUser)
-	router.POST("/login", server.Login)
-	router.GET("/getuser", server.GetUser)
-	router.GET("/getuser/:id", server.getUserByID)
-	router.POST("/getcollaboratoruser", server.FetchUsers)
-	router.PUT("/profile", server.UpdateProfile)
-	router.PUT("/educations", server.UpdateEducations)
-	router.POST("/educations", server.CreateEducations)
-	router.DELETE("/educations/:id", server.DeleteEducation)
-	router.PUT("/skills", server.AddSkill)
-	router.DELETE("/skills", server.DeleteSkill)
-	router.GET("/skills", server.GetSkills)
-	router.GET("/educations", server.FindEducationsByUserID)
-	router.GET("/socials", server.FindSocialsByUserID)
-	router.PUT("/socials", server.UpdateSocials)
+	router.POST("/signup", server.sign_up)
+	router.POST("/login", server.sign_in)
+	router.GET("/getuser", server.fetch_user)
+	router.GET("/getuser/:id", server.fetch_user_by_id)
+	router.PUT("/profile", server.update_profile)
+
+	router.GET("/favorite", server.get_user_favorite_by_id)
+	router.PUT("/favorite", server.update_favorite)
+	router.GET("/checkfavorite/:id", server.check_favorite)
+
+	router.GET("/bookmark", server.get_user_bookmark_by_id)
+	router.PUT("/bookmark", server.update_bookmark)
+	router.GET("/checkbookmark/:id", server.check_boookmark)
+	router.POST("/getcollaboratoruser", server.fetch_users_by_collaboratorId)
+
+	router.POST("/createProject", server.create_project)
+	router.PUT("/updateProject/:id", server.update_project)
+	router.DELETE("/deleteproject/:id", server.delete_project)
+	router.GET("/getprojects", server.get_projects_by_userId)
+	router.GET("/getprojectbyid/:id", server.get_project_by_id)
+
+	router.GET("/contact", server.get_contact)
+	router.PUT("/contact", server.update_contact)
+
+	router.POST("/educations", server.create_education)
+	router.PUT("/educations", server.update_education)
+	router.GET("/educations", server.get_education)
+	router.DELETE("/educations/:id", server.delete_education)
+
+	router.PUT("/skills", server.add_skill)
+	router.DELETE("/skills", server.delete_skill)
+	router.GET("/skills", server.get_skills)
+
+	router.PUT("/socials", server.update_social)
+	router.GET("/socials", server.get_social)
+
 	router.POST("/upload", server.handleFileUpload)
 	router.POST("/avatar", server.uploadAvatar)
 	router.GET("/images/:filename", server.handleImage)
 	router.DELETE("/images/:filename", server.deleteImage)
-	router.POST("/createProject", server.CreateProject)
-	router.GET("/getprojects", server.GetProjectsByUser)
-	router.PUT("/updateProject/:id", server.UpdateProjectByID)
-	router.GET("/getprojectbyid/:id", server.GetProjectByID)
-	router.DELETE("/deleteproject/:id", server.DeleteProject)
-	router.GET("/favorite", server.GetUserFavoritesByID)
-	router.GET("/checkfavorite/:id", server.CheckFavorite)
-	router.PUT("/favorite", server.AddOrRemoveUserFromFavorite)
-	router.GET("/bookmark", server.GetUserBookmarksByID)
-	router.PUT("/bookmark", server.AddOrRemoveUserFromBookmark)
-	router.GET("/contact", server.FindContact)
-	router.PUT("/contact", server.UpdateContact)
 	server.router = router
 }
 
@@ -73,6 +82,6 @@ func (server *Server) Start(address string) error {
 	return server.router.Run(address)
 }
 
-func errorResponse(err error) gin.H {
-	return gin.H{"error": err.Error()}
-}
+// func errorResponse(err error) gin.H {
+// 	return gin.H{"error": err.Error()}
+// }

@@ -7,9 +7,9 @@ import (
 type Config struct {
 	MONGODB_URI         string `mapstructure:"MONGODB_URI"`
 	DATABASE_NAME       string `mapstructure:"DATABASE_NAME"`
-	COLLECTION_NAME     string `mapstructure:"COLLECTION_NAME"`
 	TOKEN_SYMMETRIC_KEY string `mapstructure:"TOKEN_SYMMETRIC_KEY"`
 	HTTP_SERVER_ADDRESS string `mapstructure:"HTTP_SERVER_ADDRESS"`
+	TOKEN_EXPIRATION    int    `mapstructure:"TOKEN_EXPIRATION"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

@@ -36,26 +36,29 @@ class ProjectDetailScreen extends StatelessWidget {
 
     Future<void> _getProjectDetail() async {
       late ProjectResponse? projectData;
-      projectData = await ProjectServices().getProjectById(id);
+      dynamic temp = await ProjectServices().getProjectById(id);
+      if (temp['success']) {
+        projectData = temp["data"];
+        if (projectData != null) {
+          String dateString = projectData.createdDate;
+          DateTime dateTime = DateTime.parse(dateString);
+          String formattedDate = DateFormat.yMMMMd().format(dateTime);
 
-      if (projectData != null) {
-        String dateString = projectData.createdDate;
-        DateTime dateTime = DateTime.parse(dateString);
-        String formattedDate = DateFormat.yMMMMd().format(dateTime);
-
-        projectDetail = ProjectResponse(
-            projectData.userID,
-            projectData.id,
-            formattedDate,
-            "${ApiConstants.baseUrl}/images/${projectData.image}",
-            projectData.title,
-            projectData.url,
-            projectData.description,
-            projectData.technologies,
-            projectData.collaboratorsID,
-            projectData.projectType,
-            projectData.hashtags);
+          projectDetail = ProjectResponse(
+              projectData.userID,
+              projectData.id,
+              formattedDate,
+              "${ApiConstants.baseUrl}/images/${projectData.image}",
+              projectData.title,
+              projectData.url,
+              projectData.description,
+              projectData.technologies,
+              projectData.collaboratorsID,
+              projectData.projectType,
+              projectData.hashtags);
+        }
       }
+
       final auth = Provider.of<AuthProvider>(context, listen: false);
       String? token = auth.token;
       if (token != null) {

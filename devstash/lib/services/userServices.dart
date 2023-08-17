@@ -8,23 +8,31 @@ import 'package:http/http.dart' as http;
 import 'package:devstash/constants.dart';
 
 class UserServices {
+<<<<<<< HEAD
   Future<UserState?> getUser(String? authToken) async {
+=======
+  dynamic getUser(String authToken) async {
+>>>>>>> fcdd3faa197ea6a6d4b0c5fbae6d3d4a3a11e17c
     try {
       var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.getUserEndpoint);
       var headers = {
-        'Authorization': authToken ?? '',
+        'Authorization': authToken,
       };
-
       var response = await http.get(url, headers: headers);
+<<<<<<< HEAD
       if (response.statusCode == 200) {
         UserState user = userFromJson(response.body);
         return user;
       }
+=======
+      return dataFromJson(response.body);
+>>>>>>> fcdd3faa197ea6a6d4b0c5fbae6d3d4a3a11e17c
     } catch (e) {
       log(e.toString());
     }
   }
 
+<<<<<<< HEAD
   Future<dynamic> updateProfile(
       UserProfile userDetails, String? authToken) async {
     try {
@@ -44,21 +52,40 @@ class UserServices {
   }
 
   Future<UserState?> getUserById(String id) async {
+=======
+  dynamic getUserById(String id) async {
+>>>>>>> fcdd3faa197ea6a6d4b0c5fbae6d3d4a3a11e17c
     try {
       var url = Uri.parse(
           ApiConstants.baseUrl + ApiConstants.getUserByIdEndpoint + id);
-
       var response = await http.get(url);
+<<<<<<< HEAD
       if (response.statusCode == 200) {
         UserState user = userFromJson(response.body);
         return user;
       }
+=======
+      return dataFromJson(response.body);
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  dynamic updateProfile(UserProfile userDetails, String authToken) async {
+    try {
+      var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.profileEndpoint);
+      var headers = {'Authorization': authToken};
+      var response = await http.put(url,
+          headers: headers, body: jsonEncode(userDetails.toJson()));
+      return jsonDecode(response.body);
+>>>>>>> fcdd3faa197ea6a6d4b0c5fbae6d3d4a3a11e17c
     } catch (e) {
       log(e.toString());
     }
   }
 }
 
+<<<<<<< HEAD
 UserState userFromJson(String json) {
   final userData = jsonDecode(json);
 
@@ -77,6 +104,32 @@ UserState userFromJson(String json) {
     email,
     description,
   );
+=======
+dynamic dataFromJson(String json) {
+  final authData = jsonDecode(json);
+  bool success = authData['success'];
+  String msg = authData['msg'];
+  if (success) {
+    UserResponse user = userFromJson(json);
+    return {"success": success, "msg": msg, "data": user};
+  }
 
+  return {"success": success, "msg": msg, "data": {}};
+}
+
+UserResponse userFromJson(String jsonData) {
+  final json = jsonDecode(jsonData)['user'];
+>>>>>>> fcdd3faa197ea6a6d4b0c5fbae6d3d4a3a11e17c
+
+  String id = json['ID'];
+  String name = json['Name'];
+  String avatar = json['Avatar'];
+  String username = json['Username'];
+  String password = json['Password'];
+  String email = json['Email'];
+  String description = json['Description'];
+
+  UserResponse user =
+      UserResponse(id, name, avatar, username, password, email, description);
   return user;
 }

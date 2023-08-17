@@ -26,13 +26,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // Fetch user details from the provider and set them in the text controllers
     final provider = Provider.of<AuthProvider>(context, listen: false);
     if (provider.user != null) {
+<<<<<<< HEAD
       _nameController.text = provider.user!.name;
       _usernameController.text = provider.user!.username;
       _descriptionController.text = provider.user!.description;
       _emailController.text = provider.user!.email;
+=======
+      _nameController.text = provider.user!.Name;
+      _usernameController.text = provider.user!.Username;
+      _descriptionController.text = provider.user!.Description;
+      _emailController.text = provider.user!.Email;
+>>>>>>> fcdd3faa197ea6a6d4b0c5fbae6d3d4a3a11e17c
     }
   }
 
@@ -105,39 +111,51 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     String email = _emailController.text;
     String username = _usernameController.text;
 
-    log('Name: $name');
-    log('Description: $description');
-    log('Phone Number: $phone');
-    log('Email: $email');
     UserProfile userprofile = UserProfile(
-        name: name,
-        username: username,
-        description: description,
-        phone: phone,
-        email: email);
+        name: name, username: username, description: description, email: email);
     try {
       final provider = Provider.of<AuthProvider>(context, listen: false);
+<<<<<<< HEAD
       dynamic _user =
           await _userServices.updateProfile(userprofile, provider.token);
       log(_user.toString());
       if (provider.token != null) {
         UserState? _userData = await _userServices.getUser(provider.token);
         provider.setUser(_userData);
+=======
+      String? token = provider.token;
+      if (token != null) {
+        dynamic res = await _userServices.updateProfile(userprofile, token);
+        dynamic userResponse = await _userServices.getUser(token);
+        if (res["success"]) {
+          if (userResponse["success"]) {
+            provider.setUser(userResponse["data"]);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProfileScreen()),
+            );
+          }
+          Fluttertoast.showToast(
+            msg: userResponse["msg"],
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor:
+                userResponse["success"] ? Colors.green : Colors.red,
+            textColor: Colors.white,
+          );
+        }
+        Fluttertoast.showToast(
+          msg: res["msg"],
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: res["success"] ? Colors.green : Colors.red,
+          textColor: Colors.white,
+        );
+>>>>>>> fcdd3faa197ea6a6d4b0c5fbae6d3d4a3a11e17c
       }
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ProfileScreen()),
-      );
-      Fluttertoast.showToast(
-        msg: "Successfully Save Details",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-      );
     } catch (error) {
-      log(error.toString());
       Fluttertoast.showToast(
         msg: error.toString(),
         toastLength: Toast.LENGTH_SHORT,

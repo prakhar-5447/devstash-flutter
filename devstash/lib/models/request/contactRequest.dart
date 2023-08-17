@@ -16,7 +16,7 @@ class ContactRequest {
 
   Map<String, dynamic> toJson() {
     return {
-      'userid': userid,
+      'userId': userid,
       'city': city,
       'state': state,
       'country': country,
