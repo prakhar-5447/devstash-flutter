@@ -18,7 +18,7 @@ func (q *Queries) Create_User(ctx context.Context, user *User) (primitive.Object
 	return res.InsertedID.(primitive.ObjectID), nil
 }
 
-func (store *MongoDBStore) Find_User_By_UserId(ctx context.Context, userId string) (*User, error) {
+func (store *MongoDBStore) Find_User_By_UserId(ctx context.Context, userId primitive.ObjectID) (*User, error) {
 	var user User
 	err := store.GetCollection("users").FindOne(ctx, bson.M{"_id": userId}).Decode(&user)
 	if err != nil {
@@ -75,7 +75,7 @@ func (store *MongoDBStore) Check_User_By_Username(ctx context.Context, username 
 	return false, nil
 }
 
-func (store *MongoDBStore) Find_User_By_Username_Or_Email(ctx context.Context, usernameOrEmail string, password string) (*User, error) {
+func (store *MongoDBStore) Find_User_By_Username_Or_Email(ctx context.Context, usernameOrEmail string) (*User, error) {
 	filter := bson.M{"$or": []bson.M{
 		{"username": usernameOrEmail},
 		{"email": usernameOrEmail},
@@ -90,13 +90,6 @@ func (store *MongoDBStore) Find_User_By_Username_Or_Email(ctx context.Context, u
 			}
 		}
 		return nil, err
-	}
-
-	if user.Password != password {
-		return nil, &models.HTTPError{
-			StatusCode: http.StatusUnauthorized,
-			Message:    "Invalid password.",
-		}
 	}
 
 	return user, nil

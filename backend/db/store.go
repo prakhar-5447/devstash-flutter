@@ -13,11 +13,11 @@ import (
 
 type Store interface {
 	Create_User(ctx context.Context, user *User) (primitive.ObjectID, error)
-	Find_User_By_UserId(ctx context.Context, userId string) (*User, error)
+	Find_User_By_UserId(ctx context.Context, userId primitive.ObjectID) (*User, error)
 	Get_User_By_Id(ctx context.Context, userID primitive.ObjectID) (*User, error)
 	Check_User_By_Email(ctx context.Context, email string) (bool, error)
 	Check_User_By_Username(ctx context.Context, username string) (bool, error)
-	Find_User_By_Username_Or_Email(ctx context.Context, usernameOrEmail string, password string) (*User, error)
+	Find_User_By_Username_Or_Email(ctx context.Context, usernameOrEmail string) (*User, error)
 	Update_User(ctx context.Context, user *User) error
 	Update_Avatar(ctx context.Context, avatar string, userID primitive.ObjectID) error
 	Update_User_Profile(ctx context.Context, user *User) bool

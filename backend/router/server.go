@@ -46,12 +46,12 @@ func (server *Server) setupRouter() {
 	router.GET("/checkfavorite/:id", server.check_favorite)
 
 	router.GET("/bookmark", server.get_user_bookmark_by_id)
-	router.PUT("/bookmark", server.upadte_bookmark)
+	router.PUT("/bookmark", server.update_bookmark)
 	router.GET("/checkbookmark/:id", server.check_boookmark)
 	router.POST("/getcollaboratoruser", server.fetch_users_by_collaboratorId)
 
 	router.POST("/createProject", server.create_project)
-	router.PUT("/updateProject/:id", server.update_profile)
+	router.PUT("/updateProject/:id", server.update_project)
 	router.DELETE("/deleteproject/:id", server.delete_project)
 	router.GET("/getprojects", server.get_projects_by_userId)
 	router.GET("/getprojectbyid/:id", server.get_project_by_id)

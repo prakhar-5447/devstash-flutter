@@ -23,7 +23,6 @@ func (store *MongoDBStore) Create_Project(ctx context.Context, project *Project)
 }
 
 func (store *MongoDBStore) Update_Project(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID, update models.ProjectRequest) (*Project, error) {
-	// Create the update
 	collaboratorsID := make([]primitive.ObjectID, len(update.CollaboratorsID))
 	for i, collabID := range update.CollaboratorsID {
 		objectID, err := primitive.ObjectIDFromHex(collabID)
