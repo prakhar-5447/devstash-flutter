@@ -125,8 +125,8 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
             if (res['success']) {
               userData = res["data"];
               if (userData != null) {
-                bookmark.add(Bookmarks(userData.Name,
-                    "${ApiConstants.baseUrl}/images/" + userData.Avatar));
+                bookmark.add(Bookmarks(userData.name,
+                    "${ApiConstants.baseUrl}/images/" + userData.avatar));
               }
             } else {
               errCount = errCount + 1;
