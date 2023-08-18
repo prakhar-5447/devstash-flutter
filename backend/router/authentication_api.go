@@ -22,7 +22,7 @@ func (server *Server) sign_up(c *gin.Context) {
 		return
 	}
 	if found {
-		c.JSON(http.StatusOK, gin.H{"message": "User with the same email already exists"})
+		c.JSON(http.StatusOK, gin.H{"msg": "User with the same email already exists"})
 		return
 	}
 
@@ -32,7 +32,7 @@ func (server *Server) sign_up(c *gin.Context) {
 		return
 	}
 	if found {
-		c.JSON(http.StatusOK, gin.H{"message": "User with the same username already exists"})
+		c.JSON(http.StatusOK, gin.H{"msg": "User with the same username already exists"})
 		return
 	}
 

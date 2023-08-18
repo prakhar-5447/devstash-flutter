@@ -1,7 +1,6 @@
-import 'dart:developer';
-
-import 'package:devstash/controllers/auth_controller.dart';
-import 'package:devstash/models/request/signinRequest.dart';
+import 'package:devstash/models/request/signupRequest.dart';
+import 'package:devstash/screens/HomeScreen.dart';
+import 'package:devstash/services/AuthServices.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,15 +13,18 @@ import 'package:devstash/widgets/PasswordStrengthBar.dart';
 
 class SignupModalContent extends StatelessWidget {
   SignupModalContent({Key? key}) : super(key: key);
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _username = TextEditingController();
   final TextEditingController _name = TextEditingController();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
   final PasswordController _controller = Get.put(PasswordController());
+
+  final AuthServices _authServices = AuthServices();
+
   final formatter = SingleSpaceInputFormatter();
-  bool _isLoading = false;
+  final RxBool _isLoading = false.obs;
   String _errorMessage = '';
 
   @override
@@ -35,7 +37,6 @@ class SignupModalContent extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
               "Create\nAccount",
@@ -63,7 +64,7 @@ class SignupModalContent extends StatelessWidget {
                         keyboardType: TextInputType.text,
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
-                            RegExp('[a-zA-Z0-9]'),
+                            RegExp('[a-zA-Z0-9_]'),
                           ),
                           formatter
                         ],
@@ -79,7 +80,9 @@ class SignupModalContent extends StatelessWidget {
                           labelText: 'Username',
                         ),
                       ),
-                      const SizedBox(height: 15),
+                      const SizedBox(
+                        height: 15,
+                      ),
                       TextFormField(
                         keyboardType: TextInputType.text,
                         inputFormatters: [
@@ -100,7 +103,9 @@ class SignupModalContent extends StatelessWidget {
                           labelText: 'Name',
                         ),
                       ),
-                      const SizedBox(height: 15),
+                      const SizedBox(
+                        height: 15,
+                      ),
                       TextFormField(
                         keyboardType: TextInputType.text,
                         inputFormatters: [
@@ -111,15 +116,13 @@ class SignupModalContent extends StatelessWidget {
                         ],
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return 'enter valid ${_name.text}';
+                            return 'enter your email';
                           }
                           if (value.contains('@') &&
                               value.indexOf('@') == value.lastIndexOf('@')) {
                             if (!EmailValidator.validate(value)) {
                               return 'invalid email';
                             }
-                          } else {
-                            return 'invalid email';
                           }
                           return null;
                         },
@@ -129,7 +132,9 @@ class SignupModalContent extends StatelessWidget {
                           labelText: 'Email',
                         ),
                       ),
-                      const SizedBox(height: 15),
+                      const SizedBox(
+                        height: 15,
+                      ),
                       TextFormField(
                         obscureText: true,
                         keyboardType: TextInputType.text,
@@ -158,79 +163,69 @@ class SignupModalContent extends StatelessWidget {
                           labelText: 'Password',
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(
+                        height: 10,
+                      ),
                       Align(
                         alignment: Alignment.centerRight,
                         child: SizedBox(
                           width: 150,
-                          child: Obx(() => PasswordStrengthBar(
-                                strength: _controller.passwordStrength.value,
-                              )),
+                          child: Obx(
+                            () => PasswordStrengthBar(
+                              strength: _controller.passwordStrength.value,
+                            ),
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 15),
+                      const SizedBox(
+                        height: 15,
+                      ),
                     ],
                   ),
                 ),
                 Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(top: 10, bottom: 15),
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                              const Color.fromARGB(255, 33, 149, 221)),
-                        ),
-                        onPressed: _isLoading ? null : _performLogin,
-                        child: _isLoading
-                            ? const CircularProgressIndicator()
-                            : const Padding(
-                                padding: EdgeInsets.only(
-                                  left: 50,
-                                  top: 12,
-                                  right: 50,
-                                  bottom: 12,
-                                ),
-                                child: Text(
-                                  "REGISTER",
-                                  style: TextStyle(
-                                    color: Color.fromARGB(221, 221, 215, 215),
-                                    fontFamily: 'Comfortaa',
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 22,
-                                  ),
-                                ),
-                              ),
+                      padding: const EdgeInsets.only(
+                        top: 10,
+                        bottom: 15,
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Don't have an account?",
-                          style: TextStyle(
-                            color: Color.fromARGB(197, 144, 144, 144),
-                            fontFamily: 'Comfortaa',
-                            fontWeight: FontWeight.w400,
-                            fontSize: 15,
-                          ),
-                        ),
-                        const SizedBox(width: 5),
-                        GestureDetector(
-                          onTap: () {
-                            Get.find<ModalController>().changeForm(true);
-                          },
-                          child: const Text(
-                            "Register here",
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 24, 178, 250),
-                              fontFamily: 'Comfortaa',
-                              fontWeight: FontWeight.w400,
-                              fontSize: 15,
-                            ),
-                          ),
-                        )
-                      ],
+                      child: Obx(
+                        () {
+                          return _isLoading.value
+                              ? const CircularProgressIndicator()
+                              : ElevatedButton(
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                      const Color.fromARGB(
+                                        255,
+                                        33,
+                                        149,
+                                        221,
+                                      ),
+                                    ),
+                                  ),
+                                  onPressed:
+                                      _isLoading.value ? null : _performLogin,
+                                  child: const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 50,
+                                      vertical: 12,
+                                    ),
+                                    child: Text(
+                                      "REGISTER",
+                                      style: TextStyle(
+                                        color:
+                                            Color.fromARGB(221, 221, 215, 215),
+                                        fontFamily: 'Comfortaa',
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 22,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -244,46 +239,46 @@ class SignupModalContent extends StatelessWidget {
 
   void _performLogin() async {
     if (_formKey.currentState!.validate()) {
-      _isLoading = true;
+      _isLoading.value = true;
       _errorMessage = '';
-    }
-
-    final usernameOrEmail = _username.text;
-    final password = _password.text;
-    SigninRequest loginData = SigninRequest(usernameOrEmail, password);
-    try {
-      // dynamic _user = await _authServices.loginUser(loginData);
-      // final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      // authProvider.setToken(_user.token);
-      // authProvider.setUser(_user.user);
-      Fluttertoast.showToast(
-        msg: "Successfully Login",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-      );
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      // await prefs.setString('token', _user.token);
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => const HomeScreen()),
-      // );
-    } catch (error) {
-      log(error.toString());
-      _errorMessage = 'Invalid username or password';
-      _username.clear();
-      _password.clear();
-      _isLoading = false;
-      Fluttertoast.showToast(
-        msg: _errorMessage,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
+      final username = _username.text;
+      final password = _password.text;
+      final name = _name.text;
+      final email = _email.text;
+      SignupRequest signupdata = SignupRequest(name, username, email, password);
+      try {
+        dynamic res = await _authServices.signupUser(signupdata);
+        Fluttertoast.showToast(
+          msg: res["msg"],
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: res["success"] ? Colors.green : Colors.red,
+          textColor: Colors.white,
+        );
+        if (res["success"]) {
+          final SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', res["data"].token);
+          Get.off(() => const HomeScreen());
+        }
+        _isLoading.value = false;
+      } catch (error) {
+        _errorMessage = 'Invalid username or password';
+        _username.clear();
+        _password.clear();
+        _password.clear();
+        _controller.updatePasswordStrength(_password.text);
+        _email.clear();
+        _isLoading.value = false;
+        Fluttertoast.showToast(
+          msg: _errorMessage,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+      }
     }
   }
 }
@@ -292,9 +287,7 @@ class SingleSpaceInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
-    // Replace any sequence of spaces with a single space
     final trimmedValue = newValue.text.replaceAll(RegExp(r'\s+'), ' ');
-
     return TextEditingValue(
       text: trimmedValue,
       selection: TextSelection.collapsed(offset: trimmedValue.length),
