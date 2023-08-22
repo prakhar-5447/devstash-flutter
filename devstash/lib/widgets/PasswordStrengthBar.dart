@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class PasswordStrengthBar extends StatelessWidget {
   late double strength;
   PasswordStrengthBar({Key? key, required this.strength}) : super(key: key);

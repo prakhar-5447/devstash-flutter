@@ -264,6 +264,7 @@ class SignupModalContent extends StatelessWidget {
           backgroundColor: res["success"] ? Colors.green : Colors.red,
           textColor: Colors.white,
         );
+        _isLoading.value = false;
       } catch (error) {
         _errorMessage = 'Invalid username or password';
         _username.clear();

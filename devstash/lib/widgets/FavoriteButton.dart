@@ -1,9 +1,8 @@
 import "dart:developer";
 import 'package:devstash/models/request/favoriteRequest.dart';
-import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/services/favoriteServices.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FavoriteButton extends StatefulWidget {
   bool found;
@@ -34,8 +33,8 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   }
 
   Future<void> _updateFavorite() async {
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-    String? token = auth.token;
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
     if (token != null) {
       String action = "add";
       if (widget.found) {

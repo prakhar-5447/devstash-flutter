@@ -35,7 +35,7 @@ class NoNetwork extends StatelessWidget {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: ((context) => const HomeScreen())));
+                            builder: ((context) => HomeScreen())));
                   },
                   child: const Text('Retry ',
                       style: TextStyle(

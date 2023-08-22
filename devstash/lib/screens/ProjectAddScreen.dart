@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:devstash/constants.dart';
 import 'package:devstash/models/request/projectRequest.dart';
 import 'package:devstash/models/response/projectResponse.dart';
-import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/services/imageServices.dart';
 import 'package:devstash/services/projectServices.dart';
 import 'package:devstash/widgets/DescriptionField.dart';
@@ -10,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProjectAddScreen extends StatefulWidget {
   final Function(ProjectResponse) addProject;
@@ -123,8 +122,8 @@ class _ProjectAddScreenState extends State<ProjectAddScreen> {
 
       ProjectRequest req = ProjectRequest(_image, _title, _url, _description,
           _technologies, _collaboratorsID, _projectType, _hashtags);
-      final auth = Provider.of<AuthProvider>(context, listen: false);
-      String? token = auth.token;
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
       if (token != null) {
         ProjectResponse? newProject =
             await ProjectServices().addProject(token, req);
