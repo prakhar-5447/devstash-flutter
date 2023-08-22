@@ -1,5 +1,6 @@
+import 'dart:developer';
+
 import 'package:devstash/models/response/projectResponse.dart';
-import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/ProjectAddScreen.dart';
 import 'package:devstash/screens/ProjectEditScreen.dart';
 import 'package:devstash/screens/projectDetailScreen.dart';
@@ -9,7 +10,7 @@ import 'package:devstash/models/ProjectInfo.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:devstash/constants.dart';
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Project extends StatefulWidget {
   const Project({super.key});
@@ -25,8 +26,9 @@ class _ProjectState extends State<Project> {
   int _selectedProjectIndex = -1;
 
   Future<List<ProjectInfo>> _getProject() async {
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-    String? token = auth.token;
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    log(token.toString());
     if (token != null && !isDataLoaded) {
       projectData = await ProjectServices().getProjects(token);
 
@@ -73,8 +75,8 @@ class _ProjectState extends State<Project> {
   }
 
   Future<void> _removeProject(String id, int index) async {
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-    String? token = auth.token;
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
     if (token != null) {
       await ProjectServices().deleteProject(token, id).then((value) => {
             if (value['deleted'])

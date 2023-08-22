@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
     final UserState? user = userController.user;
 
     return Scaffold(
-        drawer: const AppDrawer(
+        drawer: AppDrawer(
           currentIndex: 0,
         ),
         body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
