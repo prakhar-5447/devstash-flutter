@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:devstash/models/request/contactRequest.dart';
 import 'package:devstash/models/response/contactResponse.dart';
 import 'package:devstash/providers/AuthProvider.dart';
-import 'package:devstash/screens/ProfileScreen.dart';
+import 'package:devstash/screens/profile/ProfileScreen.dart';
 import 'package:devstash/services/ContactServices.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';

@@ -1,8 +1,8 @@
-import 'package:devstash/screens/CalendarScreen.dart';
+import 'package:devstash/screens/tasks/CalendarScreen.dart';
 import 'package:devstash/screens/home/home_screen.dart';
-import 'package:devstash/screens/ProfileScreen.dart';
+import 'package:devstash/screens/profile/ProfileScreen.dart';
 import 'package:devstash/screens/auth/welcome_screen.dart';
-import 'package:devstash/screens/saved.dart';
+import 'package:devstash/screens/favourite/saved.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';

@@ -5,7 +5,7 @@ import 'package:devstash/models/response/bookmarkResponse.dart';
 import 'package:devstash/models/response/favoriteResponse.dart';
 import 'package:devstash/models/response/projectResponse.dart';
 import 'package:devstash/models/response/user_state.dart';
-import 'package:devstash/screens/projectDetailScreen.dart';
+import 'package:devstash/screens/projects/projectDetailScreen.dart';
 import 'package:devstash/services/bookmarkServices.dart';
 import 'package:devstash/services/favoriteServices.dart';
 import 'package:devstash/services/projectServices.dart';

@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:devstash/models/Events.dart';
 import 'package:devstash/utils/utils.dart' as devstash_utils;
 import 'package:devstash/widgets/AppDrawer.dart';
-import 'package:devstash/widgets/EventList.dart';
-import 'package:devstash/widgets/EventModal.dart';
+import 'package:devstash/screens/events/EventList.dart';
+import 'package:devstash/screens/events/EventModal.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 

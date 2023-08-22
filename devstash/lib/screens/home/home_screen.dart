@@ -1,9 +1,9 @@
 import 'package:devstash/controllers/user_controller.dart';
 import 'package:devstash/models/response/user_state.dart';
-import 'package:devstash/screens/ProfileScreen.dart';
-import 'package:devstash/screens/project.dart';
+import 'package:devstash/screens/profile/ProfileScreen.dart';
+import 'package:devstash/screens/projects/project.dart';
 import 'package:devstash/widgets/AppDrawer.dart';
-import 'package:devstash/widgets/WeekdayTaskScreen.dart';
+import 'package:devstash/screens/tasks/WeekdayTaskScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';

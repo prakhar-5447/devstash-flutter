@@ -1,5 +1,5 @@
 import 'package:devstash/models/Events.dart';
-import 'package:devstash/screens/CalendarScreen.dart';
+import 'package:devstash/screens/tasks/CalendarScreen.dart';
 import 'package:flutter/material.dart';
 
 class EventList extends StatelessWidget {

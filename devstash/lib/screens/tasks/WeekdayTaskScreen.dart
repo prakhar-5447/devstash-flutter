@@ -1,5 +1,5 @@
 import 'package:devstash/models/Events.dart';
-import 'package:devstash/screens/CalendarScreen.dart';
+import 'package:devstash/screens/tasks/CalendarScreen.dart';
 import 'package:devstash/utils/utils.dart' as devstash_utils;
 import 'package:flutter/material.dart';
 

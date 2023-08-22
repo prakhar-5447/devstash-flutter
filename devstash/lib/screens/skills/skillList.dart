@@ -1,19 +1,22 @@
 import 'dart:developer';
 
-import 'package:devstash/models/response/education.dart';
+import 'package:devstash/models/request/skillRequest.dart';
+import 'package:devstash/models/response/skillResponse.dart';
 import 'package:devstash/providers/AuthProvider.dart';
-import 'package:devstash/screens/educationEditScreen.dart';
-import 'package:devstash/services/education.dart';
+import 'package:devstash/screens/skills/SkillEditScreen.dart';
+import 'package:devstash/services/SkillServices.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
-class EducationList extends StatelessWidget {
-  List<EducationResponse>? educationList;
-  EducationList({super.key, required this.educationList});
+class SkillList extends StatelessWidget {
+  SkillResponse? skillList;
+  SkillList({super.key, required this.skillList});
 
   @override
   Widget build(BuildContext context) {
+    final _provider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -21,11 +24,7 @@ class EducationList extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => EducationEditProfileScreen(
-                            title: "Add",
-                            educationList: null,
-                          )),
+                  MaterialPageRoute(builder: (context) => SkillEditScreen()),
                 );
               },
               icon: Icon(Icons.add))
@@ -34,7 +33,7 @@ class EducationList extends StatelessWidget {
       body: Container(
         height: MediaQuery.of(context).size.height,
         child: ListView.builder(
-            itemCount: educationList!.length,
+            itemCount: skillList!.skills!.length,
             itemBuilder: (context, index) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -45,33 +44,15 @@ class EducationList extends StatelessWidget {
                     ),
                     child: ListTile(
                       title: Text(
-                        educationList![index].collegeorSchoolName!,
+                        skillList!.skills![index],
                         style: const TextStyle(
                           fontSize: 14,
                           fontFamily: 'Comfortaa',
                           fontWeight: FontWeight.w400,
                         ),
                       ),
-                      subtitle: Text(
-                        '${educationList![index].educationLevel} - ${educationList![index].subject}\n${educationList![index].fromYear} - ${educationList![index].toYear}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontFamily: 'Comfortaa',
-                          fontWeight: FontWeight.w400,
-                          color: Color.fromARGB(255, 165, 165, 165),
-                        ),
-                      ),
-                      onTap: () => {
-                        // _delete(educationList![index].id!)
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EducationEditProfileScreen(
-                                    title: "Edit",
-                                    educationList: educationList![index],
-                                  )),
-                        )
-                      },
+                      onTap: () =>
+                          {_delete(skillList!.skills![index], _provider.token)},
                     ),
                   ),
                 ],
@@ -81,11 +62,11 @@ class EducationList extends StatelessWidget {
     );
   }
 
-  void _delete(String id) async {
+  void _delete(String skill, String? token) async {
     try {
-      final provider = AuthProvider();
-      dynamic _user =
-          await EducationServices().deleteEducation(provider.token, id);
+      log(skill);
+      SkillRequest _skill = SkillRequest(skill: skill);
+      dynamic _user = await SkillServices().deleteskill(token, _skill);
       log(_user.toString());
       Fluttertoast.showToast(
         msg: "Successfully Save Details",

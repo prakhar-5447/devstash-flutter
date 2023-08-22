@@ -37,6 +37,8 @@ class _SplashScreenState extends State<SplashScreen> {
             UserState userData = res["data"];
             Get.find<UserController>().user = userData;
             Get.off(() => const HomeScreen());
+          } else {
+            Get.off(() => WelcomeScreen());
           }
         } catch (error) {
           log(error.toString());

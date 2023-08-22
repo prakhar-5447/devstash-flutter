@@ -1,11 +1,9 @@
 import 'dart:developer';
 
 import 'package:devstash/models/response/projectResponse.dart';
-import 'package:devstash/screens/ProjectAddScreen.dart';
-import 'package:devstash/screens/ProjectEditScreen.dart';
-import 'package:devstash/screens/projectDetailScreen.dart';
+import 'package:devstash/screens/projects/ProjectAddScreen.dart';
+import 'package:devstash/screens/projects/ProjectEditScreen.dart';
 import 'package:devstash/services/projectServices.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:devstash/models/ProjectInfo.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
