@@ -1,4 +1,4 @@
-import 'package:devstash/screens/HomeScreen.dart';
+import 'package:devstash/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 
 class NoNetwork extends StatelessWidget {

@@ -1,6 +1,6 @@
 import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/CalendarScreen.dart';
-import 'package:devstash/screens/HomeScreen.dart';
+import 'package:devstash/screens/home/home_screen.dart';
 import 'package:devstash/screens/ProfileScreen.dart';
 import 'package:devstash/screens/auth/welcome_screen.dart';
 import 'package:devstash/screens/saved.dart';

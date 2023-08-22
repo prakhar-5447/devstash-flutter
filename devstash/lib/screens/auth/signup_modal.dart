@@ -1,5 +1,7 @@
+import 'package:devstash/controllers/user_controller.dart';
 import 'package:devstash/models/request/signupRequest.dart';
-import 'package:devstash/screens/HomeScreen.dart';
+import 'package:devstash/models/response/user_state.dart';
+import 'package:devstash/screens/home/home_screen.dart';
 import 'package:devstash/services/AuthServices.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +14,6 @@ import 'package:devstash/controllers/password_controller.dart';
 import 'package:devstash/widgets/PasswordStrengthBar.dart';
 
 class SignupModalContent extends StatelessWidget {
-  SignupModalContent({Key? key}) : super(key: key);
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _username = TextEditingController();
   final TextEditingController _name = TextEditingController();
@@ -248,6 +248,14 @@ class SignupModalContent extends StatelessWidget {
       SignupRequest signupdata = SignupRequest(name, username, email, password);
       try {
         dynamic res = await _authServices.signupUser(signupdata);
+        if (res["success"]) {
+          final SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', res["data"].token);
+          UserState userData = res["data"].user;
+          Get.find<UserController>().user = userData;
+          Get.off(() => const HomeScreen());
+        }
+        _isLoading.value = false;
         Fluttertoast.showToast(
           msg: res["msg"],
           toastLength: Toast.LENGTH_SHORT,
@@ -256,12 +264,6 @@ class SignupModalContent extends StatelessWidget {
           backgroundColor: res["success"] ? Colors.green : Colors.red,
           textColor: Colors.white,
         );
-        if (res["success"]) {
-          final SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('token', res["data"].token);
-          Get.off(() => const HomeScreen());
-        }
-        _isLoading.value = false;
       } catch (error) {
         _errorMessage = 'Invalid username or password';
         _username.clear();

@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AuthScreen extends StatelessWidget {
-  AuthScreen({Key? key}) : super(key: key);
-
   final ModalController _controller = Get.put(ModalController());
 
   @override
@@ -156,7 +154,7 @@ class AuthScreen extends StatelessWidget {
                         const SizedBox(width: 5),
                         GestureDetector(
                           onTap: () {
-                            Get.find<ModalController>()
+                            _controller
                                 .changeForm(!_controller.showLoginModal.value);
                           },
                           child: Text(

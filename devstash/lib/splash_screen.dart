@@ -1,5 +1,10 @@
-import 'package:devstash/screens/HomeScreen.dart';
+import 'dart:developer';
+
+import 'package:devstash/controllers/user_controller.dart';
+import 'package:devstash/models/response/user_state.dart';
+import 'package:devstash/screens/home/home_screen.dart';
 import 'package:devstash/screens/auth/welcome_screen.dart';
+import 'package:devstash/services/userServices.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,23 +15,33 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  String token = '';
+  late String token;
 
   @override
   void initState() {
     super.initState();
-    checkAuth();
+    loadToken();
   }
 
-  void checkAuth() async {
+  void loadToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     token = prefs.getString('token') ?? '';
 
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () async {
       if (token.isEmpty) {
-        Get.off(WelcomeScreen());
+        Get.off(() => WelcomeScreen());
       } else {
-        Get.off(const HomeScreen());
+        try {
+          dynamic res = await UserServices().getUser(token);
+          if (res["success"]) {
+            UserState userData = res["data"];
+            Get.find<UserController>().user = userData;
+            Get.off(() => const HomeScreen());
+          }
+        } catch (error) {
+          log(error.toString());
+          Get.off(() => WelcomeScreen());
+        }
       }
     });
   }

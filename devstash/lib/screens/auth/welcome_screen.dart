@@ -1,11 +1,8 @@
-import 'package:devstash/controllers/auth_controller.dart';
 import 'package:devstash/screens/auth/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class WelcomeScreen extends StatelessWidget {
-  final ModalController _controller = Get.put(ModalController());
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,7 +47,7 @@ class WelcomeScreen extends StatelessWidget {
             ElevatedButton(
               onLongPress: () {},
               onPressed: () {
-                Get.off(AuthScreen());
+                Get.off(() => AuthScreen());
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.secondary,
