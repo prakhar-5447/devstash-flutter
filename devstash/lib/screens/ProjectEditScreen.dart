@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:devstash/constants.dart';
 import 'package:devstash/models/request/projectRequest.dart';
 import 'package:devstash/models/response/projectResponse.dart';
-import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/services/imageServices.dart';
 import 'package:devstash/services/projectServices.dart';
 import 'package:devstash/widgets/DescriptionField.dart';
@@ -10,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProjectEditScreen extends StatefulWidget {
   String id;
@@ -75,17 +74,19 @@ class _ProjectEditScreenState extends State<ProjectEditScreen> {
   }
 
   Future<void> fetchData() async {
-    ProjectResponse? newProject =
-        await ProjectServices().getProjectById(widget.id);
-    if (newProject != null) {
-      _image = newProject.image;
-      _title = newProject.title;
-      _urlController.text = newProject.url;
-      _description = newProject.description;
-      _technologies = newProject.technologies;
-      _collaboratorsID = newProject.collaboratorsID;
-      _projectType = newProject.projectType;
-      _hashtags = newProject.hashtags;
+    dynamic res = await ProjectServices().getProjectById(widget.id);
+    if (res['success']) {
+      ProjectResponse newProject = res['data'];
+      if (newProject != null) {
+        _image = newProject.image;
+        _title = newProject.title;
+        _urlController.text = newProject.url;
+        _description = newProject.description;
+        _technologies = newProject.technologies;
+        _collaboratorsID = newProject.collaboratorsID;
+        _projectType = newProject.projectType;
+        _hashtags = newProject.hashtags;
+      }
     }
     setState(() {
       _dataFetched = true;
@@ -107,8 +108,8 @@ class _ProjectEditScreenState extends State<ProjectEditScreen> {
           _collaboratorsID,
           _projectType,
           _hashtags);
-      final auth = Provider.of<AuthProvider>(context, listen: false);
-      String? token = auth.token;
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
       if (token != null) {
         ProjectResponse? newProject = await ProjectServices()
             .updateProject(token, updatedProject, widget.id);

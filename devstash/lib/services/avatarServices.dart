@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
 class AvatarServices {
-  Future<dynamic> updateAvatar(String? authToken, XFile image) async {
+  dynamic updateAvatar(String? authToken, XFile image) async {
     try {
       var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.avatarEndpoint);
       var request = http.MultipartRequest('POST', url)
@@ -19,9 +19,16 @@ class AvatarServices {
       var response = await request.send();
 
       if (response.statusCode == 200) {
-        return jsonDecode(await response.stream.bytesToString());
+        return {
+          'success': true,
+          'msg': 'Uploaded successfully',
+          'data': jsonDecode(await response.stream.bytesToString())
+        };
       } else {
-        throw Exception('Failed to login');
+        return {
+          'success': false,
+          'msg': 'Uploaded successfully',
+        };
       }
     } catch (error) {
       log('Error during fetching: $error');

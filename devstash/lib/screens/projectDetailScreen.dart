@@ -3,6 +3,7 @@ import 'package:devstash/models/request/favoriteRequest.dart';
 import 'package:devstash/models/response/CollaboratorResponse.dart';
 import 'package:devstash/services/favoriteServices.dart';
 import 'package:devstash/widgets/FavoriteButton.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 import 'dart:ui';
@@ -10,10 +11,8 @@ import 'package:devstash/models/Collaborator.dart';
 import 'package:devstash/models/Hashtag.dart';
 import 'package:devstash/models/TechStack.dart';
 import 'package:devstash/models/response/projectResponse.dart';
-import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/services/projectServices.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:devstash/constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -59,8 +58,8 @@ class ProjectDetailScreen extends StatelessWidget {
         }
       }
 
-      final auth = Provider.of<AuthProvider>(context, listen: false);
-      String? token = auth.token;
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
       if (token != null) {
         found = await FavoriteServices().checkFavorite(token, projectDetail.id);
       }

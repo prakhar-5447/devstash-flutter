@@ -1,4 +1,3 @@
-import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/CalendarScreen.dart';
 import 'package:devstash/screens/HomeScreen.dart';
 import 'package:devstash/screens/ProfileScreen.dart';
@@ -7,13 +6,19 @@ import 'package:devstash/screens/saved.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppDrawer extends StatefulWidget {
-  final int currentIndex; // Add currentIndex property
+  final int currentIndex;
 
-  const AppDrawer({Key? key, required this.currentIndex}) : super(key: key);
+  AppDrawer({Key? key, required this.currentIndex}) : super(key: key) {
+    init();
+  }
+
+  init() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+  }
 
   @override
   State<AppDrawer> createState() => _AppDrawerState();
@@ -24,9 +29,6 @@ class _AppDrawerState extends State<AppDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-    final token = authProvider.token;
-
     return Drawer(
       child: Padding(
         padding: const EdgeInsets.only(
@@ -220,7 +222,6 @@ class _AppDrawerState extends State<AppDrawer> {
                         backgroundColor: Colors.transparent,
                       ),
                       onPressed: () async {
-                        authProvider.setToken(null);
                         final SharedPreferences prefs =
                             await SharedPreferences.getInstance();
                         await prefs.setString('token', '');

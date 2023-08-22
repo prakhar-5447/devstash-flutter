@@ -4,32 +4,46 @@ import 'package:devstash/models/response/user_state.dart';
 import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/ProfileScreen.dart';
 import 'package:devstash/screens/project.dart';
+import 'package:devstash/services/userServices.dart';
 import 'package:devstash/widgets/AppDrawer.dart';
 import 'package:devstash/widgets/WeekdayTaskScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  HomeScreen({super.key}) {
+    init();
+  }
+
+  late UserState user = UserState("", "", "", "", "", "");
+  late final token;
+
+  init() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    token = prefs.getString('token');
+    if (token != null) {
+      dynamic res = await UserServices().getUser(token);
+      if (res["success"]) {
+        user = res['data'];
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-    final token = authProvider.token;
-    UserState? user = authProvider.user;
-
     if (token == null) {
       WidgetsBinding.instance!.addPostFrameCallback((_) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(builder: (context) => HomeScreen()),
         );
       });
     }
 
     return Scaffold(
-        drawer: const AppDrawer(
+        drawer: AppDrawer(
           currentIndex: 0,
         ),
         body: Container(
@@ -63,7 +77,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            user?.username ?? '',
+                            user.username,
                             style: const TextStyle(
                               fontFamily: 'Comfortaa',
                               fontWeight: FontWeight.w600,

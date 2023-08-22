@@ -207,7 +207,7 @@ class LoginModalContent extends StatelessWidget {
         if (res["success"]) {
           final SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('token', res["data"].token);
-          Get.off(() => const HomeScreen());
+          Get.off(() => HomeScreen());
           _isLoading.value = false;
         }
       } catch (error) {

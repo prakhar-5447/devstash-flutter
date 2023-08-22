@@ -5,7 +5,6 @@ import 'package:devstash/models/response/bookmarkResponse.dart';
 import 'package:devstash/models/response/favoriteResponse.dart';
 import 'package:devstash/models/response/projectResponse.dart';
 import 'package:devstash/models/response/user_state.dart';
-import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/projectDetailScreen.dart';
 import 'package:devstash/services/bookmarkServices.dart';
 import 'package:devstash/services/favoriteServices.dart';
@@ -13,8 +12,8 @@ import 'package:devstash/services/projectServices.dart';
 import 'package:devstash/services/userServices.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
 import 'package:devstash/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Saved extends StatefulWidget {
   const Saved({super.key});
@@ -61,8 +60,8 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
   Future<List<ProjectList>> _getfavorite() async {
     late ProjectResponse? projectData;
 
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-    String? token = auth.token;
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
     if (token != null && !isFavoriteDataLoaded) {
       dynamic res = await FavoriteServices().getFavorite(token);
       if (res['success']) {
@@ -111,8 +110,8 @@ class _SavedState extends State<Saved> with SingleTickerProviderStateMixin {
   Future<List<Bookmarks>> _bookmarkData() async {
     late UserState? userData;
 
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-    String? token = auth.token;
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
     if (token != null && !isBookmarkDataLoaded) {
       dynamic res = await BookmarkServices().getBookmark(token);
       if (res['success']) {

@@ -26,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (token.isEmpty) {
         Get.off(WelcomeScreen());
       } else {
-        Get.off(const HomeScreen());
+        Get.off(HomeScreen());
       }
     });
   }

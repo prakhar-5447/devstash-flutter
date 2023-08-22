@@ -102,7 +102,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const AppDrawer(currentIndex: 3),
+      drawer: AppDrawer(currentIndex: 3),
       appBar: AppBar(
         title: const Text('Calendar'),
         actions: [
