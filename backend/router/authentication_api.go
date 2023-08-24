@@ -1,8 +1,9 @@
 package router
 
 import (
-	"golang.org/x/crypto/bcrypt"
 	"net/http"
+
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/prakhar-5447/db"
@@ -74,11 +75,13 @@ func (server *Server) sign_up(c *gin.Context) {
 		return
 	}
 
-	token, err := server.tokenMaker.CreateToken(user.ID.Hex())
+	token, err := server.tokenMaker.CreateToken(userId.Hex())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": "Failed to generate token"})
 		return
 	}
+
+	user.ID = userId
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
