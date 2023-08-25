@@ -1,5 +1,6 @@
-import 'package:devstash/screens/home/home_screen.dart';
+import 'package:devstash/connectivity_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class NoNetwork extends StatelessWidget {
   const NoNetwork({super.key});
@@ -31,17 +32,23 @@ class NoNetwork extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       color: Color.fromARGB(255, 117, 117, 117))),
               TextButton(
-                  onPressed: () async {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: ((context) => HomeScreen())));
-                  },
-                  child: const Text('Retry ',
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: Color.fromARGB(255, 145, 145, 145)))),
+                onPressed: () async {
+                  Get.off(() => const ConnectivityHandler());
+                },
+                child: const Text(
+                  'Retry ',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: Color.fromARGB(
+                      255,
+                      145,
+                      145,
+                      145,
+                    ),
+                  ),
+                ),
+              ),
             ]),
       ),
     ));

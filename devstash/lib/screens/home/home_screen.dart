@@ -1,11 +1,9 @@
 import 'package:devstash/controllers/user_controller.dart';
 import 'package:devstash/models/response/user_state.dart';
-import 'package:devstash/screens/profile/ProfileScreen.dart';
-import 'package:devstash/screens/projects/project.dart';
 import 'package:devstash/widgets/AppDrawer.dart';
 import 'package:devstash/screens/tasks/WeekdayTaskScreen.dart';
+import 'package:devstash/screens/home/suggestion_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -17,157 +15,132 @@ class HomeScreen extends StatelessWidget {
     final UserState? user = userController.user;
 
     return Scaffold(
-        drawer: AppDrawer(
-          currentIndex: 0,
-        ),
-        body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(25, 50, 25, 0),
-            child: GestureDetector(
-              onTap: () {
-                Get.to(() => const ProfileScreen());
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          user?.name ?? '',
-                          style: const TextStyle(
-                            fontFamily: 'Comfortaa',
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
-                        ),
-                        Text(
-                          user?.username ?? '',
-                          style: const TextStyle(
-                            fontFamily: 'Comfortaa',
-                            fontWeight: FontWeight.w600,
-                            fontSize: 10,
-                            color: Color.fromARGB(255, 165, 165, 165),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(100.0),
-                    child: Image.asset(
-                      'assets/profile.jpg',
-                      width: 35.0,
-                      height: 35.0,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(25, 30, 25, 0),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(
-                'Hello,\n${user?.name}',
-                style: const TextStyle(
-                  fontSize: 40,
-                  fontFamily: 'Comfortaa',
-                  fontWeight: FontWeight.w800,
+      backgroundColor: const Color.fromARGB(255, 246, 245, 250),
+      drawer: AppDrawer(
+        currentIndex: 0,
+      ),
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  height: 40,
                 ),
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              Container(
-                padding: const EdgeInsets.fromLTRB(17, 35, 17, 38),
-                width: 160,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(18),
-                  gradient: const LinearGradient(
-                    begin: Alignment(-0.939, -0.91),
-                    end: Alignment(0.954, 1),
-                    colors: <Color>[Color(0xff758bfd), Color(0xcc758bfd)],
-                    stops: <double>[0, 1],
-                  ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x3f000000),
-                      offset: Offset(0, 4),
-                      blurRadius: 4,
-                    ),
-                    BoxShadow(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      spreadRadius: -10.0,
-                      blurRadius: 20,
-                    ),
-                  ],
-                ),
-                child: GestureDetector(
-                  onTap: () => {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const Project()),
-                    )
-                  },
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const Text(
+                        "Hello,",
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.w600,
+                          color: Color.fromARGB(255, 130, 129, 129),
+                        ),
+                      ),
+                      Text(
+                        user?.name ?? '',
+                        style: const TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const Text(
+                        "0 notifications, 0 messages",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: Color.fromARGB(255, 159, 157, 157),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
                       Container(
-                        margin: const EdgeInsets.fromLTRB(0, 0, 55, 4),
-                        width: double.infinity,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Text(
-                              '12',
-                              style: TextStyle(
-                                fontFamily: 'Comfortaa',
-                                fontSize: 35,
-                                fontWeight: FontWeight.w500,
-                                height: 1.115,
-                                color: Color(0xfff1f2f6),
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            SvgPicture.asset(
-                              'assets/arrow.svg',
-                              height: 15.0,
-                              width: 30.0,
+                        padding: EdgeInsets.zero,
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromARGB(255, 217, 217, 217),
+                              blurRadius: 3,
+                              offset: Offset(2, 2),
                             ),
                           ],
                         ),
-                      ),
-                      Container(
-                        constraints: const BoxConstraints(
-                          maxWidth: 122,
-                        ),
-                        child: const Text(
-                          'PROJECTS COMPLETED',
-                          style: TextStyle(
-                            fontFamily: 'Comfortaa',
-                            fontSize: 18,
-                            fontWeight: FontWeight.w400,
-                            height: 1.115,
-                            color: Color(0xfff1f2f6),
+                        child: TextField(
+                          decoration: InputDecoration(
+                            isDense: true,
+                            filled: true,
+                            fillColor: Colors.white,
+                            hintText: "Find someone simmilar to you...",
+                            suffixIcon: const Icon(
+                              Icons.search_rounded,
+                              size: 20,
+                              color: Colors.black,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide:
+                                  const BorderSide(color: Colors.transparent),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide:
+                                  const BorderSide(color: Colors.transparent),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide:
+                                  const BorderSide(color: Colors.transparent),
+                            ),
                           ),
+                          textAlignVertical: TextAlignVertical.center,
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ]),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 30,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(
+                          left: 20,
+                        ),
+                        child: Text(
+                          "Suggestions for you",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      SuggestionSlider(),
+                    ],
+                  ),
+                ),
+                WeekdayTaskScreen(),
+              ],
+            ),
           ),
-          Expanded(
-            child: WeekdayTaskScreen(),
-          ),
-        ]));
+        ),
+      ),
+    );
   }
 }
