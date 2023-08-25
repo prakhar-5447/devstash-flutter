@@ -1,3 +1,4 @@
+import 'package:devstash/controllers/tabs_controller.dart';
 import 'package:devstash/controllers/user_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -52,5 +53,6 @@ class InitialBindings extends Bindings {
   @override
   void dependencies() {
     Get.put(UserController());
+    Get.put(BottomTabController());
   }
 }

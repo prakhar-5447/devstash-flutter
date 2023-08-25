@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:devstash/binding_screens.dart';
 import 'package:devstash/controllers/user_controller.dart';
 import 'package:devstash/models/response/user_state.dart';
 import 'package:devstash/screens/home/home_screen.dart';
@@ -36,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
           if (res["success"]) {
             UserState userData = res["data"];
             Get.find<UserController>().user = userData;
-            Get.off(() => const HomeScreen());
+            Get.off(() => BindingScreen());
           } else {
             Get.off(() => WelcomeScreen());
           }

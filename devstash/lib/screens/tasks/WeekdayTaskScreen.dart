@@ -54,88 +54,90 @@ class _WeekdayTaskScreenState extends State<WeekdayTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Plans for this week",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-                color: Color.fromARGB(255, 165, 165, 165),
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: WeekdaySwitchButton(
-                selectedDay: _selectedDay,
-                onDaySelected: (day) {
-                  setState(() {
-                    _selectedDay = day;
-                  });
-                },
-              ),
-            )
-          ],
-        ),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            return Container(
-              constraints: BoxConstraints(
-                maxHeight: max(0, constraints.maxHeight),
-                minHeight: 0,
-              ),
-              child: Container(
-                constraints: const BoxConstraints(
-                  maxHeight: 500,
-                  minHeight: 0,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(25, 0, 25, 5),
-                  child: ListView.builder(
-                    itemCount: _tasks[_selectedDay - 1].length,
-                    itemBuilder: (context, index) {
-                      List<Event> tasksForDay = _tasks[_selectedDay - 1];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 25),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 5),
-                              child: Text(
-                                tasksForDay[index].title,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              tasksForDay[index].description,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                color: Color.fromARGB(255, 165, 165, 165),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+    return Container(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Plans for this week",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                    color: Color.fromARGB(255, 165, 165, 165),
                   ),
                 ),
+                const SizedBox(
+                  height: 20,
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: WeekdaySwitchButton(
+                    selectedDay: _selectedDay,
+                    onDaySelected: (day) {
+                      setState(() {
+                        _selectedDay = day;
+                      });
+                    },
+                  ),
+                )
+              ],
+            ),
+          ),
+          Container(
+            constraints: const BoxConstraints(
+              maxHeight: 500,
+              minHeight: 0,
+            ),
+            child: Container(
+              constraints: const BoxConstraints(
+                maxHeight: 500,
+                minHeight: 0,
               ),
-            );
-          },
-        )
-      ],
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(25, 0, 25, 5),
+                child: ListView.builder(
+                  itemCount: _tasks[_selectedDay - 1].length,
+                  itemBuilder: (context, index) {
+                    List<Event> tasksForDay = _tasks[_selectedDay - 1];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 25),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 5),
+                            child: Text(
+                              tasksForDay[index].title,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            tasksForDay[index].description,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: Color.fromARGB(255, 165, 165, 165),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
