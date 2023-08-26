@@ -72,14 +72,20 @@ class BindingScreen extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
+                  buildNavButton(
+                    context,
+                    Icons.event_sharp,
+                    Icons.event_sharp,
+                    2,
+                  ),
                   Obx(
                     () => MaterialButton(
                       enableFeedback: false,
                       splashColor: Colors.transparent,
                       highlightColor: Colors.transparent,
-                      minWidth: 20,
+                      minWidth: 18,
                       onPressed: () {
-                        tabController.changeTabIndex(2);
+                        tabController.changeTabIndex(3);
                       },
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -89,7 +95,7 @@ class BindingScreen extends StatelessWidget {
                           ColorFiltered(
                             colorFilter: ColorFilter.mode(
                               Colors.black.withOpacity(
-                                tabController.currentIndex.value == 2 ? 0 : 0.5,
+                                tabController.currentIndex.value == 3 ? 0 : 0.5,
                               ),
                               BlendMode.srcATop,
                             ),
@@ -108,7 +114,7 @@ class BindingScreen extends StatelessWidget {
                           Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: 2 == tabController.currentIndex.value
+                              color: 3 == tabController.currentIndex.value
                                   ? Theme.of(context).colorScheme.secondary
                                   : Colors.transparent,
                             ),
@@ -118,12 +124,6 @@ class BindingScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                  ),
-                  buildNavButton(
-                    context,
-                    Icons.event_sharp,
-                    Icons.event_sharp,
-                    3,
                   ),
                 ],
               )
@@ -144,7 +144,6 @@ class BindingScreen extends StatelessWidget {
         minWidth: 20,
         onPressed: () {
           tabController.changeTabIndex(index);
-          log(index.toString());
         },
         child: Column(
           mainAxisSize: MainAxisSize.min,

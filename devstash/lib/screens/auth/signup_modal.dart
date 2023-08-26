@@ -1,7 +1,7 @@
+import 'package:devstash/binding_screens.dart';
 import 'package:devstash/controllers/user_controller.dart';
 import 'package:devstash/models/request/signupRequest.dart';
 import 'package:devstash/models/response/user_state.dart';
-import 'package:devstash/screens/home/home_screen.dart';
 import 'package:devstash/services/AuthServices.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
@@ -253,7 +253,7 @@ class SignupModalContent extends StatelessWidget {
           await prefs.setString('token', res["data"].token);
           UserState userData = res["data"].user;
           Get.find<UserController>().user = userData;
-          Get.off(() => const HomeScreen());
+          Get.off(() => BindingScreen());
         }
         _isLoading.value = false;
         Fluttertoast.showToast(
