@@ -34,7 +34,7 @@ func (server *Server) fetch_user(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "User found", "user": user})
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "User found", "data": user})
 }
 
 func (server *Server) fetch_user_by_id(c *gin.Context) {
@@ -52,7 +52,7 @@ func (server *Server) fetch_user_by_id(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "User found", "user": user})
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "User found", "data": user})
 }
 
 func (server *Server) update_profile(c *gin.Context) {

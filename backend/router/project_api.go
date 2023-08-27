@@ -13,13 +13,13 @@ import (
 func (server *Server) create_project(c *gin.Context) {
 	token := c.GetHeader("Authorization")
 	if token == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Authorization token required"})
 		return
 	}
 
 	payload, err := server.tokenMaker.VerifyToken(token)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Invalid token"})
 		return
 	}
 
@@ -27,7 +27,7 @@ func (server *Server) create_project(c *gin.Context) {
 
 	var req models.ProjectRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 
@@ -35,7 +35,7 @@ func (server *Server) create_project(c *gin.Context) {
 	for i, collabID := range req.CollaboratorsID {
 		objectID, err := primitive.ObjectIDFromHex(collabID)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
 			return
 		}
 		collaboratorsID[i] = objectID
@@ -43,7 +43,7 @@ func (server *Server) create_project(c *gin.Context) {
 
 	ID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 
@@ -62,7 +62,7 @@ func (server *Server) create_project(c *gin.Context) {
 
 	createdProject, err := server.store.Create_Project(c.Request.Context(), project)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 
@@ -83,13 +83,13 @@ func convert_to_projectType(projectType string) db.ProjectType {
 func (server *Server) update_project(c *gin.Context) {
 	token := c.GetHeader("Authorization")
 	if token == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Authorization token required"})
 		return
 	}
 
 	payload, err := server.tokenMaker.VerifyToken(token)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Invalid token"})
 		return
 	}
 
@@ -97,91 +97,91 @@ func (server *Server) update_project(c *gin.Context) {
 
 	pID, err := primitive.ObjectIDFromHex(projectID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 
 	userID, err := primitive.ObjectIDFromHex(payload.UserID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 
 	var req models.ProjectRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 
 	updatedProject, err := server.store.Update_Project(c.Request.Context(), pID, userID, req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, updatedProject)
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Update successfully", "data": updatedProject})
 }
 
 func (server *Server) delete_project(c *gin.Context) {
 	token := c.GetHeader("Authorization")
 	if token == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"deleted": false, "error": "Authorization token required"})
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Authorization token required"})
 		return
 	}
 
 	payload, err := server.tokenMaker.VerifyToken(token)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"deleted": false, "error": "Invalid token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Invalid token"})
 		return
 	}
 
 	projectID := c.Param("id")
 	pID, err := primitive.ObjectIDFromHex(projectID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"deleted": false, "error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 	userID, err := primitive.ObjectIDFromHex(payload.UserID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"deleted": false, "error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 
-	deleted, err := server.store.Delete_Project(c.Request.Context(), pID, userID)
+	_, err = server.store.Delete_Project(c.Request.Context(), pID, userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"deleted": deleted, "error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"deleted": deleted, "message": "Project deleted successfully"})
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Project deleted successfully"})
 }
 
 func (server *Server) get_projects_by_userId(c *gin.Context) {
 	token := c.GetHeader("Authorization")
 	if token == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Authorization token required"})
 		return
 	}
 
 	payload, err := server.tokenMaker.VerifyToken(token)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Invalid token"})
 		return
 	}
 
 	userID, err := primitive.ObjectIDFromHex(payload.UserID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 
 	projects, err := server.store.Get_Projects_By_UserId(c.Request.Context(), userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, projects)
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Data retrieve successfully", "data": projects})
 }
 
 func (server *Server) get_project_by_id(c *gin.Context) {
@@ -193,5 +193,5 @@ func (server *Server) get_project_by_id(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Retrieve project successfully", "project": project})
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Retrieve project successfully", "data": project})
 }

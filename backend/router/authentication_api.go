@@ -87,7 +87,7 @@ func (server *Server) sign_up(c *gin.Context) {
 		"success": true,
 		"msg":     "User created successfully",
 		"token":   token,
-		"user":    user,
+		"data":    user,
 	})
 }
 
@@ -124,5 +124,5 @@ func (server *Server) sign_in(c *gin.Context) {
 		"success": true,
 		"msg":     "Login successfully",
 		"token":   token,
-		"user":    user})
+		"data":    user})
 }
