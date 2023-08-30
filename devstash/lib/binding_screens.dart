@@ -4,7 +4,9 @@ import 'package:devstash/constants.dart';
 import 'package:devstash/controllers/tabs_controller.dart';
 import 'package:devstash/controllers/user_controller.dart';
 import 'package:devstash/screens/home/home_screen.dart';
+import 'package:devstash/screens/profile/ProfileScreen.dart';
 import 'package:devstash/screens/projects/project.dart';
+import 'package:devstash/widgets/github_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,8 +16,8 @@ class BindingScreen extends StatelessWidget {
   final UserController userController = Get.find<UserController>();
   final _pages = [
     const HomeScreen(),
-    const HomeScreen(),
-    const HomeScreen(),
+    const ProfileScreen(),
+    GithubOAuthScreen(),
     const Project(),
   ];
 
@@ -53,7 +55,7 @@ class BindingScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   buildNavButton(
                     context,
@@ -70,12 +72,12 @@ class BindingScreen extends StatelessWidget {
                 ],
               ),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   buildNavButton(
                     context,
-                    Icons.event_sharp,
-                    Icons.event_sharp,
+                    Icons.email_rounded,
+                    Icons.email_outlined,
                     2,
                   ),
                   Obx(
@@ -95,12 +97,12 @@ class BindingScreen extends StatelessWidget {
                           ColorFiltered(
                             colorFilter: ColorFilter.mode(
                               Colors.black.withOpacity(
-                                tabController.currentIndex.value == 3 ? 0 : 0.5,
+                                tabController.currentIndex.value == 3 ? 0 : 0.3,
                               ),
                               BlendMode.srcATop,
                             ),
                             child: CircleAvatar(
-                              radius: 15,
+                              radius: 12,
                               foregroundColor: Colors.black,
                               backgroundColor: Colors.transparent,
                               backgroundImage: NetworkImage(
@@ -136,31 +138,33 @@ class BindingScreen extends StatelessWidget {
 
   Widget buildNavButton(
       BuildContext context, IconData icon1, IconData icon2, int index) {
-    return Obx(
-      () => MaterialButton(
-        enableFeedback: false,
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        minWidth: 20,
-        onPressed: () {
-          tabController.changeTabIndex(index);
-        },
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
+    return MaterialButton(
+      enableFeedback: false,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      minWidth: 20,
+      onPressed: () {
+        tabController.changeTabIndex(index);
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Obx(
+            () => Icon(
               index == tabController.currentIndex.value ? icon1 : icon2,
               size: 25,
               color: index == tabController.currentIndex.value
                   ? Theme.of(context).colorScheme.secondary
                   : Colors.grey,
             ),
-            const SizedBox(
-              height: 5,
-            ),
-            Container(
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          Obx(
+            () => Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: index == tabController.currentIndex.value
@@ -170,8 +174,8 @@ class BindingScreen extends StatelessWidget {
               width: 5,
               height: 5,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
