@@ -24,3 +24,4 @@ class ApiConstants {
   static String contactEndpoint = "/contact";
   static String avatarEndpoint = "/avatar";
 }
+

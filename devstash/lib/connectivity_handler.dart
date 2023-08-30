@@ -16,9 +16,11 @@ class _ConnectivityHandlerState extends State<ConnectivityHandler> {
     return StreamBuilder<ConnectivityResult>(
       stream: Connectivity().onConnectivityChanged,
       builder: (context, AsyncSnapshot<ConnectivityResult> snapshot) {
-        return (!snapshot.hasData && (snapshot.data == ConnectivityResult.none))
-            ? const NoNetwork()
-            : SplashScreen();
+        if (!snapshot.hasData || snapshot.data == ConnectivityResult.none) {
+          return const NoNetwork();
+        } else {
+          return SplashScreen();
+        }
       },
     );
   }
