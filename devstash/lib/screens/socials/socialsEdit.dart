@@ -8,6 +8,7 @@ import 'package:devstash/services/SocialServices.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SocialsEditScreen extends StatefulWidget {
   @override
@@ -20,6 +21,31 @@ class _SocialsEditScreenState extends State<SocialsEditScreen> {
   TextEditingController _twitterController = TextEditingController();
   TextEditingController _linkedinController = TextEditingController();
   TextEditingController _otherController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  void init() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    if (token != null) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      if (token != null) {
+        dynamic res = await SocialServices().getSocials(token);
+        if (res['success']) {
+          _instagramController.text = res['data'].instagram;
+          _githubController.text = res['data'].github;
+          _twitterController.text = res['data'].twitter;
+          _linkedinController.text = res['data'].linkedin;
+          _otherController.text = res['data'].other;
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +65,7 @@ class _SocialsEditScreenState extends State<SocialsEditScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 219, 219, 219),
+                    color: Color.fromARGB(131, 0, 0, 0),
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   child: Row(
@@ -66,7 +92,7 @@ class _SocialsEditScreenState extends State<SocialsEditScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 219, 219, 219),
+                    color: Color.fromARGB(131, 0, 0, 0),
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   child: Row(
@@ -93,7 +119,7 @@ class _SocialsEditScreenState extends State<SocialsEditScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 219, 219, 219),
+                    color: Color.fromARGB(131, 0, 0, 0),
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   child: Row(
@@ -120,7 +146,7 @@ class _SocialsEditScreenState extends State<SocialsEditScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 219, 219, 219),
+                    color: Color.fromARGB(131, 0, 0, 0),
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   child: Row(
@@ -147,7 +173,7 @@ class _SocialsEditScreenState extends State<SocialsEditScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 219, 219, 219),
+                    color: Color.fromARGB(131, 0, 0, 0),
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   child: Row(
@@ -191,20 +217,22 @@ class _SocialsEditScreenState extends State<SocialsEditScreen> {
         linkedin: linkedin,
         other: other);
     try {
-      final provider = Provider.of<AuthProvider>(context, listen: false);
-      dynamic _user =
-          await SocialServices().updateSocials(provider.token, _socials);
-
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      dynamic res = await SocialServices().updateSocials(token, _socials);
       Fluttertoast.showToast(
-        msg: "Successfully Save Details",
+        msg: res['msg'],
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
+        backgroundColor: res['success'] ? Colors.green : Colors.red,
         textColor: Colors.white,
       );
+      if (res['success']) {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      }
     } catch (error) {
-      log(error.toString());
       Fluttertoast.showToast(
         msg: error.toString(),
         toastLength: Toast.LENGTH_SHORT,

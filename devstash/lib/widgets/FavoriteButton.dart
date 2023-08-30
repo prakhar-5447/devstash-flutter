@@ -8,7 +8,7 @@ class FavoriteButton extends StatefulWidget {
   bool found;
   final String id;
   final int index;
-  final Function(int) onDelete;
+  final dynamic onDelete;
   FavoriteButton(
       {required this.id,
       required this.found,
@@ -48,18 +48,24 @@ class _FavoriteButtonState extends State<FavoriteButton> {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      backgroundColor: const Color.fromARGB(255, 174, 183, 254),
-      onPressed: () {
-        _updateFavorite();
-      },
-      elevation: 0,
-      child: Icon(
-        Icons.star_rounded,
-        color: widget.found
-            ? const Color.fromARGB(255, 254, 237, 89)
-            : const Color.fromARGB(223, 223, 220, 220),
-        size: 40,
+    return Container(
+      width: 60,
+      height: 60,
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(11)),
+        color: Color.fromARGB(255, 174, 183, 254),
+      ),
+      child: GestureDetector(
+        onTap: () {
+          _updateFavorite();
+        },
+        child: Icon(
+          Icons.star_rounded,
+          color: widget.found
+              ? const Color.fromARGB(255, 254, 237, 89)
+              : const Color.fromARGB(223, 223, 220, 220),
+          size: 40,
+        ),
       ),
     );
   }

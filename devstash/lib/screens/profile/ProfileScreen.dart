@@ -1,12 +1,19 @@
 import 'dart:developer';
+import 'package:devstash/models/ProjectList.dart';
+import 'package:devstash/models/response/projectResponse.dart';
+import 'package:devstash/screens/projects/projectDetailScreen.dart';
+import 'package:devstash/services/projectServices.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import 'package:devstash/constants.dart';
+import 'package:devstash/controllers/user_controller.dart';
 import 'package:devstash/models/Project.dart';
 import 'package:devstash/models/response/contactResponse.dart';
 import 'package:devstash/models/response/education.dart';
 import 'package:devstash/models/response/skillResponse.dart';
 import 'package:devstash/models/response/socialsResponse.dart';
 import 'package:devstash/models/response/user_state.dart';
-import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/profile/EditProfile.dart';
 import 'package:devstash/screens/contact/contactScreen.dart';
 import 'package:devstash/screens/education/educationList.dart';
@@ -19,42 +26,20 @@ import 'package:devstash/services/education.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-    UserState? user = authProvider.user;
+    final UserController userController = Get.find<UserController>();
+    final UserState? user = userController.user;
     final date = DateTime.now();
     List<EducationResponse>? educations;
     SkillResponse? tech;
     ContactResponse? contactDetails;
-
-    List<Project> projects = [
-      Project(
-        "Juicy-N-Yummy",
-        "Juicy-N-Yummy is an platform for restaurant aggregator and food delivery. It provides information, menus and user-reviews of restaurants as well as food delivery options from partner restaurants in select cities.\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum est a, mattis tellus. Sed dignissim, metus nec fringilla accumsan, risus sem sollicitudin lacus, ut interdum tellus elit sed risus. Maecenas eget condimentum velit, sit amet feugiat lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Praesent auctor purus luctus enim egestas, ac scelerisque ante pulvinar. Donec ut rhoncus ex. Suspendisse ac rhoncus nisl, eu tempor urna. Curabitur vel bibendum lorem. Morbi convallis convallis diam sit amet lacinia. Aliquam in elementum tellus.",
-        date,
-        "https://github.com/pratham-0094",
-        "banner.jpg",
-        ["html", "css", "javascript"],
-        ["prakhar-5447", "pratham-0094"],
-        ["angular", "web"],
-      ),
-      Project(
-        "Juicy-N-Yummy",
-        "Juicy-N-Yummy is an platform for restaurant aggregator and food delivery. It provides information, menus and user-reviews of restaurants as well as food delivery options from partner restaurants in select cities.\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum est a, mattis tellus. Sed dignissim, metus nec fringilla accumsan, risus sem sollicitudin lacus, ut interdum tellus elit sed risus. Maecenas eget condimentum velit, sit amet feugiat lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Praesent auctor purus luctus enim egestas, ac scelerisque ante pulvinar. Donec ut rhoncus ex. Suspendisse ac rhoncus nisl, eu tempor urna. Curabitur vel bibendum lorem. Morbi convallis convallis diam sit amet lacinia. Aliquam in elementum tellus.",
-        date,
-        "https://github.com/pratham-0094",
-        "banner.jpg",
-        ["html", "css", "javascript"],
-        ["prakhar-5447", "pratham-0094"],
-        ["angular", "web"],
-      )
-    ];
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -96,7 +81,7 @@ class ProfileScreen extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
-                  Avatar()
+                  Avatar(avatar: user?.avatar)
                 ],
               ),
             ),
@@ -172,7 +157,7 @@ class ProfileScreen extends StatelessWidget {
                           height: 10,
                         ),
                         Padding(
-                          padding: EdgeInsets.fromLTRB(10, 0, 10, 25),
+                          padding: const EdgeInsets.fromLTRB(10, 0, 10, 25),
                           child: Text(
                             user?.description ?? '',
                             textAlign: TextAlign.center,
@@ -186,58 +171,78 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   Center(
-                      child: SizedBox(
-                    width: 250,
-                    child: FutureBuilder<SocialsResponse?>(
-                        future: _getsocials(context),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const CircularProgressIndicator(); // Show loading indicator while waiting for data
-                          } else if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else {
-                            SocialsResponse? socials = snapshot.data;
-                            if (socials == null) {
-                              return Text('No socials data found.');
+                      child: FutureBuilder<SocialsResponse?>(
+                          future: _getsocials(context),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const SizedBox(
+                                width: 40,
+                                child: CircularProgressIndicator(),
+                              ); // Show loading indicator while waiting for data
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              SocialsResponse? socials = snapshot.data;
+                              if (socials == null) {
+                                return const Text('No socials data found.');
+                              }
+
+                              final Map<String, dynamic> socialIcons = {
+                                'twitter': socials.twitter,
+                                'instagram': socials.instagram,
+                                'linkedin': socials.linkedin,
+                                'github': socials.github,
+                              };
+
+                              return SizedBox(
+                                width: 250,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    for (var social in socialIcons.keys)
+                                      GestureDetector(
+                                        onTap: () async {
+                                          final Uri url = Uri.parse(
+                                              'https://${social}.com/${socialIcons[social]}');
+                                          if (await canLaunchUrl(url)) {
+                                            await launchUrl(url);
+                                          } else {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content:
+                                                    Text('invalid url $url'),
+                                                behavior:
+                                                    SnackBarBehavior.floating,
+                                                backgroundColor: Colors.red,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        child: Container(
+                                          width: 45,
+                                          height: 45,
+                                          padding: const EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                            border:
+                                                Border.all(color: Colors.black),
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                            color: Colors.white,
+                                          ),
+                                          child: Image.asset(
+                                            'assets/google.png',
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              );
                             }
-
-                            // Define the social icons and their respective asset paths
-                            final Map<String, String> socialIcons = {
-                              'twitter':
-                                  'assets/linkedin.png', // Replace with the correct asset for Twitter
-                              'instagram':
-                                  'assets/google.png', // Replace with the correct asset for Instagram
-                              'linkedin':
-                                  'assets/google.png', // Replace with the correct asset for LinkedIn
-                              'github':
-                                  'assets/linkedin.png', // Replace with the correct asset for GitHub
-                            };
-
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                for (var social in socialIcons.keys)
-                                  Container(
-                                    width: 45,
-                                    height: 45,
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black),
-                                      borderRadius: BorderRadius.circular(30),
-                                      color: Colors.white,
-                                    ),
-                                    child: Image.asset(
-                                      socialIcons[social] ??
-                                          'assets/google.png',
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
-                              ],
-                            );
-                          }
-                        }),
-                  )),
+                          })),
                   const SizedBox(
                     height: 50,
                   ),
@@ -254,36 +259,61 @@ class ProfileScreen extends StatelessWidget {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 0),
-                        child: GridView.builder(
-                          shrinkWrap:
-                              true, // Allow the GridView to take only the necessary height
-                          physics:
-                              const NeverScrollableScrollPhysics(), // Disable GridView's scrolling
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3, // Number of columns in the grid
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                          ),
-                          itemCount: projects.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    colorFilter: ColorFilter.mode(
-                                      Colors.black.withOpacity(0.5),
-                                      BlendMode.darken,
-                                    ),
-                                    image: const AssetImage(
-                                      "assets/banner.jpg",
-                                    ),
-                                    fit: BoxFit.cover,
+                        child: FutureBuilder<List<ProjectList>?>(
+                            future: _getprojects(context),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const CircularProgressIndicator(); // Show loading indicator while waiting for data
+                              } else if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              } else {
+                                List<ProjectList>? projects = snapshot.data;
+                                if (projects == null) {
+                                  return const Text('No projects data found.');
+                                }
+
+                                return GridView.builder(
+                                  shrinkWrap:
+                                      true, // Allow the GridView to take only the necessary height
+                                  physics:
+                                      const NeverScrollableScrollPhysics(), // Disable GridView's scrolling
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount:
+                                        3, // Number of columns in the grid
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10,
                                   ),
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(5))),
-                            );
-                          },
-                        ),
+                                  itemCount: projects.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return GestureDetector(
+                                      onTap: () => Get.to(() =>
+                                          ProjectDetailScreen(
+                                              id: projects[index].id,
+                                              onDelete: null,
+                                              index: index)),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                              colorFilter: ColorFilter.mode(
+                                                Colors.black.withOpacity(0.5),
+                                                BlendMode.darken,
+                                              ),
+                                              image: NetworkImage(
+                                                  projects[index].image),
+                                              fit: BoxFit.cover,
+                                            ),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(5))),
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
+                            }),
                       ),
                     ],
                   ),
@@ -628,41 +658,41 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Future<SocialsResponse?> _getsocials(BuildContext context) async {
-    try {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      String? token = authProvider.token;
-
-      if (token != null) {
-        // Call the API to get socials data
-        final socialsResponse = await SocialServices().getSocials(token);
-
-        // Check if the API call was successful
-        if (socialsResponse != null) {
-          // Socials data received successfully
-          print("Socials data: ${socialsResponse.twitter}");
-          return socialsResponse;
-          // You can log the socials data here or handle it as per your requirement
-        } else {
-          // API call failed or no socials data received
-          print("Failed to get socials data");
+  Future<List<ProjectList>?> _getprojects(BuildContext context) async {
+    List<ProjectList> projects = [];
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    if (token != null) {
+      dynamic res = await ProjectServices().getProjects(token);
+      if (res['success']) {
+        for (var project in res['data']) {
+          projects.add(ProjectList(
+              project.id, "${ApiConstants.baseUrl}/images/" + project.image));
         }
+        return projects;
       }
-    } catch (error) {
-      // Handle any errors that may occur during the API call
-      print("Error while fetching socials: $error");
+      return null;
     }
-    return null;
+  }
+
+  Future<SocialsResponse?> _getsocials(BuildContext context) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    if (token != null) {
+      dynamic res = await SocialServices().getSocials(token);
+      if (res['success']) {
+        return res['data'];
+      }
+      return null;
+    }
   }
 
   Future<List<EducationResponse>?> _geteducations(BuildContext context) async {
     try {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      String? token = authProvider.token;
-
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
       if (token != null) {
         final educationResponse = await EducationServices().getEducation(token);
-
         if (educationResponse != null) {
           return educationResponse;
         } else {
@@ -677,12 +707,10 @@ class ProfileScreen extends StatelessWidget {
 
   Future<SkillResponse?> _getskills(BuildContext context) async {
     try {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      String? token = authProvider.token;
-
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
       if (token != null) {
         final skillResponse = await SkillServices().getskill(token);
-
         if (skillResponse != null) {
           return skillResponse;
         } else {
@@ -697,12 +725,10 @@ class ProfileScreen extends StatelessWidget {
 
   Future<ContactResponse?> _getcontact(BuildContext context) async {
     try {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      String? token = authProvider.token;
-
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
       if (token != null) {
         final contact = await ContactServices().getContact(token);
-
         if (contact != null) {
           return contact;
         } else {
@@ -717,7 +743,8 @@ class ProfileScreen extends StatelessWidget {
 }
 
 class Avatar extends StatefulWidget {
-  const Avatar({super.key});
+  String? avatar;
+  Avatar({super.key, required this.avatar});
 
   @override
   State<Avatar> createState() => _AvatarState();
@@ -726,7 +753,9 @@ class Avatar extends StatefulWidget {
 class _AvatarState extends State<Avatar> {
   late XFile _pickedImage = XFile('');
   bool _isLoading = false;
-  Future<void> _pickImage(String? token) async {
+  Future<void> _pickImage() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
     final pickedImage =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
@@ -748,15 +777,23 @@ class _AvatarState extends State<Avatar> {
       );
       return;
     }
-    dynamic data = await AvatarServices().updateAvatar(token, _pickedImage);
+    dynamic res = await AvatarServices().updateAvatar(token, _pickedImage);
+    if (res != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(res['msg']),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: res["success"] ? Colors.green : Colors.red,
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<AuthProvider>(context);
     return GestureDetector(
       onTap: () {
-        _pickImage(provider.token);
+        _pickImage();
       },
       child: Align(
         alignment: Alignment.bottomCenter,
@@ -776,12 +813,18 @@ class _AvatarState extends State<Avatar> {
               alignment: const AlignmentDirectional(-0.01, 2.25),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(100),
-                child: Image.network(
-                  'https://avatars.githubusercontent.com/u/80202909?s=400&u=eb9dc715363d2d16941b2a809567e7fb685a9a16&v=4',
-                  width: 150,
-                  height: 150,
-                  fit: BoxFit.cover,
-                ),
+                child: widget.avatar != null
+                    ? Image.network(
+                        "${ApiConstants.baseUrl}/images/${widget.avatar}",
+                        width: 150,
+                        height: 150,
+                        fit: BoxFit.cover,
+                      )
+                    : Container(
+                        width: 150,
+                        height: 150,
+                        decoration: const BoxDecoration(color: Colors.white),
+                      ),
               ),
             ),
           ),

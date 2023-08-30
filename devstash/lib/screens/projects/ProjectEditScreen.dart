@@ -74,23 +74,26 @@ class _ProjectEditScreenState extends State<ProjectEditScreen> {
   }
 
   Future<void> fetchData() async {
-    dynamic res = await ProjectServices().getProjectById(widget.id);
-    if (res['success']) {
-      ProjectResponse newProject = res['data'];
-      if (newProject != null) {
-        _image = newProject.image;
-        _title = newProject.title;
-        _urlController.text = newProject.url;
-        _description = newProject.description;
-        _technologies = newProject.technologies;
-        _collaboratorsID = newProject.collaboratorsID;
-        _projectType = newProject.projectType;
-        _hashtags = newProject.hashtags;
+    if (!_dataFetched) {
+      dynamic res = await ProjectServices().getProjectById(widget.id);
+      if (res['success']) {
+        ProjectResponse newProject = res['data'];
+        if (newProject != null) {
+          _image = newProject.image;
+          _title = newProject.title;
+          _urlController.text = newProject.url;
+          _url = newProject.url;
+          _description = newProject.description;
+          _technologies = newProject.technologies;
+          _collaboratorsID = newProject.collaboratorsID;
+          _projectType = newProject.projectType;
+          _hashtags = newProject.hashtags;
+        }
       }
+      setState(() {
+        _dataFetched = true;
+      });
     }
-    setState(() {
-      _dataFetched = true;
-    });
   }
 
   void _submitForm() async {
@@ -111,19 +114,22 @@ class _ProjectEditScreenState extends State<ProjectEditScreen> {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
       if (token != null) {
-        ProjectResponse? newProject = await ProjectServices()
+        dynamic res = await ProjectServices()
             .updateProject(token, updatedProject, widget.id);
-        if (newProject != null) {
-          _formKey.currentState!.reset();
-          _urlController.clear();
-          _hashtagController.clear();
-          setState(() {
-            _technologies.clear();
-            _collaboratorsID.clear();
-            _hashtags.clear();
-            _projectType = '';
-          });
-          Navigator.pop(context);
+        if (res["success"]) {
+          ProjectResponse newProject = res["data"];
+          if (newProject != null) {
+            _formKey.currentState!.reset();
+            _urlController.clear();
+            _hashtagController.clear();
+            setState(() {
+              _technologies.clear();
+              _collaboratorsID.clear();
+              _hashtags.clear();
+              _projectType = '';
+            });
+            Navigator.pop(context);
+          }
         }
         setState(() {
           _isLoading = false;
@@ -240,7 +246,7 @@ class _ProjectEditScreenState extends State<ProjectEditScreen> {
             });
           },
           validator: (value) {
-            if (selectedValues.isEmpty) {
+            if (_collaboratorsID == null) {
               return 'Please select at least one item';
             }
             return null;

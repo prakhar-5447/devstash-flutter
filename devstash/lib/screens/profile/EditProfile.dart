@@ -1,6 +1,9 @@
 import 'dart:developer';
 
+import 'package:devstash/controllers/user_controller.dart';
 import 'package:devstash/models/request/UserProfile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
 import 'package:devstash/models/response/user_state.dart';
 import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/profile/ProfileScreen.dart';
@@ -26,12 +29,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    final provider = Provider.of<AuthProvider>(context, listen: false);
-    if (provider.user != null) {
-      _nameController.text = provider.user!.name;
-      _usernameController.text = provider.user!.username;
-      _descriptionController.text = provider.user!.description;
-      _emailController.text = provider.user!.email;
+    final UserController userController = Get.find<UserController>();
+    final UserState? user = userController.user;
+    if (user != null) {
+      _nameController.text = user.name;
+      _usernameController.text = user.username;
+      _descriptionController.text = user.description;
+      _emailController.text = user.email;
     }
   }
 
@@ -107,14 +111,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     UserProfile userprofile = UserProfile(
         name: name, username: username, description: description, email: email);
     try {
-      final provider = Provider.of<AuthProvider>(context, listen: false);
-      String? token = provider.token;
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
       if (token != null) {
         dynamic res = await _userServices.updateProfile(userprofile, token);
         dynamic userResponse = await _userServices.getUser(token);
         if (res["success"]) {
           if (userResponse["success"]) {
-            provider.setUser(userResponse["data"]);
+          Get.find<UserController>().user = userResponse['data'];
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => ProfileScreen()),
