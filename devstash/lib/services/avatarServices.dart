@@ -27,7 +27,7 @@ class AvatarServices {
       } else {
         return {
           'success': false,
-          'msg': 'Uploaded successfully',
+          'msg': 'Failed to update',
         };
       }
     } catch (error) {

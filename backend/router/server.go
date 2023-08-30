@@ -40,6 +40,7 @@ func (server *Server) setupRouter() {
 	router.GET("/getuser", server.fetch_user)
 	router.GET("/getuser/:id", server.fetch_user_by_id)
 	router.PUT("/profile", server.update_profile)
+	router.GET("/getrecommendedusers/:num", server.fetch_recommended_users)
 
 	router.GET("/favorite", server.get_user_favorite_by_id)
 	router.PUT("/favorite", server.update_favorite)

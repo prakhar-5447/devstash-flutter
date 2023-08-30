@@ -16,20 +16,20 @@ import (
 func (server *Server) handleFileUpload(c *gin.Context) {
 	err := c.Request.ParseMultipartForm(32 << 20)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Error parsing form data"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"success": false, "msg": "Error parsing form data"})
 		return
 	}
 
 	file, handler, err := c.Request.FormFile("image")
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Error retrieving file"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"success": false, "msg": "Error retrieving file"})
 		return
 	}
 	defer file.Close()
 
 	err = server.store.UploadFileToGridFS(file, handler)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error uploading file"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"success": false, "msg": "Error uploading file"})
 		return
 	}
 
@@ -42,27 +42,27 @@ func (server *Server) handleFileUpload(c *gin.Context) {
 
 	imageURL := handler.Filename
 	// Success response
-	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully", "image_url": imageURL})
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "File uploaded successfully", "data": imageURL})
 
 }
 
 func (server *Server) uploadAvatar(c *gin.Context) {
 	err := c.Request.ParseMultipartForm(32 << 20)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Error parsing form data"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"success": false, "msg": "Error parsing form data"})
 		return
 	}
 
 	file, handler, err := c.Request.FormFile("image")
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Error retrieving file"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"success": false, "msg": "Error retrieving file"})
 		return
 	}
 	defer file.Close()
 
 	err = server.store.UploadFileToGridFS(file, handler)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error uploading file"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"success": false, "msg": "Error uploading file"})
 		return
 	}
 
@@ -75,27 +75,30 @@ func (server *Server) uploadAvatar(c *gin.Context) {
 
 	token := c.GetHeader("Authorization")
 	if token == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token required"})
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Authorization token required"})
 		return
 	}
 
 	payload, err := server.tokenMaker.VerifyToken(token)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Invalid token"})
 		return
 	}
 
 	userID := payload.UserID
 	ID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
 
 	imageURL := handler.Filename
 	err = server.store.Update_Avatar(c.Request.Context(), imageURL, ID)
-	// Success response
-	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully", "image_url": imageURL})
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Failed to upload"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "File uploaded successfully", "data": imageURL})
 
 }
 
@@ -119,7 +122,6 @@ func (server *Server) handleImage(c *gin.Context) {
 		return
 	}
 
-	// Get the GridFS file by its ID
 	file, contentType, err := server.store.GetFileByID(fileInfo.ID)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to get file from GridFS")
@@ -129,7 +131,6 @@ func (server *Server) handleImage(c *gin.Context) {
 
 	c.Header("Content-Type", contentType)
 
-	// Copy the file data to the response writer
 	_, err = io.Copy(c.Writer, file)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to read image data")
@@ -146,10 +147,8 @@ func (server *Server) downloadImage(c *gin.Context) {
 
 	ctx := context.TODO()
 
-	// Get the MongoDB database from the store
 	database := server.store.GetDatabase()
 
-	// Obtain the GridFS bucket
 	bucket, err := gridfs.NewBucket(database)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to create GridFS bucket")
@@ -167,7 +166,6 @@ func (server *Server) downloadImage(c *gin.Context) {
 		return
 	}
 
-	// Open a GridFS download stream
 	downloadStream, err := bucket.OpenDownloadStream(fileInfo.ID)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to open GridFS download stream")
@@ -175,13 +173,10 @@ func (server *Server) downloadImage(c *gin.Context) {
 	}
 	defer downloadStream.Close()
 
-	// Get the content type of the image
 	contentType := getContentType(filename)
 
-	// Set the Content-Type header
 	c.Header("Content-Type", contentType)
 
-	// Copy the image data to the response writer
 	_, err = io.Copy(c.Writer, downloadStream)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to read image data")
@@ -198,13 +193,11 @@ func (server *Server) deleteImage(c *gin.Context) {
 
 	ctx := context.TODO()
 
-	// Get the MongoDB database from the store
 	database := server.store.GetDatabase()
 
-	// Obtain the GridFS bucket
 	bucket, err := gridfs.NewBucket(database)
 	if err != nil {
-		c.String(http.StatusInternalServerError, "Failed to create GridFS bucket")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": "Failed to create GridFS bucket"})
 		return
 	}
 
@@ -212,22 +205,21 @@ func (server *Server) deleteImage(c *gin.Context) {
 	err = server.store.GetCollection("fs.files").FindOne(ctx, filter).Decode(&fileInfo)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			c.String(http.StatusNotFound, "Image not found")
+			c.JSON(http.StatusNotFound, gin.H{"success": false, "msg": "Image not found"})
 			return
 		}
-		c.String(http.StatusInternalServerError, "Failed to find image")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": "Failed to find image"})
+
 		return
 	}
 
-	// Delete the file from GridFS
 	err = bucket.Delete(fileInfo.ID)
 	if err != nil {
-		c.String(http.StatusInternalServerError, "Failed to delete image")
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": "Failed to delete image"})
 		return
 	}
 
-	// Success response
-	c.String(http.StatusOK, "Image deleted successfully")
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Image deleted successfully"})
 }
 
 func getContentType(filename string) string {

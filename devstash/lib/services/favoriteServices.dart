@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:devstash/models/request/favoriteRequest.dart';
 import 'package:devstash/models/response/favoriteResponse.dart';
+import 'package:devstash/services/Helper.dart';
 import 'package:http/http.dart' as http;
 import 'package:devstash/constants.dart';
 
@@ -21,7 +22,7 @@ class FavoriteServices {
     }
   }
 
-  Future<bool> checkFavorite(String token, String id) async {
+  dynamic checkFavorite(String token, String id) async {
     try {
       var url = Uri.parse(
           ApiConstants.baseUrl + ApiConstants.checkfavoriteEndpoint + id);
@@ -30,16 +31,14 @@ class FavoriteServices {
       };
 
       var response = await http.get(url, headers: headers);
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      }
+      return jsonDecode(response.body);
     } catch (e) {
       log(e.toString());
     }
     return false;
   }
 
-  Future<dynamic> updateFavorite(FavoriteRequest favorite, String token) async {
+  dynamic updateFavorite(FavoriteRequest favorite, String token) async {
     try {
       var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.favoriteEndpoint);
       var headers = {
@@ -47,9 +46,7 @@ class FavoriteServices {
       };
       var response = await http.put(url,
           headers: headers, body: jsonEncode(favorite.toJson()));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      }
+      return Helper().responseFromJson(response.body);
     } catch (e) {
       log(e.toString());
     }
@@ -69,7 +66,7 @@ dynamic dataFromJson(String json) {
 }
 
 FavoriteResponse favoriteFromJson(String json) {
-  final favoriteData = jsonDecode(json)['favorite'];
+  final favoriteData = jsonDecode(json)['data'];
   String userId = favoriteData['UserId'];
   List<String> projectIds = List<String>.from(favoriteData['ProjectIds']);
 

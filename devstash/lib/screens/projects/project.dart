@@ -26,24 +26,25 @@ class _ProjectState extends State<Project> {
   Future<List<ProjectInfo>> _getProject() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
-    log(token.toString());
     if (token != null && !isDataLoaded) {
-      projectData = await ProjectServices().getProjects(token);
-
-      if (projectData != null) {
-        for (var i = 0; i < projectData!.length; i++) {
-          var currentProject = projectData!.elementAt(i);
-          String dateString = currentProject.createdDate;
-          DateTime dateTime = DateTime.parse(dateString);
-          String formattedDate = DateFormat.yMMMMd().format(dateTime);
-          project.add(ProjectInfo(
-            currentProject.id,
-            currentProject.title,
-            "${ApiConstants.baseUrl}/images/${currentProject.image}",
-            formattedDate,
-            currentProject.url,
-            currentProject.description,
-          ));
+      dynamic res = await ProjectServices().getProjects(token);
+      if (res["success"]) {
+        projectData = res['data'];
+        if (projectData != null) {
+          for (var i = 0; i < projectData!.length; i++) {
+            var currentProject = projectData!.elementAt(i);
+            String dateString = currentProject.createdDate;
+            DateTime dateTime = DateTime.parse(dateString);
+            String formattedDate = DateFormat.yMMMMd().format(dateTime);
+            project.add(ProjectInfo(
+              currentProject.id,
+              currentProject.title,
+              "${ApiConstants.baseUrl}/images/${currentProject.image}",
+              formattedDate,
+              currentProject.url,
+              currentProject.description,
+            ));
+          }
         }
       }
       setState(() {
@@ -76,15 +77,13 @@ class _ProjectState extends State<Project> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
     if (token != null) {
-      await ProjectServices().deleteProject(token, id).then((value) => {
-            if (value['deleted'])
-              {
-                setState(() {
-                  project.removeAt(index);
-                  _selectedProjectIndex = -1;
-                })
-              }
-          });
+      dynamic res = await ProjectServices().deleteProject(token, id);
+      if (res["success"]) {
+        setState(() {
+          project.removeAt(index);
+          _selectedProjectIndex = -1;
+        });
+      }
     }
   }
 

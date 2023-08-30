@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:devstash/models/request/UserProfile.dart';
 import 'package:devstash/models/request/signupRequest.dart';
 import 'package:devstash/models/response/user_state.dart';
+import 'package:devstash/services/Helper.dart';
 import 'package:http/http.dart' as http;
 import 'package:devstash/constants.dart';
 
@@ -38,7 +39,7 @@ class UserServices {
       var headers = {'Authorization': authToken};
       var response = await http.put(url,
           headers: headers, body: jsonEncode(userDetails.toJson()));
-      return jsonDecode(response.body);
+      return Helper().responseFromJson(response.body);
     } catch (e) {
       log(e.toString());
     }
@@ -58,7 +59,7 @@ dynamic dataFromJson(String json) {
 }
 
 UserState userFromJson(String jsonData) {
-  final json = jsonDecode(jsonData)['user'];
+  final json = jsonDecode(jsonData)['data'];
 
   String id = json['ID'];
   String name = json['Name'];

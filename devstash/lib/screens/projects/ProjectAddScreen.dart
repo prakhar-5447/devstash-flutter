@@ -21,7 +21,7 @@ class ProjectAddScreen extends StatefulWidget {
 
 class _ProjectAddScreenState extends State<ProjectAddScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final List<String> _allCollaboratorsID = ['64d0eb91908b9fdbe1c77250'];
+  final List<String> _allCollaboratorsID = ['64db8ef425797753868a7ba0'];
   final List<String> _allTechnologies = ['html', 'css', 'javascript'];
   final List<String> _allProjectType = [
     'Select a value',
@@ -86,18 +86,19 @@ class _ProjectAddScreenState extends State<ProjectAddScreen> {
       _isLoading = true;
     });
 
-    String? imageData = await ImageServices().addImage(_pickedImage);
+    dynamic res = await ImageServices().addImage(_pickedImage);
+    if (res['success']) {
+      String imageData = res['data'];
 
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (imageData != null) {
       setState(() {
         _image = imageData;
         _imagecontroller.text = imageData;
       });
     }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   bool isValidUrl(String url) {
@@ -125,9 +126,9 @@ class _ProjectAddScreenState extends State<ProjectAddScreen> {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
       if (token != null) {
-        ProjectResponse? newProject =
-            await ProjectServices().addProject(token, req);
-        if (newProject != null) {
+        dynamic res = await ProjectServices().addProject(token, req);
+        if (res['success']) {
+          ProjectResponse newProject = res['data'];
           _formKey.currentState!.reset();
           _imagecontroller.clear();
           _urlController.clear();
@@ -137,13 +138,11 @@ class _ProjectAddScreenState extends State<ProjectAddScreen> {
             _collaboratorsID.clear();
             _hashtags.clear();
             _projectType = '';
+            _isLoading = false;
           });
           widget.addProject(newProject);
           Navigator.pop(context);
         }
-        setState(() {
-          _isLoading = false;
-        });
       }
     }
   }
