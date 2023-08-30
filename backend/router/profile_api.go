@@ -1,6 +1,7 @@
 package router
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -80,7 +81,7 @@ func (server *Server) get_contact(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"success": true, "msg": err.Error(), "data": contact})
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Data retrieve successfully", "data": contact})
 }
 
 func (server *Server) create_education(c *gin.Context) {
@@ -416,4 +417,61 @@ func (server *Server) get_social(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Data retrieve successfully", "data": socials})
+}
+
+func (server *Server) fetch_recommended_users(c *gin.Context) {
+	token := c.GetHeader("Authorization")
+	if token == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Authorization token required"})
+		return
+	}
+
+	payload, err := server.tokenMaker.VerifyToken(token)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Invalid token"})
+		return
+	}
+
+	userID := payload.UserID
+	num := c.Param("num")
+
+	res, err := http.Get("http://127.0.0.1:5000/get_recommendations?userid=" + userID + "&num_recommendations=" + num)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "msg": err.Error()})
+	}
+
+	defer res.Body.Close()
+
+	var responseData map[string][]string
+	err = json.NewDecoder(res.Body).Decode(&responseData)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": "Failed to parse response data"})
+		return
+	}
+
+	var userResponses []models.RecommendedUsers
+
+	for _, userIDStr := range responseData["data"] {
+		userID, err := primitive.ObjectIDFromHex(userIDStr)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": "Invalid user ID"})
+			return
+		}
+
+		user, err := server.store.Get_User_By_Id(c.Request.Context(), userID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": "Failed to fetch user"})
+			return
+		}
+
+		userResponse := models.RecommendedUsers{
+			UserId: user.ID.Hex(),
+			Name:   user.Name,
+			Avatar: user.Avatar,
+		}
+
+		userResponses = append(userResponses, userResponse)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "user fetch", "data": userResponses})
 }

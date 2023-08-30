@@ -66,7 +66,7 @@ func (server *Server) create_project(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, createdProject)
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Created successfully", "data": createdProject})
 }
 
 func convert_to_projectType(projectType string) db.ProjectType {
