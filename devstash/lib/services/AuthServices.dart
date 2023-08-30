@@ -48,7 +48,7 @@ dynamic dataFromJson(String json) {
 }
 
 UserState userFromJson(String jsonData) {
-  final json = jsonDecode(jsonData)['user'];
+  final json = jsonDecode(jsonData)['data'];
 
   String id = json['ID'];
   String name = json['Name'];

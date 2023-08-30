@@ -4,12 +4,12 @@ import 'dart:developer';
 import 'package:devstash/models/request/projectRequest.dart';
 import 'package:devstash/models/response/CollaboratorResponse.dart';
 import 'package:devstash/models/response/projectResponse.dart';
+import 'package:devstash/services/Helper.dart';
 import 'package:http/http.dart' as http;
 import 'package:devstash/constants.dart';
 
 class ProjectServices {
-  Future<ProjectResponse?> addProject(
-      String token, ProjectRequest project) async {
+  dynamic addProject(String token, ProjectRequest project) async {
     try {
       var url =
           Uri.parse(ApiConstants.baseUrl + ApiConstants.createProjectEndpoint);
@@ -18,16 +18,13 @@ class ProjectServices {
       };
       var response = await http.post(url,
           headers: headers, body: jsonEncode(project.toJson()));
-      if (response.statusCode == 200) {
-        ProjectResponse project = projectFromJson(response.body);
-        return project;
-      }
+      return dataFromJson(response.body);
     } catch (e) {
       log(e.toString());
     }
   }
 
-  Future<List<ProjectResponse>?> getProjects(String token) async {
+  dynamic getProjects(String token) async {
     try {
       var url =
           Uri.parse(ApiConstants.baseUrl + ApiConstants.getProjectsEndpoint);
@@ -36,10 +33,7 @@ class ProjectServices {
       };
 
       var response = await http.get(url, headers: headers);
-      if (response.statusCode == 200) {
-        List<ProjectResponse> project = projectsFromJson(response.body);
-        return project;
-      }
+      return datasFromJson(response.body);
     } catch (e) {
       log(e.toString());
     }
@@ -58,23 +52,19 @@ class ProjectServices {
     }
   }
 
-  Future<List<CollaboratorResponse>?> getCollaboratorUsers(
-      List<String> userid) async {
+  dynamic getCollaboratorUsers(List<String> userid) async {
     try {
       var url = Uri.parse(
           ApiConstants.baseUrl + ApiConstants.getCollaboratorUsersEndpoint);
 
       var response = await http.post(url, body: jsonEncode(userid));
-      if (response.statusCode == 200) {
-        List<CollaboratorResponse> users = userFromJson(response.body);
-        return users;
-      }
+      return collaboratorDataFromJson(response.body);
     } catch (e) {
       log(e.toString());
     }
   }
 
-  Future<dynamic> deleteProject(String token, String projectid) async {
+  dynamic deleteProject(String token, String projectid) async {
     try {
       var url = Uri.parse(ApiConstants.baseUrl +
           ApiConstants.deleteProjectEndpoint +
@@ -84,15 +74,13 @@ class ProjectServices {
       };
 
       var response = await http.delete(url, headers: headers);
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      }
+      return Helper().responseFromJson(response.body);
     } catch (e) {
       log(e.toString());
     }
   }
 
-  Future<ProjectResponse?> updateProject(
+  dynamic updateProject(
       String token, ProjectRequest project, String projectId) async {
     try {
       var url = Uri.parse(ApiConstants.baseUrl +
@@ -103,23 +91,32 @@ class ProjectServices {
       };
       var response = await http.put(url,
           headers: headers, body: jsonEncode(project.toJson()));
-      if (response.statusCode == 200) {
-        ProjectResponse project = projectFromJson(response.body);
-        return project;
-      }
+      return dataFromJson(response.body);
     } catch (e) {
       log(e.toString());
     }
   }
 }
 
+dynamic collaboratorDataFromJson(String json) {
+  final authData = jsonDecode(json);
+  bool success = authData['success'];
+  String msg = authData['msg'];
+  if (success) {
+    List<CollaboratorResponse> collaborator = userFromJson(json);
+    return {"success": success, "msg": msg, "data": collaborator};
+  }
+
+  return {"success": success, "msg": msg, "data": {}};
+}
+
 List<CollaboratorResponse> userFromJson(String json) {
-  final userData = jsonDecode(json);
+  final userData = jsonDecode(json)['data'];
   List<CollaboratorResponse> collaboratorUsers = [];
 
   for (var user in userData) {
     CollaboratorResponse userInfo =
-        CollaboratorResponse(user['userId'], user['avatar'], user['name']);
+        CollaboratorResponse(user['userId'], user['name']);
     collaboratorUsers.add(userInfo);
   }
   return collaboratorUsers;
@@ -137,8 +134,20 @@ dynamic dataFromJson(String json) {
   return {"success": success, "msg": msg, "data": {}};
 }
 
+dynamic datasFromJson(String json) {
+  final authData = jsonDecode(json);
+  bool success = authData['success'];
+  String msg = authData['msg'];
+  if (success) {
+    List<ProjectResponse> project = projectsFromJson(json);
+    return {"success": success, "msg": msg, "data": project};
+  }
+
+  return {"success": success, "msg": msg, "data": {}};
+}
+
 ProjectResponse projectFromJson(String json) {
-  final projectData = jsonDecode(json)['project'];
+  final projectData = jsonDecode(json)['data'];
 
   String userID = projectData['UserID'];
   String id = projectData['ID'];
@@ -171,7 +180,7 @@ ProjectResponse projectFromJson(String json) {
 }
 
 List<ProjectResponse> projectsFromJson(String json) {
-  final parsedData = jsonDecode(json);
+  final parsedData = jsonDecode(json)['data'];
   List<ProjectResponse> projects = [];
 
   for (var projectData in parsedData) {
@@ -201,7 +210,6 @@ List<ProjectResponse> projectsFromJson(String json) {
       projectType,
       hashtags,
     );
-
     projects.add(project);
   }
 

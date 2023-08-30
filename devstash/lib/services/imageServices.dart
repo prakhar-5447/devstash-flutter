@@ -8,7 +8,7 @@ import 'package:devstash/constants.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageServices {
-  Future<String?> addImage(XFile image) async {
+  dynamic addImage(XFile image) async {
     try {
       var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.uploadEndpoint);
       var request = http.MultipartRequest('POST', url)
@@ -16,12 +16,9 @@ class ImageServices {
 
       var response = await request.send();
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData =
-            jsonDecode(await response.stream.bytesToString());
-        final String imageName = responseData['image_url'];
-        return imageName;
-      }
+      final Map<String, dynamic> responseData =
+          jsonDecode(await response.stream.bytesToString());
+      return responseData;
     } catch (e) {
       log(e.toString());
     }

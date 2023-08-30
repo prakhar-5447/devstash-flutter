@@ -59,7 +59,7 @@ class SkillServices {
   }
 
   SkillResponse skillFromJson(String jsonData) {
-    final json = jsonDecode(jsonData)["skills"];
+    final json = jsonDecode(jsonData)["data"];
 
     List<String> skills = [];
     String id = json['ID'];

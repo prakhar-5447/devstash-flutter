@@ -1,9 +1,10 @@
 class ApiConstants {
-  static String baseUrl = 'http://192.168.1.45:8080';
+  static String baseUrl = 'http://192.168.1.113:8080';
   static String signupEndpoint = "/signup";
   static String saveProfileEndpoint = "/saveprofile";
   static String signinEndpoint = "/login";
   static String getUserEndpoint = "/getuser";
+  static String getRecommendedUserEndpoint = "/getrecommendedusers/";
   static String getUserByIdEndpoint = "/getuser/";
   static String getCollaboratorUsersEndpoint = "/getcollaboratoruser";
   static String profileEndpoint = "/profile";

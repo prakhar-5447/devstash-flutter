@@ -53,7 +53,7 @@ dynamic dataFromJson(String json) {
 }
 
 BookmarkResponse bookmarkFromJson(String json) {
-  final bookmarkData = jsonDecode(json)['bookmark'];
+  final bookmarkData = jsonDecode(json)['data'];
 
   String userId = bookmarkData['UserId'];
   List<String> otherUserIds = List<String>.from(bookmarkData['OtherUserIds']);
