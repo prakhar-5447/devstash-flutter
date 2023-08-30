@@ -40,13 +40,12 @@ def get_recommendations():
     similar_users = np.argsort(cosine_sim[user_index])[::-1]
     similar_users_list = similar_users.tolist()
     
-    recommended_profiles = [user_profiles[i] for i in similar_users_list if i != user_index][:num_recommendations]
+    recommended = [user_profiles[i] for i in similar_users_list if i != user_index][:num_recommendations]
+    recommended_profiles=list()
+    for profile in recommended:
+        recommended_profiles.append(str(profile["userid"]))
 
-    for profile in recommended_profiles:
-        profile["_id"] = str(profile["_id"])
-        profile["userid"] = str(profile["userid"])
-
-    return jsonify({"recommendations": recommended_profiles})
+    return jsonify({"data": recommended_profiles})
 
 if __name__ == '__main__':
     app.run(debug=True)
