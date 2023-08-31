@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'package:devstash/constants.dart';
+import 'package:devstash/env.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:http/http.dart' as http;
@@ -15,10 +15,10 @@ class GithubServices {
         Uri.parse('https://github.com/login/oauth/access_token'),
         headers: {'Accept': 'application/json'},
         body: {
-          'client_id': Env.clientId,
-          'client_secret': Env.clientSecret,
+          'client_id': clientId,
+          'client_secret': clientSecret,
           'code': authCode,
-          'redirect_uri': Env.redirectUrl,
+          'redirect_uri': redirectUrl,
         },
       );
       log("second");
@@ -42,8 +42,8 @@ class GithubServices {
     try {
       final result = await FlutterWebAuth.authenticate(
         url:
-            'https://github.com/login/oauth/authorize?client_id=${Env.clientId}&redirect_uri=${Env.redirectUrl}&scope=read:user',
-        callbackUrlScheme: Env.scheme,
+            'https://github.com/login/oauth/authorize?client_id=$clientId&redirect_uri=$redirectUrl&scope=read:user',
+        callbackUrlScheme: scheme,
       );
 
       String? authCode = Uri.parse(result).queryParameters['code'];
