@@ -105,4 +105,28 @@ class GithubServices {
     }
     return [];
   }
+
+  Future<List<dynamic>> fetchContributors() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? repoName = prefs.getString('repository') ?? 'devstash-flutter';
+    String? owner = prefs.getString('owner') ?? 'prakhar-5447';
+    String? accessToken = prefs.getString('githubtoken');
+
+    final apiUrl = 'https://api.github.com/repos/$owner/$repoName/contributors';
+
+    final headers = {
+      'Authorization': 'Bearer $accessToken',
+      'Accept': 'application/json',
+    };
+
+    final response = await http.get(Uri.parse(apiUrl), headers: headers);
+
+    if (response.statusCode == 200) {
+      final contributors = json.decode(response.body);
+      return contributors;
+    } else {
+      throw Exception(
+          'Failed to fetch contributors. Status code: ${response.statusCode}');
+    }
+  }
 }

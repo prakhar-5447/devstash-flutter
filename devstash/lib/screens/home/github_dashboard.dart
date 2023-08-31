@@ -1,3 +1,4 @@
+import 'package:devstash/services/GithubServices.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -62,61 +63,75 @@ List<Repo> mockRepos = [
   ),
 ];
 
-
 class GithubDashboardContainer extends StatelessWidget {
   final controller = Get.put(GithubController());
   final List<String> _tabs = ['Issues', 'Pull Requests', 'Contributors'];
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Container(
-          decoration:
-              const BoxDecoration(color: Color.fromARGB(255, 255, 255, 255)),
-          child: TabBar(
-            controller: controller.tabController,
-            dividerColor: Colors.transparent,
-            tabs: _tabs
-                .map(
-                  (String tab) => Tab(
-                    child: Text(
-                      tab,
-                      style: const TextStyle(
-                        color: Color.fromARGB(255, 75, 73, 70),
-                        fontFamily: 'Comfortaa',
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
+    return Container(
+      margin: const EdgeInsets.symmetric(
+        horizontal: 15,
+      ),
+      decoration: BoxDecoration(
+          border: Border.all(
+        width: 0.5,
+        color: Colors.black26,
+      )),
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Container(
+            decoration:
+                const BoxDecoration(color: Color.fromARGB(255, 255, 255, 255)),
+            child: TabBar(
+              controller: controller.tabController,
+              unselectedLabelColor: Colors.red,
+              tabAlignment: TabAlignment.fill,
+              dividerColor: Colors.transparent,
+              tabs: _tabs
+                  .map(
+                    (String tab) => Tab(
+                      child: Text(
+                        tab,
+                        style: const TextStyle(
+                          color: Color.fromARGB(255, 75, 73, 70),
+                          fontFamily: 'Comfortaa',
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                  ),
-                )
-                .toList(),
-            indicator: const UnderlineTabIndicator(
-              borderSide: BorderSide(
-                color: Color.fromARGB(255, 117, 140, 253),
-                width: 3,
+                  )
+                  .toList(),
+              indicator: const UnderlineTabIndicator(
+                borderSide: BorderSide(
+                  color: Color.fromARGB(255, 117, 140, 253),
+                  width: 3,
+                ),
+                insets: EdgeInsets.symmetric(
+                  horizontal: 0,
+                ),
               ),
-              insets: EdgeInsets.symmetric(
-                horizontal: 0,
-              ),
+              automaticIndicatorColorAdjustment: true,
             ),
-            automaticIndicatorColorAdjustment: true,
           ),
-        ),
-        Expanded(
-          child: TabBarView(
-            controller: controller.tabController,
-            children: [
-              RepoDetailsTab(repo: mockRepos[0]),
-              PlaceholderTab(tabName: 'Pull Requests'),
-              PlaceholderTab(tabName: 'Contributors'),
-            ],
+          const SizedBox(
+            height: 10,
           ),
-        ),
-      ],
+          Expanded(
+            child: TabBarView(
+              controller: controller.tabController,
+              children: [
+                RepoDetailsTab(repo: mockRepos[0]),
+                PlaceholderTab(tabName: 'Pull Requests'),
+                ContributorsLoadingTab(),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -147,7 +162,7 @@ class GithubController extends GetxController
 class RepoDetailsTab extends StatelessWidget {
   final Repo repo;
 
-  RepoDetailsTab({required this.repo});
+  const RepoDetailsTab({required this.repo});
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +184,7 @@ class RepoDetailsTab extends StatelessWidget {
           style: TextStyle(fontSize: 16, color: Colors.grey),
         ),
         const SizedBox(height: 16),
-        Text(
+        const Text(
           'Repository URL:',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
@@ -191,6 +206,68 @@ class PlaceholderTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text('$tabName content goes here'),
+    );
+  }
+}
+
+class ContributorsLoadingTab extends StatefulWidget {
+  @override
+  _ContributorsLoadingTabState createState() => _ContributorsLoadingTabState();
+}
+
+class _ContributorsLoadingTabState extends State<ContributorsLoadingTab> {
+  List<dynamic> contributors = [];
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<dynamic>>(
+      future: GithubServices().fetchContributors(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (snapshot.hasData) {
+          final contributors = snapshot.data!;
+          return ListView.builder(
+            itemCount: contributors.length,
+            itemBuilder: (context, index) {
+              final contributor = contributors[index];
+              return Column(
+                children: [
+                  ListTile(
+                    dense: true,
+                    onTap: () {
+                      // Handle tap
+                    },
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(contributor['avatar_url']),
+                      radius: 15,
+                    ),
+                    title: Text(contributor['login']),
+                    subtitle:
+                        Text('Contributions: ${contributor['contributions']}'),
+                  ),
+                  if (index < contributors.length - 1)
+                    const Divider(
+                      indent: 10,
+                      endIndent: 10,
+                      color: Colors.black26,
+                    ),
+                ],
+              );
+            },
+          );
+        } else {
+          return Center(child: Text('No contributors found.'));
+        }
+      },
     );
   }
 }
