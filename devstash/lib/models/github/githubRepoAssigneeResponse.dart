@@ -1,10 +1,10 @@
-class GithubRepoIssueAssigneeResponse {
+class GithubRepoAssigneeResponse {
   String _Id;
   String _Login;
   String _Avatar_url;
   String _Url;
 
-  GithubRepoIssueAssigneeResponse(
+  GithubRepoAssigneeResponse(
     this._Id,
     this._Login,
     this._Avatar_url,

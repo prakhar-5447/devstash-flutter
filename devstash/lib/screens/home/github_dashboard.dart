@@ -1,7 +1,9 @@
 import 'package:devstash/controllers/github_controller.dart';
+import 'package:devstash/models/github/githubRepoIssueResponse.dart';
 import 'package:devstash/services/GithubServices.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
 class Issue {
@@ -124,123 +126,6 @@ final user = User(
   url: "https://api.github.com/users/Sahilkumar19",
 );
 
-final List<Issue> issuelist = [
-  Issue(
-    url:
-        "https://api.github.com/repos/kunal-kushwaha/DSA-Bootcamp-Java/issues/1146",
-    repositoryUrl:
-        "https://api.github.com/repos/kunal-kushwaha/DSA-Bootcamp-Java",
-    htmlUrl:
-        "https://api.github.com/repos/kunal-kushwaha/DSA-Bootcamp-Java/issues/1146/labels{/name}",
-    id: 1873679614,
-    title:
-        "General message to all the folks regarding not able to access the files",
-    user: user,
-    state: "open",
-    locked: false,
-    comments: 0,
-    number: 1152,
-    createdAt: DateTime.parse("2023-08-30T13:25:59Z"),
-    updatedAt: DateTime.parse("2023-08-30T13:25:59Z"),
-    closedAt: null,
-    authorAssociation: "NONE",
-    body:
-        "Those who are raising new issues regarding the notes (pdf) for them please fork the repo and clone it to your local system giving correct path of directory (or where you want to locate this) .You will be able to see all the code files and pdf files. Hope it will help you.Let me know if you are still not able to get the notes.\r\nEdited:\r\nyou can access it by using <>Code button. ",
-    assignees: [
-      User(
-        avatarUrl: 'https://avatars.githubusercontent.com/u/124178990?v=4',
-        login: 'prakhar-5447',
-        url: 'https://github.com/prakhar-5447',
-        id: 1234,
-      ),
-      User(
-        avatarUrl: 'https://avatars.githubusercontent.com/u/124178990?v=4',
-        login: 'prakhar-5447',
-        url: 'https://github.com/prakhar-5447',
-        id: 1234,
-      ),
-      User(
-        avatarUrl: 'https://avatars.githubusercontent.com/u/124178990?v=4',
-        login: 'prakhar-5447',
-        url: 'https://github.com/prakhar-5447',
-        id: 1234,
-      ),
-    ],
-  ),
-  Issue(
-    url:
-        "https://api.github.com/repos/kunal-kushwaha/DSA-Bootcamp-Java/issues/1146",
-    repositoryUrl:
-        "https://api.github.com/repos/kunal-kushwaha/DSA-Bootcamp-Java",
-    htmlUrl:
-        "https://api.github.com/repos/kunal-kushwaha/DSA-Bootcamp-Java/issues/1146/labels{/name}",
-    id: 1873679614,
-    title:
-        "General message to all the folks regarding not able to access the files",
-    user: user,
-    state: "open",
-    locked: false,
-    comments: 0,
-    number: 1153,
-    createdAt: DateTime.parse("2023-08-30T13:25:59Z"),
-    updatedAt: DateTime.parse("2023-08-30T13:25:59Z"),
-    closedAt: null,
-    authorAssociation: "NONE",
-    body:
-        "Those who are raising new issues regarding the notes (pdf) for them please fork the repo and clone it to your local system giving correct path of directory (or where you want to locate this) .You will be able to see all the code files and pdf files. Hope it will help you.Let me know if you are still not able to get the notes.\r\nEdited:\r\nyou can access it by using <>Code button. ",
-    assignees: [
-      User(
-        avatarUrl: 'https://avatars.githubusercontent.com/u/124178990?v=4',
-        login: 'prakhar-5447',
-        url: 'https://github.com/prakhar-5447',
-        id: 1234,
-      ),
-      User(
-        avatarUrl: 'https://avatars.githubusercontent.com/u/124178990?v=4',
-        login: 'prakhar-5447',
-        url: 'https://github.com/prakhar-5447',
-        id: 1234,
-      ),
-    ],
-  ),
-  Issue(
-    url:
-        "https://api.github.com/repos/kunal-kushwaha/DSA-Bootcamp-Java/issues/1146",
-    repositoryUrl:
-        "https://api.github.com/repos/kunal-kushwaha/DSA-Bootcamp-Java",
-    htmlUrl:
-        "https://api.github.com/repos/kunal-kushwaha/DSA-Bootcamp-Java/issues/1146/labels{/name}",
-    id: 1873679614,
-    title:
-        "General message to all the folks regarding not able to access the files",
-    user: user,
-    state: "open",
-    locked: false,
-    comments: 0,
-    number: 1153,
-    createdAt: DateTime.parse("2023-08-30T13:25:59Z"),
-    updatedAt: DateTime.parse("2023-08-30T13:25:59Z"),
-    closedAt: null,
-    authorAssociation: "NONE",
-    body:
-        "Those who are raising new issues regarding the notes (pdf) for them please fork the repo and clone it to your local system giving correct path of directory (or where you want to locate this) .You will be able to see all the code files and pdf files. Hope it will help you.Let me know if you are still not able to get the notes.\r\nEdited:\r\nyou can access it by using <>Code button. ",
-    assignees: [
-      User(
-        avatarUrl: 'https://avatars.githubusercontent.com/u/124178990?v=4',
-        login: 'prakhar-5447',
-        url: 'https://github.com/prakhar-5447',
-        id: 1234,
-      ),
-      User(
-        avatarUrl: 'https://avatars.githubusercontent.com/u/124178990?v=4',
-        login: 'prakhar-5447',
-        url: 'https://github.com/prakhar-5447',
-        id: 1234,
-      ),
-    ],
-  ),
-];
-
 class GithubDashboardContainer extends StatelessWidget {
   final controller = Get.put(GithubController());
   final List<String> _tabs = ['Issues', 'Pull Requests', 'Contributors'];
@@ -315,7 +200,7 @@ class GithubDashboardContainer extends StatelessWidget {
               physics: const ClampingScrollPhysics(),
               controller: controller.tabController,
               children: [
-                IssueTab(issues: issuelist),
+                IssueTab(),
                 PlaceholderTab(tabName: 'Pull Requests'),
                 ContributorsLoadingTab(),
               ],
@@ -328,139 +213,180 @@ class GithubDashboardContainer extends StatelessWidget {
 }
 
 class IssueTab extends StatelessWidget {
-  final List<Issue> issues;
+  Future<List<GithubRepoIssueResponse>> _getRepoIssue() async {
+    late List<GithubRepoIssueResponse> repoIssue;
 
-  const IssueTab({required this.issues});
+    dynamic res = await GithubServices().getRepoIssue();
+    if (res['success']) {
+      repoIssue = res['data'];
+    } else {
+      Fluttertoast.showToast(
+        msg: res["data"].message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    }
+
+    return repoIssue;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: issues.length,
-      padding: EdgeInsets.zero,
-      physics: const BouncingScrollPhysics(),
-      scrollDirection: Axis.vertical,
-      itemBuilder: (context, index) {
-        return Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(
-                vertical: 18,
-                horizontal: 18,
-              ),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SvgPicture.asset(
-                    'assets/open_issue.svg',
-                    width: 15,
-                    fit: BoxFit.cover,
-                    color: Colors.green,
-                    theme: const SvgTheme(
-                      currentColor: Colors.green,
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: issues[index].title,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black,
-                                  fontFamily: 'Comfortaa',
-                                ),
+    return FutureBuilder<List<GithubRepoIssueResponse>>(
+        future: _getRepoIssue(),
+        builder: (BuildContext context,
+            AsyncSnapshot<List<GithubRepoIssueResponse>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            List<GithubRepoIssueResponse>? issues = snapshot.data;
+            if (issues == null) {
+              return const Text('No projects data found.');
+            }
+            return ListView.builder(
+                itemCount: issues.length,
+                padding: EdgeInsets.zero,
+                physics: const BouncingScrollPhysics(),
+                scrollDirection: Axis.vertical,
+                itemBuilder: (context, index) {
+                  return Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 18,
+                          horizontal: 18,
+                        ),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SvgPicture.asset(
+                              'assets/open_issue.svg',
+                              width: 15,
+                              fit: BoxFit.cover,
+                              color: Colors.green,
+                              theme: const SvgTheme(
+                                currentColor: Colors.green,
                               ),
-                              WidgetSpan(
-                                child: Container(
-                                  margin: const EdgeInsets.only(
-                                    left: 2,
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 5,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                    borderRadius: BorderRadius.circular(
-                                      12,
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: issues[index].title,
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.black,
+                                            fontFamily: 'Comfortaa',
+                                          ),
+                                        ),
+                                        WidgetSpan(
+                                          child: Container(
+                                            margin: const EdgeInsets.only(
+                                              left: 2,
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 5,
+                                              vertical: 2,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                12,
+                                              ),
+                                            ),
+                                            child: Text(
+                                              '#${issues[index].number.toString()}',
+                                              style: const TextStyle(
+                                                fontSize: 8,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w400,
+                                                fontFamily: 'Comfortaa',
+                                                height: 1.5,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  child: Text(
-                                    '#${issues[index].number.toString()}',
-                                    style: const TextStyle(
-                                      fontSize: 8,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w400,
-                                      fontFamily: 'Comfortaa',
-                                      height: 1.5,
+                                  if (issues[index].assignees.isNotEmpty)
+                                    const SizedBox(
+                                      height: 5,
                                     ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        SizedBox(
-                          height: 20,
-                          child: Stack(
-                            children:
-                                issues[index].assignees.asMap().entries.map(
-                              (entry) {
-                                final double leftPosition = entry.key * 10;
-                                return Positioned(
-                                  left: leftPosition,
-                                  child: Container(
-                                    width: 20,
+                                  SizedBox(
                                     height: 20,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                    child: CircleAvatar(
-                                      radius: 8,
-                                      backgroundImage: NetworkImage(
-                                        entry.value.avatarUrl,
-                                      ),
+                                    child: Stack(
+                                      children: issues[index]
+                                          .assignees
+                                          .asMap()
+                                          .entries
+                                          .map(
+                                        (entry) {
+                                          final double leftPosition =
+                                              entry.key * 10;
+                                          return Positioned(
+                                            left: leftPosition,
+                                            child: Container(
+                                              width: 20,
+                                              height: 20,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.white,
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              child: CircleAvatar(
+                                                radius: 8,
+                                                backgroundImage: NetworkImage(
+                                                  entry.value.avatar_url,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ).toList(),
                                     ),
                                   ),
-                                );
-                              },
-                            ).toList(),
-                          ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (index < issuelist.length - 1)
-              const Divider(
-                color: Colors.black26,
-                height: 0,
-              )
-          ],
-        );
-      },
-    );
+                      ),
+                      if (index < issues.length - 1)
+                        const Divider(
+                          color: Colors.black26,
+                          height: 0,
+                        )
+                    ],
+                  );
+                });
+          }
+        });
   }
 }
 

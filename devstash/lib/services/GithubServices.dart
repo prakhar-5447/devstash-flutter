@@ -5,7 +5,7 @@ import 'package:devstash/env.dart';
 import 'package:devstash/models/github/githubAuthenticationErrorResponse.dart';
 import 'package:devstash/models/github/githubRepoContributerResponse.dart';
 import 'package:devstash/models/github/githubRepoDataResponse.dart';
-import 'package:devstash/models/github/githubRepoIssueAssigneeResponse.dart';
+import 'package:devstash/models/github/githubRepoAssigneeResponse.dart';
 import 'package:devstash/models/github/githubRepoIssueResponse.dart';
 import 'package:devstash/models/github/githubRepoPullResponse.dart';
 import 'package:devstash/models/github/githubTokenErrorResponse.dart';
@@ -127,11 +127,14 @@ class GithubServices {
 
   dynamic getRepoIssue() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? repoName = prefs.getString('repository') ?? 'devstash-flutter';
-    String? owner = prefs.getString('owner') ?? 'prakhar-5447';
+    String? repoName =
+        prefs.getString('repository') ?? 'FinalYear-Project-Ideas';
+    String? owner = prefs.getString('owner') ?? 'praveenscience';
     String? accessToken = prefs.getString('githubtoken');
+    String? state = 'open';
 
-    final apiUrl = 'https://api.github.com/repos/$owner/$repoName/issues';
+    final apiUrl =
+        'https://api.github.com/repos/$owner/$repoName/issues?state=$state';
 
     final headers = {
       'Accept': 'application/json',
@@ -148,11 +151,14 @@ class GithubServices {
 
   dynamic getRepoPull() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? repoName = prefs.getString('repository') ?? 'devstash-flutter';
-    String? owner = prefs.getString('owner') ?? 'prakhar-5447';
+    String? repoName =
+        prefs.getString('repository') ?? 'FinalYear-Project-Ideas';
+    String? owner = prefs.getString('owner') ?? 'praveenscience';
     String? accessToken = prefs.getString('githubtoken');
+    String? state = 'open';
 
-    final apiUrl = 'https://api.github.com/repos/$owner/$repoName/pulls';
+    final apiUrl =
+        'https://api.github.com/repos/$owner/$repoName/pulls?state=$state';
 
     final headers = {
       'Accept': 'application/json',
@@ -187,14 +193,14 @@ dynamic githubUserDataFromJson(String json, bool success) {
   final githubData = jsonDecode(json);
   if (success) {
     GithubUserResponse data = GithubUserResponse(
-        githubData['id'],
+        githubData['id'].toString(),
         githubData['login'],
         githubData['name'],
         githubData['avatar_url'],
         githubData['bio'],
-        githubData['public_repos'],
-        githubData['followers'],
-        githubData['following']);
+        githubData['public_repos'].toString(),
+        githubData['followers'].toString(),
+        githubData['following'].toString());
     return {"success": success, "data": data};
   } else {
     GithubAuthenticationErrorResponse data = GithubAuthenticationErrorResponse(
@@ -227,11 +233,11 @@ dynamic githubRepoContributerListDataFromJson(String json, bool success) {
 
     for (var user in githubData) {
       final contributer = GithubRepoContributerResponse(
-          user['id'],
+          user['id'].toString(),
           user['login'],
           user['avatar_url'],
           user['url'],
-          user['contributions']);
+          user['contributions'].toString());
       data.add(contributer);
     }
     return {"success": success, "data": data};
@@ -248,10 +254,16 @@ dynamic githubRepoIssueDataFromJson(String json, bool success) {
     List<GithubRepoIssueResponse> data = [];
 
     for (var user in githubData) {
+      final login = GithubRepoAssigneeResponse(
+          user['user']['id'].toString(),
+          user['user']['login'],
+          user['user']['avatar_url'],
+          user['user']['url']);
       final issue = GithubRepoIssueResponse(
-          user['id'],
-          user['number'],
+          user['id'].toString(),
+          user['number'].toString(),
           user['title'],
+          login,
           assigneeDataFromJson(user['assignees']),
           user['html_url']);
       data.add(issue);
@@ -270,8 +282,13 @@ dynamic githubRepoPullDataFromJson(String json, bool success) {
     List<GithubRepoPullResponse> data = [];
 
     for (var user in githubData) {
-      final issue = GithubRepoPullResponse(
-          user['id'], user['number'], user['title'], user['html_url']);
+      final login = GithubRepoAssigneeResponse(
+          user['user']['id'].toString(),
+          user['user']['login'],
+          user['user']['avatar_url'],
+          user['user']['url']);
+      final issue = GithubRepoPullResponse(user['id'].toString(),
+          user['number'].toString(), user['title'], login, user['html_url']);
       data.add(issue);
     }
     return {"success": success, "data": data};
@@ -283,10 +300,10 @@ dynamic githubRepoPullDataFromJson(String json, bool success) {
 }
 
 dynamic assigneeDataFromJson(dynamic userData) {
-  List<GithubRepoIssueAssigneeResponse> data = [];
+  List<GithubRepoAssigneeResponse> data = [];
   for (var user in userData) {
-    final assignee = GithubRepoIssueAssigneeResponse(
-        user['id'], user['login'], user['avatar_url'], user['url']);
+    final assignee = GithubRepoAssigneeResponse(
+        user['id'].toString(), user['login'], user['avatar_url'], user['url']);
     data.add(assignee);
   }
   return data;
