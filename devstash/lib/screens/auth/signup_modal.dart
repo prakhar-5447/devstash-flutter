@@ -266,7 +266,7 @@ class SignupModalContent extends StatelessWidget {
         );
         _isLoading.value = false;
       } catch (error) {
-        _errorMessage = 'Invalid username or password';
+        _errorMessage = '$error';
         _username.clear();
         _password.clear();
         _password.clear();

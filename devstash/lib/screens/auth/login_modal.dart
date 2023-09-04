@@ -216,7 +216,7 @@ class LoginModalContent extends StatelessWidget {
         _isLoading.value = false;
       } catch (error) {
         log(error.toString());
-        _errorMessage = 'Invalid username or password';
+        _errorMessage = '$error';
         _usernameOrEmail.clear();
         _password.clear();
         _isLoading.value = false;
