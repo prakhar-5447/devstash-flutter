@@ -12,7 +12,7 @@ class GithubOAuthScreen extends StatefulWidget {
 class _GithubOAuthScreenState extends State<GithubOAuthScreen> {
   List<dynamic> _repositories = [];
   final GithubServices githubServices = GithubServices();
-  String? token;
+  late String token;
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class _GithubOAuthScreenState extends State<GithubOAuthScreen> {
 
   void get() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    token = prefs.getString('githubtoken');
+    token = prefs.getString('githubtoken') ?? '';
   }
 
   String? authCode;
