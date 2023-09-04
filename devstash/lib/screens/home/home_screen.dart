@@ -187,26 +187,12 @@ class HomeScreen extends StatelessWidget {
                               const SizedBox(
                                 height: 15,
                               ),
-                              SizedBox(
-                                height: 50,
-                                child: DonutChartWithLegend(
-                                  languageData: const {
-                                    "Dart": 315182,
-                                    "Go": 83562,
-                                    "C++": 24121,
-                                    "CMake": 18860,
-                                    "Swift": 2545,
-                                    "HTML": 1841,
-                                    "Python": 1626,
-                                    "C": 1425,
-                                    "Kotlin": 125,
-                                    "Makefile": 111,
-                                    "Objective-C": 38
-                                  },
-                                ),
+                              LanguageChart(),
+                              const SizedBox(
+                                height: 20,
                               ),
                               SizedBox(
-                                height: 400,
+                                height: 350,
                                 child: GithubDashboardContainer(),
                               ),
                             ],

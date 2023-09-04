@@ -44,6 +44,22 @@ class Issue {
   });
 }
 
+class Contributor {
+  final String login;
+  final int id;
+  final String avatarUrl;
+  final String url;
+  final int contributions;
+
+  Contributor({
+    required this.login,
+    required this.id,
+    required this.avatarUrl,
+    required this.url,
+    required this.contributions,
+  });
+}
+
 class User {
   final String login;
   final int id;
@@ -125,6 +141,24 @@ final user = User(
   avatarUrl: "https://avatars.githubusercontent.com/u/124178990?v=4",
   url: "https://api.github.com/users/Sahilkumar19",
 );
+
+
+final List<Contributor> users = [
+  Contributor(
+    login: "Sahilkumar19",
+    id: 124178990,
+    avatarUrl: "https://avatars.githubusercontent.com/u/124178990?v=4",
+    url: "https://api.github.com/users/Sahilkumar19",
+    contributions: 100,
+  ),
+  Contributor(
+    login: "Sahilkumar19",
+    id: 124178990,
+    avatarUrl: "https://avatars.githubusercontent.com/u/124178990?v=4",
+    url: "https://api.github.com/users/Sahilkumar19",
+    contributions: 100,
+  ),
+];
 
 class GithubDashboardContainer extends StatelessWidget {
   final controller = Get.put(GithubController());
@@ -390,45 +424,85 @@ class IssueTab extends StatelessWidget {
   }
 }
 
-class DonutChartWithLegend extends StatelessWidget {
-  final Map<String, dynamic> languageData;
+class LanguageChart extends StatelessWidget {
+  final Map<String, dynamic> languageData = {
+    "Dart": 315182,
+    "Go": 83562,
+    "C++": 24121,
+    "CMake": 18860,
+    "Swift": 2545,
+    "HTML": 1841,
+    "Python": 1626,
+    "C": 1425,
+    "Kotlin": 125,
+    "Makefile": 111,
+    "Objective-C": 38
+  };
 
-  DonutChartWithLegend({
-    required this.languageData,
-  });
+  int totalLinesOfCode = 0;
+  void calc(Map<String, dynamic> languageData) {
+    languageData.forEach(
+      (key, value) {
+        totalLinesOfCode = totalLinesOfCode + value as int;
+      },
+    );
+  }
+
+  double calcpercentage(int value) {
+    return (value / totalLinesOfCode * 100).toPrecision(2);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      scrollDirection: Axis.horizontal,
-      children: languageData.entries.map((entry) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 5,
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 16,
-                height: 16,
-                decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
+    calc(languageData);
+    return GridView.count(
+      crossAxisCount: 3,
+      mainAxisSpacing: 0,
+      childAspectRatio: 3,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      children: languageData.entries
+          .map(
+            (item) => Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 6,
+                  height: 6,
                   color: predefinedColors[
-                      languageData.keys.toList().indexOf(entry.key)],
+                      languageData.keys.toList().indexOf(item.key) %
+                          predefinedColors.length],
                 ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                entry.key,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
+                const SizedBox(
+                  width: 5,
                 ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: item.key,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
+                        ),
+                      ),
+                      TextSpan(
+                        text: ' (${calcpercentage(item.value)} %)',
+                        style: const TextStyle(
+                          fontSize: 8,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w400,
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )
+          .toList(),
     );
   }
 
@@ -438,87 +512,186 @@ class DonutChartWithLegend extends StatelessWidget {
     Colors.green,
     Colors.yellow,
     Colors.orange,
-    Colors.blue,
-    Colors.red,
-    Colors.green,
-    Colors.yellow,
-    Colors.orange,
-    Colors.blue,
-    Colors.red,
-    Colors.green,
-    Colors.yellow,
-    Colors.orange,
   ];
 }
 
-class PlaceholderTab extends StatelessWidget {
-  final String tabName;
+class PullRequestTab extends StatelessWidget {
+  final List<Issue> issues;
 
-  PlaceholderTab({required this.tabName});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text('$tabName content goes here');
-  }
-}
-
-class ContributorsLoadingTab extends StatefulWidget {
-  @override
-  _ContributorsLoadingTabState createState() => _ContributorsLoadingTabState();
-}
-
-class _ContributorsLoadingTabState extends State<ContributorsLoadingTab> {
-  List<dynamic> contributors = [];
-  @override
-  void initState() {
-    super.initState();
-  }
+  PullRequestTab({required this.issues});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<dynamic>>(
-      future: GithubServices().fetchContributors(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (snapshot.hasData) {
-          final contributors = snapshot.data!;
-          return ListView.builder(
-            itemCount: contributors.length,
-            itemBuilder: (context, index) {
-              final contributor = contributors[index];
-              return Column(
+    return ListView.builder(
+      itemCount: issues.length,
+      padding: EdgeInsets.zero,
+      physics: const BouncingScrollPhysics(),
+      scrollDirection: Axis.vertical,
+      itemBuilder: (context, index) {
+        return Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(
+                vertical: 18,
+                horizontal: 18,
+              ),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  ListTile(
-                    dense: true,
-                    onTap: () {
-                      // Handle tap
-                    },
-                    leading: CircleAvatar(
-                      backgroundImage: NetworkImage(contributor['avatar_url']),
-                      radius: 15,
-                    ),
-                    title: Text(contributor['login']),
-                    subtitle:
-                        Text('Contributions: ${contributor['contributions']}'),
+                  const Icon(
+                    Icons.merge_type_rounded,
+                    size: 18,
+                    color: Colors.purple,
                   ),
-                  if (index < contributors.length - 1)
-                    const Divider(
-                      indent: 10,
-                      endIndent: 10,
-                      color: Colors.black26,
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: issues[index].title,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black,
+                                  fontFamily: 'Comfortaa',
+                                ),
+                              ),
+                              WidgetSpan(
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                    left: 2,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                    borderRadius: BorderRadius.circular(
+                                      12,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    '#${issues[index].number.toString()}',
+                                    style: const TextStyle(
+                                      fontSize: 8,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400,
+                                      fontFamily: 'Comfortaa',
+                                      height: 1.5,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        CircleAvatar(
+                          radius: 8,
+                          backgroundImage: NetworkImage(
+                            issues[index].user.avatarUrl,
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
                 ],
-              );
-            },
-          );
-        } else {
-          return Center(child: Text('No contributors found.'));
-        }
+              ),
+            ),
+            if (index < issuelist.length - 1)
+              const Divider(
+                color: Colors.black26,
+                height: 0,
+              )
+          ],
+        );
+      },
+    );
+  }
+}
+
+class ContributorsTab extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: users.length,
+      padding: EdgeInsets.zero,
+      physics: const BouncingScrollPhysics(),
+      scrollDirection: Axis.vertical,
+      itemBuilder: (context, index) {
+        return Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(
+                vertical: 18,
+                horizontal: 18,
+              ),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 15,
+                    backgroundImage: NetworkImage(
+                      users[index].avatarUrl,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          users[index].login,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
+                            fontFamily: 'Comfortaa',
+                          ),
+                        ),
+                        Text(
+                          'Contributons: ${users[index].contributions.toString()}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black26,
+                            fontFamily: 'Comfortaa',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (index < issuelist.length - 1)
+              const Divider(
+                color: Colors.black26,
+                height: 0,
+              )
+          ],
+        );
       },
     );
   }
