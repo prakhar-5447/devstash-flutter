@@ -42,6 +42,22 @@ class Issue {
   });
 }
 
+class Contributor {
+  final String login;
+  final int id;
+  final String avatarUrl;
+  final String url;
+  final int contributions;
+
+  Contributor({
+    required this.login,
+    required this.id,
+    required this.avatarUrl,
+    required this.url,
+    required this.contributions,
+  });
+}
+
 class User {
   final String login;
   final int id;
@@ -123,6 +139,23 @@ final user = User(
   avatarUrl: "https://avatars.githubusercontent.com/u/124178990?v=4",
   url: "https://api.github.com/users/Sahilkumar19",
 );
+
+final List<Contributor> users = [
+  Contributor(
+    login: "Sahilkumar19",
+    id: 124178990,
+    avatarUrl: "https://avatars.githubusercontent.com/u/124178990?v=4",
+    url: "https://api.github.com/users/Sahilkumar19",
+    contributions: 100,
+  ),
+  Contributor(
+    login: "Sahilkumar19",
+    id: 124178990,
+    avatarUrl: "https://avatars.githubusercontent.com/u/124178990?v=4",
+    url: "https://api.github.com/users/Sahilkumar19",
+    contributions: 100,
+  ),
+];
 
 final List<Issue> issuelist = [
   Issue(
@@ -317,7 +350,7 @@ class GithubDashboardContainer extends StatelessWidget {
               children: [
                 IssueTab(issues: issuelist),
                 PullRequestTab(issues: issuelist),
-                ContributorsLoadingTab(),
+                ContributorsTab(),
               ],
             ),
           ),
@@ -592,6 +625,7 @@ class PullRequestTab extends StatelessWidget {
                   ),
                   Expanded(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         RichText(
                           text: TextSpan(
@@ -639,35 +673,10 @@ class PullRequestTab extends StatelessWidget {
                         const SizedBox(
                           height: 5,
                         ),
-                        SizedBox(
-                          height: 20,
-                          child: Stack(
-                            children:
-                                issues[index].assignees.asMap().entries.map(
-                              (entry) {
-                                final double leftPosition = entry.key * 10;
-                                return Positioned(
-                                  left: leftPosition,
-                                  child: Container(
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                    child: CircleAvatar(
-                                      radius: 8,
-                                      backgroundImage: NetworkImage(
-                                        entry.value.avatarUrl,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ).toList(),
+                        CircleAvatar(
+                          radius: 8,
+                          backgroundImage: NetworkImage(
+                            issues[index].user.avatarUrl,
                           ),
                         ),
                       ],
@@ -688,63 +697,74 @@ class PullRequestTab extends StatelessWidget {
   }
 }
 
-class ContributorsLoadingTab extends StatefulWidget {
-  @override
-  _ContributorsLoadingTabState createState() => _ContributorsLoadingTabState();
-}
-
-class _ContributorsLoadingTabState extends State<ContributorsLoadingTab> {
-  List<dynamic> contributors = [];
-  @override
-  void initState() {
-    super.initState();
-  }
-
+class ContributorsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<dynamic>>(
-      future: GithubServices().fetchContributors(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (snapshot.hasData) {
-          final contributors = snapshot.data!;
-          return ListView.builder(
-            itemCount: contributors.length,
-            itemBuilder: (context, index) {
-              final contributor = contributors[index];
-              return Column(
+    return ListView.builder(
+      itemCount: users.length,
+      padding: EdgeInsets.zero,
+      physics: const BouncingScrollPhysics(),
+      scrollDirection: Axis.vertical,
+      itemBuilder: (context, index) {
+        return Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(
+                vertical: 18,
+                horizontal: 18,
+              ),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  ListTile(
-                    dense: true,
-                    onTap: () {
-                      // Handle tap
-                    },
-                    leading: CircleAvatar(
-                      backgroundImage: NetworkImage(contributor['avatar_url']),
-                      radius: 15,
+                  CircleAvatar(
+                    radius: 15,
+                    backgroundImage: NetworkImage(
+                      users[index].avatarUrl,
                     ),
-                    title: Text(contributor['login']),
-                    subtitle:
-                        Text('Contributions: ${contributor['contributions']}'),
                   ),
-                  if (index < contributors.length - 1)
-                    const Divider(
-                      indent: 10,
-                      endIndent: 10,
-                      color: Colors.black26,
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          users[index].login,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
+                            fontFamily: 'Comfortaa',
+                          ),
+                        ),
+                        Text(
+                          'Contributons: ${users[index].contributions.toString()}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black26,
+                            fontFamily: 'Comfortaa',
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
                 ],
-              );
-            },
-          );
-        } else {
-          return Center(child: Text('No contributors found.'));
-        }
+              ),
+            ),
+            if (index < issuelist.length - 1)
+              const Divider(
+                color: Colors.black26,
+                height: 0,
+              )
+          ],
+        );
       },
     );
   }
