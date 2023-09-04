@@ -316,7 +316,7 @@ class GithubDashboardContainer extends StatelessWidget {
               controller: controller.tabController,
               children: [
                 IssueTab(issues: issuelist),
-                PlaceholderTab(tabName: 'Pull Requests'),
+                PullRequestTab(issues: issuelist),
                 ContributorsLoadingTab(),
               ],
             ),
@@ -464,45 +464,85 @@ class IssueTab extends StatelessWidget {
   }
 }
 
-class DonutChartWithLegend extends StatelessWidget {
-  final Map<String, dynamic> languageData;
+class LanguageChart extends StatelessWidget {
+  final Map<String, dynamic> languageData = {
+    "Dart": 315182,
+    "Go": 83562,
+    "C++": 24121,
+    "CMake": 18860,
+    "Swift": 2545,
+    "HTML": 1841,
+    "Python": 1626,
+    "C": 1425,
+    "Kotlin": 125,
+    "Makefile": 111,
+    "Objective-C": 38
+  };
 
-  DonutChartWithLegend({
-    required this.languageData,
-  });
+  int totalLinesOfCode = 0;
+  void calc(Map<String, dynamic> languageData) {
+    languageData.forEach(
+      (key, value) {
+        totalLinesOfCode = totalLinesOfCode + value as int;
+      },
+    );
+  }
+
+  double calcpercentage(int value) {
+    return (value / totalLinesOfCode * 100).toPrecision(2);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      scrollDirection: Axis.horizontal,
-      children: languageData.entries.map((entry) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 5,
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 16,
-                height: 16,
-                decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
+    calc(languageData);
+    return GridView.count(
+      crossAxisCount: 3,
+      mainAxisSpacing: 0,
+      childAspectRatio: 3,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      children: languageData.entries
+          .map(
+            (item) => Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 6,
+                  height: 6,
                   color: predefinedColors[
-                      languageData.keys.toList().indexOf(entry.key)],
+                      languageData.keys.toList().indexOf(item.key) %
+                          predefinedColors.length],
                 ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                entry.key,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
+                const SizedBox(
+                  width: 5,
                 ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: item.key,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
+                        ),
+                      ),
+                      TextSpan(
+                        text: ' (${calcpercentage(item.value)} %)',
+                        style: const TextStyle(
+                          fontSize: 8,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w400,
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )
+          .toList(),
     );
   }
 
@@ -512,27 +552,139 @@ class DonutChartWithLegend extends StatelessWidget {
     Colors.green,
     Colors.yellow,
     Colors.orange,
-    Colors.blue,
-    Colors.red,
-    Colors.green,
-    Colors.yellow,
-    Colors.orange,
-    Colors.blue,
-    Colors.red,
-    Colors.green,
-    Colors.yellow,
-    Colors.orange,
   ];
 }
 
-class PlaceholderTab extends StatelessWidget {
-  final String tabName;
+class PullRequestTab extends StatelessWidget {
+  final List<Issue> issues;
 
-  PlaceholderTab({required this.tabName});
+  PullRequestTab({required this.issues});
 
   @override
   Widget build(BuildContext context) {
-    return Text('$tabName content goes here');
+    return ListView.builder(
+      itemCount: issues.length,
+      padding: EdgeInsets.zero,
+      physics: const BouncingScrollPhysics(),
+      scrollDirection: Axis.vertical,
+      itemBuilder: (context, index) {
+        return Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(
+                vertical: 18,
+                horizontal: 18,
+              ),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.merge_type_rounded,
+                    size: 18,
+                    color: Colors.purple,
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: issues[index].title,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black,
+                                  fontFamily: 'Comfortaa',
+                                ),
+                              ),
+                              WidgetSpan(
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                    left: 2,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                    borderRadius: BorderRadius.circular(
+                                      12,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    '#${issues[index].number.toString()}',
+                                    style: const TextStyle(
+                                      fontSize: 8,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400,
+                                      fontFamily: 'Comfortaa',
+                                      height: 1.5,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        SizedBox(
+                          height: 20,
+                          child: Stack(
+                            children:
+                                issues[index].assignees.asMap().entries.map(
+                              (entry) {
+                                final double leftPosition = entry.key * 10;
+                                return Positioned(
+                                  left: leftPosition,
+                                  child: Container(
+                                    width: 20,
+                                    height: 20,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: CircleAvatar(
+                                      radius: 8,
+                                      backgroundImage: NetworkImage(
+                                        entry.value.avatarUrl,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ).toList(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (index < issuelist.length - 1)
+              const Divider(
+                color: Colors.black26,
+                height: 0,
+              )
+          ],
+        );
+      },
+    );
   }
 }
 
