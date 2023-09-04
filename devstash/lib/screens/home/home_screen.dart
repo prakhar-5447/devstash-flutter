@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      Container(
+                      SizedBox(
                         child: IconButton(
                           onPressed: () {},
                           icon: Image.asset(
@@ -125,9 +125,9 @@ class HomeScreen extends StatelessWidget {
                           const Text(
                             "0 notifications, 0 messages",
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 12,
                               fontWeight: FontWeight.w400,
-                              color: Color.fromARGB(255, 233, 232, 232),
+                              color: Color.fromARGB(255, 239, 239, 239),
                             ),
                           ),
                         ],
@@ -161,15 +161,56 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(
-                          height: 10,
+                          height: 5,
                         ),
                         SuggestionSlider(),
                         const SizedBox(
-                          height: 20,
+                          height: 15,
                         ),
-                        SizedBox(
-                          height: 500,
-                          child: GithubDashboardContainer(),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Github Dashboard",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black,
+                                ),
+                                textAlign: TextAlign.left,
+                              ),
+                              const SizedBox(
+                                height: 15,
+                              ),
+                              SizedBox(
+                                height: 50,
+                                child: DonutChartWithLegend(
+                                  languageData: const {
+                                    "Dart": 315182,
+                                    "Go": 83562,
+                                    "C++": 24121,
+                                    "CMake": 18860,
+                                    "Swift": 2545,
+                                    "HTML": 1841,
+                                    "Python": 1626,
+                                    "C": 1425,
+                                    "Kotlin": 125,
+                                    "Makefile": 111,
+                                    "Objective-C": 38
+                                  },
+                                ),
+                              ),
+                              SizedBox(
+                                height: 400,
+                                child: GithubDashboardContainer(),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),

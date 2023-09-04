@@ -43,7 +43,7 @@ dependencies:
   sqflite: ^2.2.8+4
   provider: ^6.0.5
   url_launcher: ^6.1.12
-  intl: ^0.18.0
+  intl: ^0.18.1
   fluttertoast: ^8.2.2
   flutter_typeahead: ^4.6.2
   image_picker: ^0.8.4
