@@ -1,164 +1,12 @@
 import 'package:devstash/controllers/github_controller.dart';
+import 'package:devstash/models/github/githubRepoContributerResponse.dart';
 import 'package:devstash/models/github/githubRepoIssueResponse.dart';
+import 'package:devstash/models/github/githubRepoPullResponse.dart';
 import 'package:devstash/services/GithubServices.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-
-class Issue {
-  final String url;
-  final String repositoryUrl;
-  final String htmlUrl;
-  final int id;
-  final String title;
-  final User user;
-  final String state;
-  final bool locked;
-  final int comments;
-  final int number;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final DateTime? closedAt;
-  final String authorAssociation;
-  final String body;
-  final List<User> assignees;
-
-  Issue({
-    required this.url,
-    required this.repositoryUrl,
-    required this.htmlUrl,
-    required this.id,
-    required this.title,
-    required this.user,
-    required this.state,
-    required this.locked,
-    required this.comments,
-    required this.number,
-    required this.createdAt,
-    required this.updatedAt,
-    this.closedAt,
-    required this.authorAssociation,
-    required this.body,
-    required this.assignees,
-  });
-}
-
-class Contributor {
-  final String login;
-  final int id;
-  final String avatarUrl;
-  final String url;
-  final int contributions;
-
-  Contributor({
-    required this.login,
-    required this.id,
-    required this.avatarUrl,
-    required this.url,
-    required this.contributions,
-  });
-}
-
-class User {
-  final String login;
-  final int id;
-  final String avatarUrl;
-  final String url;
-
-  User({
-    required this.login,
-    required this.id,
-    required this.avatarUrl,
-    required this.url,
-  });
-}
-
-class Repo {
-  final int id;
-  final String name;
-  final String fullName;
-  final Owner owner;
-  final String htmlUrl;
-  final String? description;
-  final bool fork;
-
-  Repo({
-    required this.id,
-    required this.name,
-    required this.fullName,
-    required this.owner,
-    required this.htmlUrl,
-    required this.description,
-    required this.fork,
-  });
-}
-
-class Owner {
-  final String login;
-  final int id;
-  final String avatarUrl;
-
-  Owner({
-    required this.login,
-    required this.id,
-    required this.avatarUrl,
-  });
-}
-
-List<Repo> mockRepos = [
-  Repo(
-    id: 542113002,
-    name: "html-css-javascript",
-    fullName: "pixel8cloud/html-css-javascript",
-    owner: Owner(
-      login: "pixel8cloud",
-      id: 111991143,
-      avatarUrl: "https://avatars.githubusercontent.com/u/111991143?v=4",
-    ),
-    htmlUrl: "https://github.com/pixel8cloud/html-css-javascript",
-    description: null,
-    fork: false,
-  ),
-  Repo(
-    id: 531539336,
-    name: "Learn-Git-and-Github",
-    fullName: "pixel8cloud/Learn-Git-and-Github",
-    owner: Owner(
-      login: "pixel8cloud",
-      id: 111991143,
-      avatarUrl: "https://avatars.githubusercontent.com/u/111991143?v=4",
-    ),
-    htmlUrl: "https://github.com/pixel8cloud/Learn-Git-and-Github",
-    description: null,
-    fork: false,
-  ),
-];
-
-final user = User(
-  login: "Sahilkumar19",
-  id: 124178990,
-  avatarUrl: "https://avatars.githubusercontent.com/u/124178990?v=4",
-  url: "https://api.github.com/users/Sahilkumar19",
-);
-
-
-final List<Contributor> users = [
-  Contributor(
-    login: "Sahilkumar19",
-    id: 124178990,
-    avatarUrl: "https://avatars.githubusercontent.com/u/124178990?v=4",
-    url: "https://api.github.com/users/Sahilkumar19",
-    contributions: 100,
-  ),
-  Contributor(
-    login: "Sahilkumar19",
-    id: 124178990,
-    avatarUrl: "https://avatars.githubusercontent.com/u/124178990?v=4",
-    url: "https://api.github.com/users/Sahilkumar19",
-    contributions: 100,
-  ),
-];
 
 class GithubDashboardContainer extends StatelessWidget {
   final controller = Get.put(GithubController());
@@ -235,8 +83,8 @@ class GithubDashboardContainer extends StatelessWidget {
               controller: controller.tabController,
               children: [
                 IssueTab(),
-                PlaceholderTab(tabName: 'Pull Requests'),
-                ContributorsLoadingTab(),
+                PullRequestTab(),
+                ContributorsTab(),
               ],
             ),
           ),
@@ -246,8 +94,122 @@ class GithubDashboardContainer extends StatelessWidget {
   }
 }
 
+class LanguageChart extends StatelessWidget {
+  Future<Map<String, dynamic>?> _getRepoLanguage() async {
+    late Map<String, dynamic> languageData;
+    dynamic res = await GithubServices().getRepoLanguages();
+    if (res['success']) {
+      languageData = res['data'];
+    } else {
+      Fluttertoast.showToast(
+        msg: res["data"].message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      return null;
+    }
+
+    return languageData;
+  }
+
+  int totalLinesOfCode = 0;
+  void calc(Map<String, dynamic> languageData) {
+    languageData.forEach(
+      (key, value) {
+        totalLinesOfCode = totalLinesOfCode + value as int;
+      },
+    );
+  }
+
+  double calcpercentage(int value) {
+    return (value / totalLinesOfCode * 100).toPrecision(2);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Map<String, dynamic>?>(
+        future: _getRepoLanguage(),
+        builder: (BuildContext context,
+            AsyncSnapshot<Map<String, dynamic>?> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            Map<String, dynamic>? languages = snapshot.data;
+            if (languages == null) {
+              return const Text('Not able to fetch data');
+            }
+            calc(languages);
+            return GridView.count(
+              crossAxisCount: 3,
+              mainAxisSpacing: 0,
+              childAspectRatio: 3,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              children: languages.entries
+                  .map(
+                    (item) => Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 6,
+                          height: 6,
+                          color: predefinedColors[
+                              languages.keys.toList().indexOf(item.key) %
+                                  predefinedColors.length],
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: item.key,
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              TextSpan(
+                                text: ' (${calcpercentage(item.value)} %)',
+                                style: const TextStyle(
+                                  fontSize: 8,
+                                  color: Colors.black54,
+                                  fontWeight: FontWeight.w400,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                  .toList(),
+            );
+          }
+        });
+  }
+
+  final List<Color> predefinedColors = [
+    Colors.blue,
+    Colors.red,
+    Colors.green,
+    Colors.yellow,
+    Colors.orange,
+  ];
+}
+
 class IssueTab extends StatelessWidget {
-  Future<List<GithubRepoIssueResponse>> _getRepoIssue() async {
+  Future<List<GithubRepoIssueResponse>?> _getRepoIssue() async {
     late List<GithubRepoIssueResponse> repoIssue;
 
     dynamic res = await GithubServices().getRepoIssue();
@@ -262,6 +224,7 @@ class IssueTab extends StatelessWidget {
         backgroundColor: Colors.red,
         textColor: Colors.white,
       );
+      return null;
     }
 
     return repoIssue;
@@ -269,10 +232,10 @@ class IssueTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<GithubRepoIssueResponse>>(
+    return FutureBuilder<List<GithubRepoIssueResponse>?>(
         future: _getRepoIssue(),
         builder: (BuildContext context,
-            AsyncSnapshot<List<GithubRepoIssueResponse>> snapshot) {
+            AsyncSnapshot<List<GithubRepoIssueResponse>?> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: CircularProgressIndicator(),
@@ -282,7 +245,9 @@ class IssueTab extends StatelessWidget {
           } else {
             List<GithubRepoIssueResponse>? issues = snapshot.data;
             if (issues == null) {
-              return const Text('No projects data found.');
+              return const Text('Not able to fetch data');
+            } else if (issues.isEmpty) {
+              return const Text('No data found');
             }
             return ListView.builder(
                 itemCount: issues.length,
@@ -424,275 +389,272 @@ class IssueTab extends StatelessWidget {
   }
 }
 
-class LanguageChart extends StatelessWidget {
-  final Map<String, dynamic> languageData = {
-    "Dart": 315182,
-    "Go": 83562,
-    "C++": 24121,
-    "CMake": 18860,
-    "Swift": 2545,
-    "HTML": 1841,
-    "Python": 1626,
-    "C": 1425,
-    "Kotlin": 125,
-    "Makefile": 111,
-    "Objective-C": 38
-  };
-
-  int totalLinesOfCode = 0;
-  void calc(Map<String, dynamic> languageData) {
-    languageData.forEach(
-      (key, value) {
-        totalLinesOfCode = totalLinesOfCode + value as int;
-      },
-    );
-  }
-
-  double calcpercentage(int value) {
-    return (value / totalLinesOfCode * 100).toPrecision(2);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    calc(languageData);
-    return GridView.count(
-      crossAxisCount: 3,
-      mainAxisSpacing: 0,
-      childAspectRatio: 3,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      children: languageData.entries
-          .map(
-            (item) => Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  width: 6,
-                  height: 6,
-                  color: predefinedColors[
-                      languageData.keys.toList().indexOf(item.key) %
-                          predefinedColors.length],
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: item.key,
-                        style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black,
-                        ),
-                      ),
-                      TextSpan(
-                        text: ' (${calcpercentage(item.value)} %)',
-                        style: const TextStyle(
-                          fontSize: 8,
-                          color: Colors.black54,
-                          fontWeight: FontWeight.w400,
-                          height: 1.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          )
-          .toList(),
-    );
-  }
-
-  final List<Color> predefinedColors = [
-    Colors.blue,
-    Colors.red,
-    Colors.green,
-    Colors.yellow,
-    Colors.orange,
-  ];
-}
-
 class PullRequestTab extends StatelessWidget {
-  final List<Issue> issues;
+  Future<List<GithubRepoPullResponse>?> _getRepoPull() async {
+    late List<GithubRepoPullResponse> repoPull;
 
-  PullRequestTab({required this.issues});
+    dynamic res = await GithubServices().getRepoPull();
+    if (res['success']) {
+      repoPull = res['data'];
+    } else {
+      Fluttertoast.showToast(
+        msg: res["data"].message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      return null;
+    }
+
+    return repoPull;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: issues.length,
-      padding: EdgeInsets.zero,
-      physics: const BouncingScrollPhysics(),
-      scrollDirection: Axis.vertical,
-      itemBuilder: (context, index) {
-        return Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(
-                vertical: 18,
-                horizontal: 18,
-              ),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Icon(
-                    Icons.merge_type_rounded,
-                    size: 18,
-                    color: Colors.purple,
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: issues[index].title,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black,
-                                  fontFamily: 'Comfortaa',
-                                ),
+    return FutureBuilder<List<GithubRepoPullResponse>?>(
+        future: _getRepoPull(),
+        builder: (BuildContext context,
+            AsyncSnapshot<List<GithubRepoPullResponse>?> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            List<GithubRepoPullResponse>? pulls = snapshot.data;
+            if (pulls == null) {
+              return const Text('Not able to fetch data');
+            } else if (pulls.isEmpty) {
+              return const Text('No data found');
+            }
+            return ListView.builder(
+                itemCount: pulls.length,
+                padding: EdgeInsets.zero,
+                physics: const BouncingScrollPhysics(),
+                scrollDirection: Axis.vertical,
+                itemBuilder: (context, index) {
+                  return Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 18,
+                          horizontal: 18,
+                        ),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SvgPicture.asset(
+                              'assets/open_issue.svg',
+                              width: 15,
+                              fit: BoxFit.cover,
+                              color: Colors.green,
+                              theme: const SvgTheme(
+                                currentColor: Colors.green,
                               ),
-                              WidgetSpan(
-                                child: Container(
-                                  margin: const EdgeInsets.only(
-                                    left: 2,
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 5,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                    borderRadius: BorderRadius.circular(
-                                      12,
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: pulls[index].title,
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.black,
+                                            fontFamily: 'Comfortaa',
+                                          ),
+                                        ),
+                                        WidgetSpan(
+                                          child: Container(
+                                            margin: const EdgeInsets.only(
+                                              left: 2,
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 5,
+                                              vertical: 2,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                12,
+                                              ),
+                                            ),
+                                            child: Text(
+                                              '#${pulls[index].number.toString()}',
+                                              style: const TextStyle(
+                                                fontSize: 8,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w400,
+                                                fontFamily: 'Comfortaa',
+                                                height: 1.5,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  child: Text(
-                                    '#${issues[index].number.toString()}',
-                                    style: const TextStyle(
-                                      fontSize: 8,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w400,
-                                      fontFamily: 'Comfortaa',
-                                      height: 1.5,
-                                    ),
-                                  ),
-                                ),
+                                  if (pulls[index].user != null)
+                                    Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
+                                        CircleAvatar(
+                                          radius: 8,
+                                          backgroundImage: NetworkImage(
+                                            pulls[index].user.avatar_url,
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        CircleAvatar(
-                          radius: 8,
-                          backgroundImage: NetworkImage(
-                            issues[index].user.avatarUrl,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (index < issuelist.length - 1)
-              const Divider(
-                color: Colors.black26,
-                height: 0,
-              )
-          ],
-        );
-      },
-    );
+                      ),
+                      if (index < pulls.length - 1)
+                        const Divider(
+                          color: Colors.black26,
+                          height: 0,
+                        )
+                    ],
+                  );
+                });
+          }
+        });
   }
 }
 
 class ContributorsTab extends StatelessWidget {
+  Future<List<GithubRepoContributerResponse>?> _getRepoContributer() async {
+    late List<GithubRepoContributerResponse> repoContributer;
+
+    dynamic res = await GithubServices().getRepoContributors();
+    if (res['success']) {
+      repoContributer = res['data'];
+    } else {
+      Fluttertoast.showToast(
+        msg: res["data"].message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      return null;
+    }
+
+    return repoContributer;
+  }
+
+  List<GithubRepoIssueResponse> contributer = [];
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: users.length,
-      padding: EdgeInsets.zero,
-      physics: const BouncingScrollPhysics(),
-      scrollDirection: Axis.vertical,
-      itemBuilder: (context, index) {
-        return Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(
-                vertical: 18,
-                horizontal: 18,
-              ),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  CircleAvatar(
-                    radius: 15,
-                    backgroundImage: NetworkImage(
-                      users[index].avatarUrl,
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          users[index].login,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black,
-                            fontFamily: 'Comfortaa',
+    return FutureBuilder<List<GithubRepoContributerResponse>?>(
+        future: _getRepoContributer(),
+        builder: (BuildContext context,
+            AsyncSnapshot<List<GithubRepoContributerResponse>?> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            List<GithubRepoContributerResponse>? contributers = snapshot.data;
+            if (contributers == null) {
+              return const Text('Not able to fetch data');
+            } else if (contributers.isEmpty) {
+              return const Text('No data found');
+            }
+            return ListView.builder(
+              itemCount: contributers.length,
+              padding: EdgeInsets.zero,
+              physics: const BouncingScrollPhysics(),
+              scrollDirection: Axis.vertical,
+              itemBuilder: (context, index) {
+                return Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 18,
+                        horizontal: 18,
+                      ),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          CircleAvatar(
+                            radius: 15,
+                            backgroundImage: NetworkImage(
+                              contributers[index].avatar_url,
+                            ),
                           ),
-                        ),
-                        Text(
-                          'Contributons: ${users[index].contributions.toString()}',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black26,
-                            fontFamily: 'Comfortaa',
+                          const SizedBox(
+                            width: 10,
                           ),
-                        ),
-                      ],
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  contributers[index].login,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black,
+                                    fontFamily: 'Comfortaa',
+                                  ),
+                                ),
+                                Text(
+                                  'Contributons: ${contributers[index].contributions}',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black26,
+                                    fontFamily: 'Comfortaa',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            if (index < issuelist.length - 1)
-              const Divider(
-                color: Colors.black26,
-                height: 0,
-              )
-          ],
-        );
-      },
-    );
+                    if (index < contributers.length - 1)
+                      const Divider(
+                        color: Colors.black26,
+                        height: 0,
+                      )
+                  ],
+                );
+              },
+            );
+          }
+        });
   }
 }
