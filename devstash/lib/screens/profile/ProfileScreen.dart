@@ -1,14 +1,12 @@
 import 'dart:developer';
 import 'package:devstash/models/ProjectList.dart';
-import 'package:devstash/models/response/projectResponse.dart';
+import 'package:devstash/screens/projects/project.dart';
 import 'package:devstash/screens/projects/projectDetailScreen.dart';
 import 'package:devstash/services/projectServices.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:devstash/constants.dart';
 import 'package:devstash/controllers/user_controller.dart';
-import 'package:devstash/models/Project.dart';
 import 'package:devstash/models/response/contactResponse.dart';
 import 'package:devstash/models/response/education.dart';
 import 'package:devstash/models/response/skillResponse.dart';
@@ -36,7 +34,6 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final UserController userController = Get.find<UserController>();
     final UserState? user = userController.user;
-    final date = DateTime.now();
     List<EducationResponse>? educations;
     SkillResponse? tech;
     ContactResponse? contactDetails;
@@ -48,16 +45,16 @@ class ProfileScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           children: [
             Container(
-              width: 500,
-              height: 200,
+              width: MediaQuery.of(context).size.width,
+              height: 150,
               decoration: const BoxDecoration(
                 shape: BoxShape.rectangle,
               ),
               child: Stack(
                 children: [
                   Container(
-                    height: 500,
-                    width: 500,
+                    height: 150,
+                    width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         colorFilter: ColorFilter.mode(
@@ -71,249 +68,316 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Positioned(
-                    top: 50,
-                    left: 25,
-                    child: SvgPicture.asset(
-                      'assets/arrow.svg',
-                      height: 15.0,
-                      width: 15.0,
-                      color: Colors.white,
+                  SafeArea(
+                    child: Stack(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EditProfileScreen()),
+                            );
+                          },
+                          child: Align(
+                            alignment: Alignment.topRight,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 10, 10, 0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    'PORTFOLIO',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w900,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                  SvgPicture.asset(
+                                    'assets/redirect.svg',
+                                    height: 10.0,
+                                    width: 10.0,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Avatar(avatar: user?.avatar)
+                  Avatar(avatar: user?.avatar),
                 ],
               ),
             ),
-            Stack(
+            const Stack(
               children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => EditProfileScreen()),
-                    );
-                  },
-                  child: Align(
-                    alignment: const AlignmentDirectional(0.93, 0),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 10, 10, 0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'PORTFOLIO',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontFamily: "Comfortaa",
-                              fontWeight: FontWeight.w800,
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(0, 10, 20, 0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Column(
+                          children: [
+                            Text(
+                              "12",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          SvgPicture.asset(
-                            'assets/redirect.svg',
-                            height: 10.0,
-                            width: 10.0,
-                          ),
-                        ],
-                      ),
+                            Text(
+                              "Followers",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          width: 30,
+                        ),
+                        Column(
+                          children: [
+                            Text(
+                              "20",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            Text(
+                              "Following",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ],
             ),
             const SizedBox(
-              height: 50,
+              height: 30,
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+              padding: const EdgeInsets.only(
+                left: 25,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          user?.name ?? '',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w400,
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        user?.name ?? '',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        user?.username ?? '',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w300,
+                          color: Color.fromARGB(
+                            255,
+                            165,
+                            165,
+                            165,
                           ),
                         ),
-                        Text(
-                          user?.username ?? '',
-                          style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w300,
-                              color: Color.fromARGB(255, 165, 165, 165)),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        user?.description ?? '',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black,
                         ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 0, 10, 25),
-                          child: Text(
-                            user?.description ?? '',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: Color.fromARGB(255, 165, 165, 165)),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  Center(
-                      child: FutureBuilder<SocialsResponse?>(
-                          future: _getsocials(context),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const SizedBox(
-                                width: 40,
-                                child: CircularProgressIndicator(),
-                              ); // Show loading indicator while waiting for data
-                            } else if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            } else {
-                              SocialsResponse? socials = snapshot.data;
-                              if (socials == null) {
-                                return const Text('No socials data found.');
-                              }
-
-                              final Map<String, dynamic> socialIcons = {
-                                'twitter': socials.twitter,
-                                'instagram': socials.instagram,
-                                'linkedin': socials.linkedin,
-                                'github': socials.github,
-                              };
-
-                              return SizedBox(
-                                width: 250,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    for (var social in socialIcons.keys)
-                                      GestureDetector(
-                                        onTap: () async {
-                                          final Uri url = Uri.parse(
-                                              'https://${social}.com/${socialIcons[social]}');
-                                          if (await canLaunchUrl(url)) {
-                                            await launchUrl(url);
-                                          } else {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              SnackBar(
-                                                content:
-                                                    Text('invalid url $url'),
-                                                behavior:
-                                                    SnackBarBehavior.floating,
-                                                backgroundColor: Colors.red,
-                                              ),
-                                            );
-                                          }
-                                        },
-                                        child: Container(
-                                          width: 45,
-                                          height: 45,
-                                          padding: const EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            border:
-                                                Border.all(color: Colors.black),
-                                            borderRadius:
-                                                BorderRadius.circular(30),
-                                            color: Colors.white,
-                                          ),
-                                          child: Image.asset(
-                                            'assets/google.png',
-                                            fit: BoxFit.contain,
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              );
-                            }
-                          })),
                   const SizedBox(
-                    height: 50,
+                    height: 10,
+                  ),
+                  FutureBuilder<SocialsResponse?>(
+                    future: _getsocials(context),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const SizedBox(
+                          width: 40,
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        SocialsResponse? socials = snapshot.data;
+                        if (socials == null) {
+                          return const SizedBox();
+                        }
+                        final Map<String, dynamic> socialIcons = {
+                          'twitter': socials.twitter,
+                          'instagram': socials.instagram,
+                          'linkedin': socials.linkedin,
+                          'github': socials.github,
+                        };
+                        return Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            for (var social in socialIcons.keys)
+                              GestureDetector(
+                                onTap: () async {
+                                  final Uri url = Uri.parse(
+                                      'https://$social.com/${socialIcons[social]}');
+                                  if (await canLaunchUrl(url)) {
+                                    await launchUrl(url);
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('invalid url $url'),
+                                        behavior: SnackBarBehavior.floating,
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.only(
+                                    right: socialIcons.keys
+                                                .toList()
+                                                .indexOf(social) <
+                                            socialIcons.length - 1
+                                        ? 10
+                                        : 0,
+                                  ),
+                                  width: 30,
+                                  height: 30,
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  child: Image.asset(
+                                    'assets/$social.png',
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      }
+                    },
+                  ),
+                  const SizedBox(
+                    height: 30,
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Projects",
-                        style: TextStyle(
-                          fontFamily: 'Comfortaa',
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
+                      GestureDetector(
+                        onTap: () {
+                          Get.to(() => const Project());
+                        },
+                        child: const Row(
+                          children: [
+                            Text(
+                              "Projects",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Icon(
+                              Icons.edit,
+                              color: Colors.black26,
+                              size: 20,
+                            )
+                          ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 0),
-                        child: FutureBuilder<List<ProjectList>?>(
-                            future: _getprojects(context),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const CircularProgressIndicator(); // Show loading indicator while waiting for data
-                              } else if (snapshot.hasError) {
-                                return Text('Error: ${snapshot.error}');
-                              } else {
-                                List<ProjectList>? projects = snapshot.data;
-                                if (projects == null) {
-                                  return const Text('No projects data found.');
-                                }
-
-                                return GridView.builder(
-                                  shrinkWrap:
-                                      true, // Allow the GridView to take only the necessary height
-                                  physics:
-                                      const NeverScrollableScrollPhysics(), // Disable GridView's scrolling
-                                  gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount:
-                                        3, // Number of columns in the grid
-                                    crossAxisSpacing: 10,
-                                    mainAxisSpacing: 10,
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      FutureBuilder<List<ProjectList>?>(
+                        future: _getprojects(context),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator(); // Show loading indicator while waiting for data
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else {
+                            List<ProjectList>? projects = snapshot.data;
+                            if (projects == null) {
+                              return const Text('No projects data found.');
+                            }
+                            return GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                              ),
+                              padding: EdgeInsets.zero,
+                              itemCount: projects.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  onTap: () => Get.to(
+                                    () => ProjectDetailScreen(
+                                      id: projects[index].id,
+                                      onDelete: null,
+                                      index: index,
+                                    ),
                                   ),
-                                  itemCount: projects.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return GestureDetector(
-                                      onTap: () => Get.to(() =>
-                                          ProjectDetailScreen(
-                                              id: projects[index].id,
-                                              onDelete: null,
-                                              index: index)),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                              colorFilter: ColorFilter.mode(
-                                                Colors.black.withOpacity(0.5),
-                                                BlendMode.darken,
-                                              ),
-                                              image: NetworkImage(
-                                                  projects[index].image),
-                                              fit: BoxFit.cover,
-                                            ),
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(5))),
+                                  child: Container(
+                                    margin: const EdgeInsets.all(
+                                      0,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: NetworkImage(
+                                          projects[index].image,
+                                        ),
+                                        fit: BoxFit.cover,
                                       ),
-                                    );
-                                  },
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(5),
+                                      ),
+                                    ),
+                                  ),
                                 );
-                              }
-                            }),
+                              },
+                            );
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -742,32 +806,66 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-class Avatar extends StatefulWidget {
-  String? avatar;
-  Avatar({super.key, required this.avatar});
+class Avatar extends StatelessWidget {
+  final String? avatar;
+
+  Avatar({Key? key, required this.avatar}) : super(key: key);
 
   @override
-  State<Avatar> createState() => _AvatarState();
-}
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        _pickImage(context);
+      },
+      child: Align(
+        alignment: Alignment.bottomLeft,
+        child: Transform.translate(
+          offset: const Offset(20, 60),
+          child: Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Colors.white,
+                width: 5,
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(100),
+              child: avatar != null
+                  ? Image.network(
+                      "${ApiConstants.baseUrl}/images/$avatar",
+                      width: 120,
+                      height: 120,
+                      fit: BoxFit.cover,
+                    )
+                  : Container(
+                      width: 120,
+                      height: 120,
+                      decoration: const BoxDecoration(color: Colors.black),
+                    ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
-class _AvatarState extends State<Avatar> {
-  late XFile _pickedImage = XFile('');
-  bool _isLoading = false;
-  Future<void> _pickImage() async {
+  void _pickImage(BuildContext context) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
     final pickedImage =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
-      setState(() {
-        _pickedImage = pickedImage;
-      });
-      await _uploadImage(token);
+      final _pickedImage = XFile(pickedImage.path);
+      await _uploadImage(context, token, _pickedImage);
     }
   }
 
-  Future<void> _uploadImage(String? token) async {
-    if (_pickedImage.path.isEmpty) {
+  Future<void> _uploadImage(
+      BuildContext context, String? token, XFile pickedImage) async {
+    if (pickedImage.path.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please pick an image first'),
@@ -777,7 +875,7 @@ class _AvatarState extends State<Avatar> {
       );
       return;
     }
-    dynamic res = await AvatarServices().updateAvatar(token, _pickedImage);
+    dynamic res = await AvatarServices().updateAvatar(token, pickedImage);
     if (res != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -787,49 +885,5 @@ class _AvatarState extends State<Avatar> {
         ),
       );
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        _pickImage();
-      },
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: Transform.translate(
-          offset: const Offset(0, 75),
-          child: Container(
-            width: 150,
-            height: 150,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: Colors.white,
-                width: 5,
-              ),
-            ),
-            child: Align(
-              alignment: const AlignmentDirectional(-0.01, 2.25),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: widget.avatar != null
-                    ? Image.network(
-                        "${ApiConstants.baseUrl}/images/${widget.avatar}",
-                        width: 150,
-                        height: 150,
-                        fit: BoxFit.cover,
-                      )
-                    : Container(
-                        width: 150,
-                        height: 150,
-                        decoration: const BoxDecoration(color: Colors.white),
-                      ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }
