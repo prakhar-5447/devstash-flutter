@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:devstash/controllers/github_controller.dart';
 import 'package:devstash/models/github/githubRepoIssueResponse.dart';
 import 'package:devstash/services/GithubServices.dart';
@@ -142,7 +144,6 @@ final user = User(
   url: "https://api.github.com/users/Sahilkumar19",
 );
 
-
 final List<Contributor> users = [
   Contributor(
     login: "Sahilkumar19",
@@ -235,8 +236,10 @@ class GithubDashboardContainer extends StatelessWidget {
               controller: controller.tabController,
               children: [
                 IssueTab(),
-                PlaceholderTab(tabName: 'Pull Requests'),
-                ContributorsLoadingTab(),
+                PullRequestTab(
+                  issues: [],
+                ),
+                ContributorsTab(),
               ],
             ),
           ),
@@ -612,7 +615,7 @@ class PullRequestTab extends StatelessWidget {
                 ],
               ),
             ),
-            if (index < issuelist.length - 1)
+            if (index < issues.length - 1)
               const Divider(
                 color: Colors.black26,
                 height: 0,
@@ -685,7 +688,7 @@ class ContributorsTab extends StatelessWidget {
                 ],
               ),
             ),
-            if (index < issuelist.length - 1)
+            if (index < users.length - 1)
               const Divider(
                 color: Colors.black26,
                 height: 0,

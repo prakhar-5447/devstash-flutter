@@ -1,12 +1,9 @@
-import 'dart:developer';
-
 import 'package:devstash/constants.dart';
 import 'package:devstash/controllers/tabs_controller.dart';
 import 'package:devstash/controllers/user_controller.dart';
 import 'package:devstash/screens/home/home_screen.dart';
+import 'package:devstash/screens/inbox/inbox.dart';
 import 'package:devstash/screens/profile/ProfileScreen.dart';
-import 'package:devstash/screens/projects/project.dart';
-import 'package:devstash/widgets/github_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -16,9 +13,9 @@ class BindingScreen extends StatelessWidget {
   final UserController userController = Get.find<UserController>();
   final _pages = [
     const HomeScreen(),
+    const HomeScreen(),
+    const InboxScreen(),
     const ProfileScreen(),
-    GithubOAuthScreen(),
-    const Project(),
   ];
 
   @override
