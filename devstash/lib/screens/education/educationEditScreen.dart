@@ -1,11 +1,9 @@
 import 'dart:developer';
 
-import 'package:devstash/models/request/UserProfile.dart';
 import 'package:devstash/models/request/educationRequest.dart';
 import 'package:devstash/models/response/education.dart';
 import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/profile/ProfileScreen.dart';
-import 'package:devstash/screens/education/educationList.dart';
 import 'package:devstash/services/education.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';

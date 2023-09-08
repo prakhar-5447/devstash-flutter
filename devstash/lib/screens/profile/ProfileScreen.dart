@@ -329,7 +329,7 @@ class ProfileScreen extends StatelessWidget {
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return const CircularProgressIndicator(); // Show loading indicator while waiting for data
+                            return const CircularProgressIndicator();
                           } else if (snapshot.hasError) {
                             return Text('Error: ${snapshot.error}');
                           } else {
@@ -382,47 +382,48 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(
-                    height: 50,
+                    height: 30,
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Education",
-                            style: TextStyle(
-                              fontFamily: 'Comfortaa',
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
+                      GestureDetector(
+                        onTap: () {
+                          Get.to(
+                            () => EducationList(
+                              educationList: educations,
                             ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => EducationList(
-                                        educationList: educations)),
-                              );
-                            },
-                            child: const Icon(
+                          );
+                        },
+                        child: const Row(
+                          children: [
+                            Text(
+                              "Education",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Icon(
                               Icons.edit,
+                              color: Colors.black26,
                               size: 20,
-                            ),
-                          )
-                        ],
+                            )
+                          ],
+                        ),
                       ),
                       const SizedBox(
-                        height: 15,
+                        height: 10,
                       ),
                       FutureBuilder<List<EducationResponse>?>(
                           future: _geteducations(context),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return const CircularProgressIndicator(); // Show loading indicator while waiting for data
+                              return const CircularProgressIndicator();
                             } else if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
                             } else {
@@ -470,45 +471,48 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(
-                    height: 50,
+                    height: 30,
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Skills",
-                            style: TextStyle(
-                              fontFamily: 'Comfortaa',
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
+                      GestureDetector(
+                        onTap: () {
+                          Get.to(
+                            () => SkillList(
+                              skillList: tech,
                             ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => SkillList(
-                                          skillList: tech,
-                                        )),
-                              );
-                            },
-                            child: const Icon(
+                          );
+                        },
+                        child: const Row(
+                          children: [
+                            Text(
+                              "Skills",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Icon(
                               Icons.edit,
+                              color: Colors.black26,
                               size: 20,
-                            ),
-                          )
-                        ],
+                            )
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
                       ),
                       FutureBuilder<SkillResponse?>(
                           future: _getskills(context),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return const CircularProgressIndicator(); // Show loading indicator while waiting for data
+                              return const CircularProgressIndicator();
                             } else if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
                             } else {
@@ -559,48 +563,48 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(
-                    height: 50,
+                    height: 30,
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Contact",
-                            style: TextStyle(
-                              fontFamily: 'Comfortaa',
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
+                      GestureDetector(
+                        onTap: () {
+                          Get.to(
+                            () => ContactScreen(
+                              contact: contactDetails,
                             ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ContactScreen(
-                                          contact: contactDetails,
-                                        )),
-                              );
-                            },
-                            child: const Icon(
+                          );
+                        },
+                        child: const Row(
+                          children: [
+                            Text(
+                              "Contact",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Icon(
                               Icons.edit,
+                              color: Colors.black26,
                               size: 20,
-                            ),
-                          )
-                        ],
+                            )
+                          ],
+                        ),
                       ),
                       const SizedBox(
-                        height: 15,
+                        height: 10,
                       ),
                       FutureBuilder<ContactResponse?>(
                           future: _getcontact(context),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return const CircularProgressIndicator(); // Show loading indicator while waiting for data
+                              return const CircularProgressIndicator();
                             } else if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
                             } else {
