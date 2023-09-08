@@ -44,7 +44,6 @@ def get_recommendations():
     recommended_profiles=list()
     for profile in recommended:
         recommended_profiles.append(str(profile["userid"]))
-
     return jsonify({"data": recommended_profiles})
 
 if __name__ == '__main__':

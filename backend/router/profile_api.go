@@ -442,16 +442,21 @@ func (server *Server) fetch_recommended_users(c *gin.Context) {
 
 	defer res.Body.Close()
 
-	var responseData map[string][]string
+	var responseData models.ResponseData
+
 	err = json.NewDecoder(res.Body).Decode(&responseData)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": "Failed to parse response data"})
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": "Failed to parse response data as JSON"})
+		return
+	}
+
+	if len(responseData.Data) == 0 {
+		c.JSON(http.StatusOK, gin.H{"success": true, "msg": "No recommendation available", "data": []string{}})
 		return
 	}
 
 	var userResponses []models.RecommendedUsers
-
-	for _, userIDStr := range responseData["data"] {
+	for _, userIDStr := range responseData.Data {
 		userID, err := primitive.ObjectIDFromHex(userIDStr)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": "Invalid user ID"})
@@ -465,7 +470,7 @@ func (server *Server) fetch_recommended_users(c *gin.Context) {
 		}
 
 		userResponse := models.RecommendedUsers{
-			UserId: user.ID.Hex(),
+			Id:     user.ID.Hex(),
 			Name:   user.Name,
 			Avatar: user.Avatar,
 		}

@@ -1,7 +1,7 @@
 package models
 
 type RecommendedUsers struct {
-	UserId string `json:"userId"`
+	Id     string `json:"id"`
 	Name   string `json:"name"`
 	Avatar string `json:"avatar"`
 }
