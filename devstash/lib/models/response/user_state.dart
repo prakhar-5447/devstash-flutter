@@ -37,26 +37,4 @@ class UserState {
   String toString() {
     return 'UserState{iD: $_id, name: $_name, avatar: $_avatar, username: $_username, email: $_email, description: $_description}';
   }
-
-  factory UserState.fromJson(Map<String, dynamic> json) {
-    return UserState(
-      json['_id'],
-      json['_name'],
-      json['_avatar'],
-      json['_username'],
-      json['_email'],
-      json['_description'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': _id,
-      '_name': _name,
-      '_avatar': _avatar,
-      '_username': _username,
-      '_email': _email,
-      '_description': _description,
-    };
-  }
 }

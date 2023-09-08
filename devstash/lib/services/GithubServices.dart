@@ -100,7 +100,31 @@ class GithubServices {
     }
   }
 
-  dynamic fetchContributors() async {
+  dynamic getRepoLanguages() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? repoName = prefs.getString('repository') ?? 'devstash-flutter';
+    String? owner = prefs.getString('owner') ?? 'prakhar-5447';
+    String? accessToken = prefs.getString('githubtoken');
+
+    final apiUrl = 'https://api.github.com/repos/$owner/$repoName/languages';
+
+    final headers = {
+      'Authorization': 'Bearer $accessToken',
+      'Accept': 'application/json',
+    };
+
+    final contributerResponse =
+        await http.get(Uri.parse(apiUrl), headers: headers);
+
+    if (contributerResponse.statusCode == 200) {
+      return githubRepoLanguagesDataFromJson(contributerResponse.body, true);
+    } else {
+      return githubRepoContributerListDataFromJson(
+          contributerResponse.body, false);
+    }
+  }
+
+  dynamic getRepoContributors() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? repoName = prefs.getString('repository') ?? 'devstash-flutter';
     String? owner = prefs.getString('owner') ?? 'prakhar-5447';
@@ -127,10 +151,15 @@ class GithubServices {
 
   dynamic getRepoIssue() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+<<<<<<< HEAD
     String? repoName =
         prefs.getString('repository') ?? 'devstash-flutter';
     String? owner = prefs.getString('owner') ?? 'prakhar-5447';
     String? accessToken = prefs.getString('githubtoken');
+=======
+    String? repoName = prefs.getString('repository') ?? 'devstash-flutter';
+    String? owner = prefs.getString('owner') ?? 'prakhar-5447';
+>>>>>>> c8102272bde164ec90eb99b5cd2fe4a3fe3b508c
     String? state = 'open';
 
     final apiUrl =
@@ -150,10 +179,8 @@ class GithubServices {
 
   dynamic getRepoPull() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? repoName =
-        prefs.getString('repository') ?? 'FinalYear-Project-Ideas';
-    String? owner = prefs.getString('owner') ?? 'praveenscience';
-    String? accessToken = prefs.getString('githubtoken');
+    String? repoName = prefs.getString('repository') ?? 'devstash-flutter';
+    String? owner = prefs.getString('owner') ?? 'prakhar-5447';
     String? state = 'open';
 
     final apiUrl =
@@ -247,6 +274,17 @@ dynamic githubRepoContributerListDataFromJson(String json, bool success) {
   }
 }
 
+dynamic githubRepoLanguagesDataFromJson(String json, bool success) {
+  final githubData = jsonDecode(json);
+  if (success) {
+    return {"success": success, "data": githubData};
+  } else {
+    GithubAuthenticationErrorResponse data = GithubAuthenticationErrorResponse(
+        githubData['message'], githubData['documentation_url']);
+    return {"success": success, "data": data};
+  }
+}
+
 dynamic githubRepoIssueDataFromJson(String json, bool success) {
   final githubData = jsonDecode(json);
   if (success) {
@@ -286,9 +324,9 @@ dynamic githubRepoPullDataFromJson(String json, bool success) {
           user['user']['login'],
           user['user']['avatar_url'],
           user['user']['url']);
-      final issue = GithubRepoPullResponse(user['id'].toString(),
+      final pull = GithubRepoPullResponse(user['id'].toString(),
           user['number'].toString(), user['title'], login, user['html_url']);
-      data.add(issue);
+      data.add(pull);
     }
     return {"success": success, "data": data};
   } else {
