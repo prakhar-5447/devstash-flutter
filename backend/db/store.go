@@ -62,6 +62,8 @@ type Store interface {
 	Create_Socials(ctx context.Context, socials *Socials) error
 	Find_Socials_By_UserId(ctx context.Context, userID primitive.ObjectID) (*Socials, error)
 	Update_Socials_By_UserId(ctx context.Context, userID primitive.ObjectID, socials Socials) error
+
+	Create_Message(ctx context.Context, message *Message) (primitive.ObjectID, error)
 }
 
 type MongoDBStore struct {

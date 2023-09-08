@@ -6,4 +6,8 @@ app:
 	cd ./devstash/ && \
 	flutter run --debug
 
-.PHONY: server app
+script:
+	cd ./scripts/ && \
+	python .\utility_script.py
+
+.PHONY: server app script

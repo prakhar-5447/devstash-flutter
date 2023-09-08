@@ -86,3 +86,11 @@ type Bookmark struct {
 	UserId       primitive.ObjectID   `bson:"userId"`
 	OtherUserIds []primitive.ObjectID `bson:"otherUserIds"`
 }
+
+type Message struct {
+	ID          primitive.ObjectID `bson:"_id,omitempty"`
+	Subject     string             `bson:"subject"`
+	Description string             `bson:"description"`
+	SenderEmail string             `bson:"senderEmail"`
+	CreatedAt   primitive.DateTime `bson:"createdAt,omitempty"`
+}
