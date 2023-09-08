@@ -24,7 +24,7 @@ class SkillServices {
     }
   }
 
-  Future<SkillResponse?> getskill(String? authToken) async {
+  dynamic getskill(String? authToken) async {
     try {
       var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.skillsEndpoint);
       var headers = {
@@ -34,9 +34,7 @@ class SkillServices {
         url,
         headers: headers,
       );
-      if (response.statusCode == 200) {
-        return skillFromJson(response.body);
-      }
+      return dataFromJson(response.body);
     } catch (e) {
       log(e.toString());
     }
@@ -57,17 +55,29 @@ class SkillServices {
       log(e.toString());
     }
   }
+}
 
-  SkillResponse skillFromJson(String jsonData) {
-    final json = jsonDecode(jsonData)["data"];
-
-    List<String> skills = [];
-    String id = json['ID'];
-    String userid = json['UserID'];
-    for (var i in json["Skills"]) {
-      skills.add(i);
-    }
-    SkillResponse res = SkillResponse(id: id, userid: userid, skills: skills);
-    return res;
+dynamic dataFromJson(String json) {
+  final authData = jsonDecode(json);
+  bool success = authData['success'];
+  String msg = authData['msg'];
+  if (success) {
+    SkillResponse skill = skillFromJson(json);
+    return {"success": success, "msg": msg, "data": skill};
   }
+
+  return {"success": success, "msg": msg, "data": {}};
+}
+
+SkillResponse skillFromJson(String jsonData) {
+  final json = jsonDecode(jsonData)["data"];
+
+  List<String> skills = [];
+  String id = json['ID'];
+  String userid = json['UserID'];
+  for (var i in json["Skills"]) {
+    skills.add(i);
+  }
+  SkillResponse res = SkillResponse(id: id, userid: userid, skills: skills);
+  return res;
 }

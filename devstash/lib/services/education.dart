@@ -41,20 +41,18 @@ class EducationServices {
     }
   }
 
-  Future<List<EducationResponse>?> getEducation(String? authToken) async {
+  dynamic getEducation(String token) async {
     try {
       var url =
           Uri.parse(ApiConstants.baseUrl + ApiConstants.educationEndpoint);
       var headers = {
-        'Authorization': authToken ?? '',
+        'Authorization': token,
       };
       var response = await http.get(
         url,
         headers: headers,
       );
-      if (response.statusCode == 200) {
-        return educationFromJson(response.body);
-      }
+      return dataFromJson(response.body);
     } catch (e) {
       log(e.toString());
     }
@@ -78,29 +76,41 @@ class EducationServices {
       log(e.toString());
     }
   }
+}
 
-  List<EducationResponse> educationFromJson(String jsonData) {
-    final json = jsonDecode(jsonData);
-
-    List<EducationResponse> eduList = [];
-    for (var i in json) {
-      String level = i['Level'];
-      String id = i['ID'];
-      String userid = i['UserId'];
-      String schoolName = i['SchoolName'];
-      String subject = i['Subject'];
-      String fromYear = i['FromYear'];
-      String toYear = i['ToYear'];
-      eduList.add(EducationResponse(
-          id: id,
-          userid: userid,
-          educationLevel: level,
-          subject: subject,
-          fromYear: fromYear,
-          toYear: toYear,
-          collegeorSchoolName: schoolName));
-    }
-
-    return eduList;
+dynamic dataFromJson(String json) {
+  final authData = jsonDecode(json);
+  bool success = authData['success'];
+  String msg = authData['msg'];
+  if (success) {
+    List<EducationResponse> education = educationFromJson(json);
+    return {"success": success, "msg": msg, "data": education};
   }
+
+  return {"success": success, "msg": msg, "data": {}};
+}
+
+List<EducationResponse> educationFromJson(String jsonData) {
+  final json = jsonDecode(jsonData)['data'];
+
+  List<EducationResponse> eduList = [];
+  for (var i in json) {
+    String level = i['Level'];
+    String id = i['ID'];
+    String userid = i['UserId'];
+    String schoolName = i['SchoolName'];
+    String subject = i['Subject'];
+    String fromYear = i['FromYear'];
+    String toYear = i['ToYear'];
+    eduList.add(EducationResponse(
+        id: id,
+        userid: userid,
+        educationLevel: level,
+        subject: subject,
+        fromYear: fromYear,
+        toYear: toYear,
+        collegeorSchoolName: schoolName));
+  }
+
+  return eduList;
 }

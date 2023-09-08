@@ -25,7 +25,7 @@ func (store *MongoDBStore) Update_Contact(ctx context.Context, ID primitive.Obje
 	return nil
 }
 
-func (store *MongoDBStore) Find_Contact(ctx context.Context, userID primitive.ObjectID) (Contact, error) {
+func (store *MongoDBStore) Find_Contact(ctx context.Context, userID primitive.ObjectID) (*Contact, error) {
 	var result Contact
 
 	filter := bson.M{"userId": userID}
@@ -33,12 +33,12 @@ func (store *MongoDBStore) Find_Contact(ctx context.Context, userID primitive.Ob
 	err := store.GetCollection("contact").FindOne(ctx, filter).Decode(&result)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return Contact{}, nil
+			return nil, err
 		}
-		return Contact{}, err
+		return nil, err
 	}
 
-	return result, nil
+	return &result, nil
 }
 
 func (q *Queries) Create_Education(ctx context.Context, education Education) error {
@@ -63,7 +63,7 @@ func (store *MongoDBStore) Find_Education_By_UserId(ctx context.Context, userID 
 	cursor, err := store.GetCollection("educations").Find(ctx, filter)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return []Education{}, nil
+			return nil, err
 		}
 		return nil, err
 	}
@@ -156,7 +156,7 @@ func (q *Queries) Find_Skills_By_UserId(ctx context.Context, userID primitive.Ob
 	err := q.skillsCollection.FindOne(ctx, filter).Decode(&skills)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, nil
+			return nil, err
 		}
 		return nil, err
 	}
@@ -192,7 +192,7 @@ func (store *MongoDBStore) Find_Socials_By_UserId(ctx context.Context, userID pr
 	err := store.GetCollection("socials").FindOne(ctx, filter).Decode(&socials)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, nil
+			return nil, err
 		}
 		return nil, err
 	}

@@ -431,7 +431,6 @@ class ProfileScreen extends StatelessWidget {
                               if (educations == null) {
                                 return const Text('No socials data found.');
                               }
-
                               return Column(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -638,7 +637,7 @@ class ProfileScreen extends StatelessWidget {
                                           ),
                                           Expanded(
                                             child: Text(
-                                              '${contactDetails!.city} , ${contactDetails!.state}, ${contactDetails!.country}',
+                                              '${contactDetails!.city}, ${contactDetails!.state}, ${contactDetails!.country}',
                                               style: const TextStyle(
                                                 fontSize: 14,
                                                 fontFamily: 'Comfortaa',
@@ -649,36 +648,6 @@ class ProfileScreen extends StatelessWidget {
                                             ),
                                           ),
                                         ],
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 25, bottom: 25),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            SvgPicture.asset(
-                                              'assets/email.svg',
-                                              height: 15.0,
-                                              width: 15.0,
-                                            ),
-                                            const SizedBox(
-                                              width: 5,
-                                            ),
-                                            const Expanded(
-                                              child: Text(
-                                                'sahuprakhar022003@gmail.com',
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontFamily: 'Comfortaa',
-                                                  fontWeight: FontWeight.w500,
-                                                  color: Color.fromARGB(
-                                                      255, 75, 73, 70),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
                                       ),
                                       Row(
                                         mainAxisAlignment:
@@ -756,57 +725,39 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Future<List<EducationResponse>?> _geteducations(BuildContext context) async {
-    try {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-      if (token != null) {
-        final educationResponse = await EducationServices().getEducation(token);
-        if (educationResponse != null) {
-          return educationResponse;
-        } else {
-          log("Failed to get education data");
-        }
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    if (token != null) {
+      dynamic res = await EducationServices().getEducation(token);
+      if (res['success']) {
+        return res['data'];
       }
-    } catch (error) {
-      log("Error while fetching educating: $error");
+      return null;
     }
-    return null;
   }
 
   Future<SkillResponse?> _getskills(BuildContext context) async {
-    try {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-      if (token != null) {
-        final skillResponse = await SkillServices().getskill(token);
-        if (skillResponse != null) {
-          return skillResponse;
-        } else {
-          log("Failed to get skill data");
-        }
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    if (token != null) {
+      dynamic res = await SkillServices().getskill(token);
+      if (res['success']) {
+        return res['data'];
       }
-    } catch (error) {
-      log("Error while fetching educating: $error");
+      return null;
     }
-    return null;
   }
 
   Future<ContactResponse?> _getcontact(BuildContext context) async {
-    try {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-      if (token != null) {
-        final contact = await ContactServices().getContact(token);
-        if (contact != null) {
-          return contact;
-        } else {
-          log("Failed to get contact data");
-        }
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    if (token != null) {
+      dynamic res = await ContactServices().getContact(token);
+      if (res['success']) {
+        return res['data'];
       }
-    } catch (error) {
-      log("Error while fetching educating: $error");
+      return null;
     }
-    return null;
   }
 }
 

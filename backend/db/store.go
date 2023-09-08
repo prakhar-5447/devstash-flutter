@@ -48,7 +48,7 @@ type Store interface {
 
 	Create_Contact(ctx context.Context, contact Contact) error
 	Update_Contact(ctx context.Context, ID primitive.ObjectID, contact Contact) error
-	Find_Contact(ctx context.Context, userID primitive.ObjectID) (Contact, error)
+	Find_Contact(ctx context.Context, userID primitive.ObjectID) (*Contact, error)
 
 	Create_Education(ctx context.Context, education Education) error
 	Find_Education_By_UserId(ctx context.Context, userID primitive.ObjectID) ([]Education, error)

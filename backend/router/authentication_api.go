@@ -57,24 +57,6 @@ func (server *Server) sign_up(c *gin.Context) {
 		return
 	}
 
-	socials := &db.Socials{
-		UserId: userId,
-	}
-
-	if err := server.store.Create_Socials(c.Request.Context(), socials); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
-		return
-	}
-
-	contact := db.Contact{
-		UserId: userId,
-	}
-
-	if err := server.store.Create_Contact(c.Request.Context(), contact); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
-		return
-	}
-
 	token, err := server.tokenMaker.CreateToken(userId.Hex())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": "Failed to generate token"})

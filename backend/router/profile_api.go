@@ -205,6 +205,11 @@ func (server *Server) get_education(c *gin.Context) {
 		return
 	}
 
+	if len(educations) == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": "mongo: no documents in result"})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Data retrieve successfully", "data": educations})
 }
 
