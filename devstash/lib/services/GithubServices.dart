@@ -151,15 +151,8 @@ class GithubServices {
 
   dynamic getRepoIssue() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-<<<<<<< HEAD
-    String? repoName =
-        prefs.getString('repository') ?? 'devstash-flutter';
-    String? owner = prefs.getString('owner') ?? 'prakhar-5447';
-    String? accessToken = prefs.getString('githubtoken');
-=======
     String? repoName = prefs.getString('repository') ?? 'devstash-flutter';
     String? owner = prefs.getString('owner') ?? 'prakhar-5447';
->>>>>>> c8102272bde164ec90eb99b5cd2fe4a3fe3b508c
     String? state = 'open';
 
     final apiUrl =
