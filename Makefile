@@ -1,6 +1,8 @@
+start: server script
+
 server:
 	cd ./backend/ && \
-	go run main.go
+	go run main.go &
 
 app:
 	cd ./devstash/ && \
@@ -8,6 +10,6 @@ app:
 
 script:
 	cd ./scripts/ && \
-	python .\utility_script.py
+	python utility_script.py &
 
-.PHONY: server app script
+.PHONY: server app script start

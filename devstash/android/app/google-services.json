@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "133073998160",
+    "project_id": "devstash-flutter",
+    "storage_bucket": "devstash-flutter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:133073998160:android:cada2625e3bb74f88c5c55",
+        "android_client_info": {
+          "package_name": "com.example.devstash"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "133073998160-2gnohfn1l4fn5k0auv196ba7huinao28.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiy_P6Oa6waZOSa0Nr2Vtlph85cTbbU30"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "133073998160-2gnohfn1l4fn5k0auv196ba7huinao28.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

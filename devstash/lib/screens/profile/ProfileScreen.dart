@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:devstash/models/ProjectList.dart';
 import 'package:devstash/screens/projects/project.dart';
 import 'package:devstash/screens/projects/projectDetailScreen.dart';
+import 'package:devstash/services/firebaseServices.dart';
 import 'package:devstash/services/projectServices.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -37,6 +38,7 @@ class ProfileScreen extends StatelessWidget {
     List<EducationResponse>? educations;
     SkillResponse? tech;
     ContactResponse? contactDetails;
+    _firbasetoken();
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -72,12 +74,20 @@ class ProfileScreen extends StatelessWidget {
                     child: Stack(
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => EditProfileScreen()),
-                            );
+                          onTap: () async {
+                            final Uri url = Uri.parse(
+                                'https://prakhar-5447.github.io/angular-portfolio');
+                            if (await canLaunchUrl(url)) {
+                              await launchUrl(url);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('invalid url $url'),
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
                           },
                           child: Align(
                             alignment: Alignment.topRight,
@@ -808,6 +818,17 @@ class ProfileScreen extends StatelessWidget {
     }
     return null;
   }
+
+  void _firbasetoken() async {
+    FirebaseServices firebaseServices = FirebaseServices();
+    String? token = await firebaseServices.getFCMToken();
+
+    if (token != null) {
+      log('FCM Token: $token');
+    } else {
+      log('FCM Token is null');
+    }
+  }
 }
 
 class Avatar extends StatelessWidget {
@@ -825,31 +846,53 @@ class Avatar extends StatelessWidget {
         alignment: Alignment.bottomLeft,
         child: Transform.translate(
           offset: const Offset(20, 60),
-          child: Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: Colors.white,
-                width: 5,
+          child: Stack(
+            children: [
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 5,
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: avatar != null
+                      ? Image.network(
+                          "${ApiConstants.baseUrl}/images/$avatar",
+                          width: 120,
+                          height: 120,
+                          fit: BoxFit.cover,
+                        )
+                      : Container(
+                          width: 120,
+                          height: 120,
+                          decoration: const BoxDecoration(color: Colors.black),
+                        ),
+                ),
               ),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(100),
-              child: avatar != null
-                  ? Image.network(
-                      "${ApiConstants.baseUrl}/images/$avatar",
-                      width: 120,
-                      height: 120,
-                      fit: BoxFit.cover,
-                    )
-                  : Container(
-                      width: 120,
-                      height: 120,
-                      decoration: const BoxDecoration(color: Colors.black),
+              Positioned(
+                bottom: 12,
+                right: 12,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.blue,
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(5),
+                  child: const Center(
+                    child: Icon(
+                      Icons.edit,
+                      size: 12,
+                      color: Colors.white,
                     ),
-            ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
