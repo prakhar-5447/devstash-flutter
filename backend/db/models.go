@@ -87,8 +87,15 @@ type Bookmark struct {
 	OtherUserIds []primitive.ObjectID `bson:"otherUserIds"`
 }
 
+type FCMToken struct {
+	ID       primitive.ObjectID `bson:"_id,omitempty"`
+	UserId   primitive.ObjectID `bson:"userid,omitempty"`
+	FCMToken string             `bson:"fcmtoken"`
+}
+
 type Message struct {
 	ID          primitive.ObjectID `bson:"_id,omitempty"`
+	UserId      primitive.ObjectID `bson:"userid,omitempty"`
 	Subject     string             `bson:"subject"`
 	Description string             `bson:"description"`
 	SenderEmail string             `bson:"senderEmail"`

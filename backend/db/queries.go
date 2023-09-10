@@ -16,6 +16,7 @@ type Queries struct {
 	contactCollection   *mongo.Collection
 	skillsCollection    *mongo.Collection
 	messagesCollection  *mongo.Collection
+	fcmtokenCollection  *mongo.Collection
 }
 
 func NewQueries(database *mongo.Database) *Queries {
@@ -30,6 +31,7 @@ func NewQueries(database *mongo.Database) *Queries {
 		userimageCollection: database.Collection("userimage"),
 		contactCollection:   database.Collection("contact"),
 		skillsCollection:    database.Collection("skills"),
-		messagesCollection:    database.Collection("messages"),
+		messagesCollection:  database.Collection("messages"),
+		fcmtokenCollection:  database.Collection("fcmtoken"),
 	}
 }

@@ -38,7 +38,6 @@ class ProfileScreen extends StatelessWidget {
     List<EducationResponse>? educations;
     SkillResponse? tech;
     ContactResponse? contactDetails;
-    _firbasetoken();
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -817,17 +816,6 @@ class ProfileScreen extends StatelessWidget {
       log("Error while fetching educating: $error");
     }
     return null;
-  }
-
-  void _firbasetoken() async {
-    FirebaseServices firebaseServices = FirebaseServices();
-    String? token = await firebaseServices.getFCMToken();
-
-    if (token != null) {
-      log('FCM Token: $token');
-    } else {
-      log('FCM Token is null');
-    }
   }
 }
 

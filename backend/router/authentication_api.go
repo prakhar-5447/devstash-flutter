@@ -1,6 +1,7 @@
 package router
 
 import (
+	"context"
 	"net/http"
 
 	"golang.org/x/crypto/bcrypt"
@@ -117,6 +118,17 @@ func (server *Server) sign_in(c *gin.Context) {
 	token, err := server.tokenMaker.CreateToken(user.ID.Hex())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": "Failed to generate token"})
+		return
+	}
+
+	fcmtoken := &db.FCMToken{
+		UserId:   user.ID,
+		FCMToken: req.FCMToken,
+	}
+
+	err = server.store.FCMToken(context.Background(), fcmtoken)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"false": false, "msg": "Failed to store fcm token"})
 		return
 	}
 

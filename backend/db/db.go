@@ -32,6 +32,8 @@ func (store *MongoDBStore) GetCollection(collectionName string) *mongo.Collectio
 		return store.skillsCollection
 	case "messages":
 		return store.messagesCollection
+	case "fcmtoken":
+		return store.fcmtokenCollection
 	default:
 		return nil
 	}

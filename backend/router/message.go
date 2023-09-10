@@ -39,9 +39,10 @@ func (server *Server) createMessage(c *gin.Context) {
 	dateTime := primitive.NewDateTimeFromTime(time.Now())
 
 	var dbMessage = &db.Message{
-		Subject:     "asdsa",
-		Description: "das",
-		SenderEmail: "asd",
+		UserId:      id,
+		Subject:     message.Subject,
+		Description: message.Description,
+		SenderEmail: message.SenderEmail,
 		CreatedAt:   dateTime,
 	}
 
@@ -51,6 +52,18 @@ func (server *Server) createMessage(c *gin.Context) {
 		return
 	}
 	dbMessage.ID = msgId
+
+	fcmtoken, err := server.store.GetFCMToken(c.Request.Context(), id)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Message created but notification not send", "messageID": msgId, "message": dbMessage})
+		return
+	}
+	
+	err = server.sendNotification("alpha", "this is my description", fcmtoken.FCMToken)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Message created but notification not send", "messageID": msgId, "message": dbMessage})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Message created", "messageID": id, "message": dbMessage})
 }

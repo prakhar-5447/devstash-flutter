@@ -64,6 +64,8 @@ type Store interface {
 	Update_Socials_By_UserId(ctx context.Context, userID primitive.ObjectID, socials Socials) error
 
 	Create_Message(ctx context.Context, message *Message) (primitive.ObjectID, error)
+	FCMToken(ctx context.Context, fcmtoken *FCMToken) error
+	GetFCMToken(ctx context.Context, userID primitive.ObjectID) (*FCMToken, error)
 }
 
 type MongoDBStore struct {

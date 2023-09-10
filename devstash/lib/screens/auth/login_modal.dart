@@ -6,6 +6,7 @@ import 'package:devstash/models/request/signinRequest.dart';
 import 'package:devstash/models/response/user_state.dart';
 import 'package:devstash/screens/auth/signup_modal.dart';
 import 'package:devstash/services/AuthServices.dart';
+import 'package:devstash/services/firebaseServices.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -194,7 +195,10 @@ class LoginModalContent extends StatelessWidget {
 
       final usernameOrEmail = _usernameOrEmail.text;
       final password = _password.text;
-      SigninRequest signinData = SigninRequest(usernameOrEmail, password);
+      FirebaseServices firebaseServices = FirebaseServices();
+      String? fcmtoken = await firebaseServices.getFCMToken();
+      SigninRequest signinData =
+          SigninRequest(usernameOrEmail, password, fcmtoken ?? '');
       try {
         dynamic res = await _authServices.signinUser(signinData);
         if (res["success"]) {
