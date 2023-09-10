@@ -720,6 +720,7 @@ class ProfileScreen extends StatelessWidget {
       if (res['success']) {
         return res['data'];
       }
+      log(res['msg']);
       return null;
     }
   }

@@ -8,6 +8,7 @@ import 'package:devstash/services/education.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SkillEditScreen extends StatefulWidget {
   @override
@@ -70,17 +71,19 @@ class _SkillEditScreenState extends State<SkillEditScreen> {
   void _save() async {
     SkillRequest _skill = SkillRequest(skill: _selectedSkills);
     try {
-      final provider = Provider.of<AuthProvider>(context, listen: false);
-      dynamic _user = await SkillServices().updateskill(_skill, provider.token);
-
-      Fluttertoast.showToast(
-        msg: "Successfully Save Details",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-      );
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      if (token != null) {
+        dynamic res = await SkillServices().updateskill(_skill, token);
+        Fluttertoast.showToast(
+          msg: res['msg'],
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+        );
+      }
     } catch (error) {
       log(error.toString());
       Fluttertoast.showToast(

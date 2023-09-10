@@ -15,10 +15,29 @@ func (q *Queries) Create_Contact(ctx context.Context, contact Contact) error {
 }
 
 func (store *MongoDBStore) Update_Contact(ctx context.Context, ID primitive.ObjectID, contact Contact) error {
-	filter := bson.M{"userId": ID}
-	update := bson.M{"$set": contact}
+	var user Contact
+	err := store.GetCollection("contact").FindOne(ctx, bson.M{"userId": ID}).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			user = Contact{
+				UserId:      ID,
+				City:        contact.City,
+				State:       contact.State,
+				Country:     contact.Country,
+				CountryCode: contact.CountryCode,
+				PhoneNo:     contact.PhoneNo,
+			}
+			_, err = store.GetCollection("contact").InsertOne(ctx, user)
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+		return err
+	}
 
-	_, err := store.GetCollection("contact").UpdateOne(ctx, filter, update)
+	query := bson.M{"$set": contact}
+	_, err = store.GetCollection("contact").UpdateOne(ctx, bson.M{"userId": ID}, query)
 	if err != nil {
 		return err
 	}
@@ -58,7 +77,7 @@ func (store *MongoDBStore) Update_Education_By_UserId(ctx context.Context, ID pr
 func (store *MongoDBStore) Find_Education_By_UserId(ctx context.Context, userID primitive.ObjectID) ([]Education, error) {
 	var result []Education
 
-	filter := bson.M{"userid": userID}
+	filter := bson.M{"userId": userID}
 
 	cursor, err := store.GetCollection("educations").Find(ctx, filter)
 	if err != nil {
@@ -94,21 +113,23 @@ func (store *MongoDBStore) Delete_Education_By_Id(ctx context.Context, education
 	return nil
 }
 
-func (q *Queries) Add_Skill_To_List(ctx context.Context, userID primitive.ObjectID, skill string) error {
-	filter := bson.M{"userid": userID}
+func (store *MongoDBStore) Add_Skill_To_List(ctx context.Context, userID primitive.ObjectID, skill string) error {
+	filter := bson.M{"userId": userID}
 
-	existingSkills, err := q.Find_Skills_By_UserId(ctx, userID)
+	existingSkills, err := store.Find_Skills_By_UserId(ctx, userID)
 	if err != nil {
-		return err
-	}
-
-	if existingSkills == nil {
-		newSkills := Skills{
-			UserID: userID,
-			Skills: []string{skill},
-		}
-		_, err = q.skillsCollection.InsertOne(ctx, newSkills)
-		if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			if existingSkills == nil {
+				newSkills := Skills{
+					UserID: userID,
+					Skills: []string{skill},
+				}
+				_, err = store.GetCollection("skills").InsertOne(ctx, newSkills)
+				if err != nil {
+					return err
+				}
+				return nil
+			}
 			return err
 		}
 	} else {
@@ -118,7 +139,7 @@ func (q *Queries) Add_Skill_To_List(ctx context.Context, userID primitive.Object
 					"skills": skill,
 				},
 			}
-			_, err = q.skillsCollection.UpdateOne(ctx, filter, update)
+			_, err = store.GetCollection("skills").UpdateOne(ctx, filter, update)
 			if err != nil {
 				return err
 			}
@@ -137,23 +158,23 @@ func Contains_Skill(skills []string, skill string) bool {
 	return false
 }
 
-func (q *Queries) Delete_Skill_From_List(ctx context.Context, userID primitive.ObjectID, skill string) error {
-	filter := bson.M{"userid": userID}
+func (store *MongoDBStore) Delete_Skill_From_List(ctx context.Context, userID primitive.ObjectID, skill string) error {
+	filter := bson.M{"userId": userID}
 	update := bson.M{
 		"$pull": bson.M{
 			"skills": skill,
 		},
 	}
 
-	_, err := q.skillsCollection.UpdateOne(ctx, filter, update)
+	_, err := store.GetCollection("skills").UpdateOne(ctx, filter, update)
 	return err
 }
 
-func (q *Queries) Find_Skills_By_UserId(ctx context.Context, userID primitive.ObjectID) (*Skills, error) {
+func (store *MongoDBStore) Find_Skills_By_UserId(ctx context.Context, userID primitive.ObjectID) (*Skills, error) {
 	var skills Skills
-	filter := bson.M{"userid": userID}
+	filter := bson.M{"userId": userID}
 
-	err := q.skillsCollection.FindOne(ctx, filter).Decode(&skills)
+	err := store.GetCollection("skills").FindOne(ctx, filter).Decode(&skills)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, err
@@ -169,9 +190,29 @@ func (q *Queries) Create_Socials(ctx context.Context, socials *Socials) error {
 	return err
 }
 
-func (q *Queries) Update_Socials_By_UserId(ctx context.Context, userID primitive.ObjectID, socials Socials) error {
-	filter := bson.M{"userid": userID}
-	update := bson.M{
+func (store *MongoDBStore) Update_Socials_By_UserId(ctx context.Context, userID primitive.ObjectID, socials Socials) error {
+	var user Socials
+	err := store.GetCollection("socials").FindOne(ctx, bson.M{"userId": userID}).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			user = Socials{
+				UserId:    userID,
+				Twitter:   socials.Twitter,
+				Github:    socials.Github,
+				Linkedin:  socials.Linkedin,
+				Instagram: socials.Instagram,
+				Other:     socials.Other,
+			}
+			_, err = store.GetCollection("socials").InsertOne(ctx, user)
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+		return err
+	}
+
+	query := bson.M{
 		"$set": bson.M{
 			"twitter":   socials.Twitter,
 			"github":    socials.Github,
@@ -180,14 +221,13 @@ func (q *Queries) Update_Socials_By_UserId(ctx context.Context, userID primitive
 			"other":     socials.Other,
 		},
 	}
-
-	_, err := q.socialsCollection.UpdateOne(ctx, filter, update)
+	_, err = store.GetCollection("socials").UpdateOne(ctx, bson.M{"userId": userID}, query)
 	return err
 }
 
 func (store *MongoDBStore) Find_Socials_By_UserId(ctx context.Context, userID primitive.ObjectID) (*Socials, error) {
 	var socials Socials
-	filter := bson.M{"userid": userID}
+	filter := bson.M{"userId": userID}
 
 	err := store.GetCollection("socials").FindOne(ctx, filter).Decode(&socials)
 	if err != nil {

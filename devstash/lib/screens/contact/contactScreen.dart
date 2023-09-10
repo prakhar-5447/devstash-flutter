@@ -2,13 +2,12 @@ import 'dart:developer';
 
 import 'package:devstash/models/request/contactRequest.dart';
 import 'package:devstash/models/response/contactResponse.dart';
-import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/profile/ProfileScreen.dart';
 import 'package:devstash/services/ContactServices.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ContactScreen extends StatefulWidget {
   final ContactResponse? contact;
@@ -32,38 +31,43 @@ class _ContactScreenState extends State<ContactScreen> {
     'New York',
     'Los Angeles',
     'Chicago',
-    // Add more city names here
   ];
 
   List<String> states = [
     'California',
     'Texas',
     'Florida',
-    // Add more state names here
   ];
 
   Map<String, String> countries = {
     'United States': '91',
     'Canada': '01',
     'United Kingdom': '912',
-    // Add more country names here
   };
 
   @override
   void initState() {
     super.initState();
-    _city = _cityController.text = widget.contact!.city!;
-    _state = _stateController.text = widget.contact!.state!;
-    _country = _countryController.text = widget.contact!.country!;
-    _phoneController.text = widget.contact!.phoneNo!;
-    _code = widget.contact!.countryCode!;
+    if (widget.contact != null) {
+      _city = _cityController.text = widget.contact!.city;
+      _state = _stateController.text = widget.contact!.state;
+      _country = _countryController.text = widget.contact!.country;
+      _phoneController.text = widget.contact!.phoneNo;
+      _code = widget.contact!.countryCode;
+    } else {
+      _city = _cityController.text = "";
+      _state = _stateController.text = "";
+      _country = _countryController.text = "";
+      _phoneController.text = "";
+      _code = "";
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Contact'),
+        title: const Text('Contact'),
       ),
       body: Form(
         key: _formKey,
@@ -85,7 +89,7 @@ class _ContactScreenState extends State<ContactScreen> {
                 });
               },
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             _buildAutoCompleteTextField(
               controller: _stateController,
               labelText: 'State',
@@ -102,7 +106,7 @@ class _ContactScreenState extends State<ContactScreen> {
                 });
               },
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             _buildAutoCompleteTextField(
               controller: _countryController,
               labelText: 'Country',
@@ -119,7 +123,7 @@ class _ContactScreenState extends State<ContactScreen> {
                 });
               },
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             TextFormField(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
@@ -131,10 +135,10 @@ class _ContactScreenState extends State<ContactScreen> {
                 return null;
               },
             ),
-            SizedBox(height: 30.0),
+            const SizedBox(height: 30.0),
             ElevatedButton(
               onPressed: _saveContactDetails,
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
           ],
         ),
@@ -179,35 +183,26 @@ class _ContactScreenState extends State<ContactScreen> {
   }
 
   Future<List<String>> fetchCitySuggestions(String input) async {
-    // Add your logic to fetch city suggestions based on the input
-    // For example, you can filter the `cities` list based on the input
     List<String> filteredCities = cities
         .where((city) => city.toLowerCase().contains(input.toLowerCase()))
         .toList();
 
-    // Limit the suggestions to the top 5
     return filteredCities.take(3).toList();
   }
 
   Future<List<String>> fetchStateSuggestions(String input) async {
-    // Add your logic to fetch state suggestions based on the input
-    // For example, you can filter the `states` list based on the input
     List<String> filteredStates = states
         .where((state) => state.toLowerCase().contains(input.toLowerCase()))
         .toList();
 
-    // Limit the suggestions to the top 5
     return filteredStates.take(3).toList();
   }
 
   Future<List<String>> fetchCountrySuggestions(String input) async {
-    // Add your logic to fetch country suggestions based on the input
-    // For example, you can filter the `countries` map based on the input
     List<String> filteredCountries = countries.keys
         .where((country) => country.toLowerCase().contains(input.toLowerCase()))
         .toList();
 
-    // Limit the suggestions to the top 5
     return filteredCountries.take(3).toList();
   }
 
@@ -225,21 +220,23 @@ class _ContactScreenState extends State<ContactScreen> {
           countryCode: _code);
 
       try {
-        final provider = Provider.of<AuthProvider>(context, listen: false);
-        dynamic _user =
-            await contactServices.updateContact(contact, provider.token);
-        Fluttertoast.showToast(
-          msg: "Successfully Save Details",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-        );
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        final token = prefs.getString('token');
+        if (token != null) {
+          dynamic res = await contactServices.updateContact(contact, token);
+          Fluttertoast.showToast(
+            msg: res['msg'],
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+          );
+          if (res['success']) {
+            Navigator.pop(context);
+          }
+        }
       } catch (error) {
-        log(error.toString());
         Fluttertoast.showToast(
           msg: error.toString(),
           toastLength: Toast.LENGTH_SHORT,

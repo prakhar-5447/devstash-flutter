@@ -1,13 +1,13 @@
 class ContactResponse {
-  String? id;
-  String? userid;
-  String? city;
-  String? state;
-  String? country;
-  String? countryCode;
-  String? phoneNo;
+  String id;
+  String userid;
+  String city;
+  String state;
+  String country;
+  String countryCode;
+  String phoneNo;
 
-  ContactResponse({
+  ContactResponse(
     this.id,
     this.userid,
     this.city,
@@ -15,7 +15,7 @@ class ContactResponse {
     this.country,
     this.countryCode,
     this.phoneNo,
-  });
+  );
 
   Map<String, dynamic> toJson() {
     return {

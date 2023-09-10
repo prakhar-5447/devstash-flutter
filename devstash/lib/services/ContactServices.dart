@@ -7,18 +7,15 @@ import 'package:devstash/models/response/education.dart';
 import 'package:http/http.dart' as http;
 
 class ContactServices {
-  Future<dynamic> updateContact(
-      ContactRequest contact, String? authToken) async {
+  dynamic updateContact(ContactRequest contact, String token) async {
     try {
       var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.contactEndpoint);
       var headers = {
-        'Authorization': authToken ?? '',
+        'Authorization': token,
       };
       var response = await http.put(url,
           headers: headers, body: jsonEncode(contact.toJson()));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      }
+      return jsonDecode(response.body);
     } catch (e) {
       log(e.toString());
     }
@@ -62,13 +59,7 @@ ContactResponse contactFromJson(String jsonData) {
   String country = json['Country'];
   String countryCode = json['CountryCode'];
   String phoneNo = json['PhoneNo'];
-  ContactResponse contact = ContactResponse(
-      id: id,
-      userid: userId,
-      city: city,
-      state: state,
-      country: country,
-      countryCode: countryCode,
-      phoneNo: phoneNo);
+  ContactResponse contact =
+      ContactResponse(id, userId, city, state, country, countryCode, phoneNo);
   return contact;
 }

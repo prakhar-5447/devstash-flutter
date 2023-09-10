@@ -125,7 +125,7 @@ func (server *Server) create_education(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Educations updated successfully"})
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Educations created successfully"})
 }
 
 func (server *Server) update_education(c *gin.Context) {

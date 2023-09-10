@@ -5,30 +5,29 @@ import 'package:devstash/models/request/educationRequest.dart';
 import 'package:devstash/models/request/skillRequest.dart';
 import 'package:devstash/models/response/education.dart';
 import 'package:devstash/models/response/skillResponse.dart';
+import 'package:devstash/services/Helper.dart';
 import 'package:http/http.dart' as http;
 
 class SkillServices {
-  Future<dynamic> updateskill(SkillRequest skill, String? authToken) async {
+  dynamic updateskill(SkillRequest skill, String token) async {
     try {
       var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.skillsEndpoint);
       var headers = {
-        'Authorization': authToken ?? '',
+        'Authorization': token,
       };
       var response = await http.put(url,
           headers: headers, body: jsonEncode(skill.toJson()));
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      }
+      return Helper().responseFromJson(response.body);
     } catch (e) {
       log(e.toString());
     }
   }
 
-  dynamic getskill(String? authToken) async {
+  dynamic getskill(String token) async {
     try {
       var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.skillsEndpoint);
       var headers = {
-        'Authorization': authToken ?? '',
+        'Authorization': token,
       };
       var response = await http.get(
         url,
@@ -40,17 +39,15 @@ class SkillServices {
     }
   }
 
-  Future<dynamic> deleteskill(String? authToken, SkillRequest skill) async {
+  dynamic deleteskill(String token, SkillRequest skill) async {
     try {
       var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.skillsEndpoint);
       var headers = {
-        'Authorization': authToken ?? '',
+        'Authorization': token,
       };
       var response = await http.delete(url,
           headers: headers, body: jsonEncode(skill.toJson()));
-      if (response.statusCode == 200) {
-        return "deleted";
-      }
+      return Helper().responseFromJson(response.body);
     } catch (e) {
       log(e.toString());
     }
