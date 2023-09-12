@@ -125,7 +125,7 @@ func (server *Server) create_education(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Educations updated successfully"})
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Educations created successfully"})
 }
 
 func (server *Server) update_education(c *gin.Context) {
@@ -202,6 +202,11 @@ func (server *Server) get_education(c *gin.Context) {
 	educations, err := server.store.Find_Education_By_UserId(c.Request.Context(), ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
+		return
+	}
+
+	if len(educations) == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": "mongo: no documents in result"})
 		return
 	}
 

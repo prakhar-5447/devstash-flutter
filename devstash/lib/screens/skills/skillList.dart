@@ -8,15 +8,16 @@ import 'package:devstash/services/SkillServices.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SkillList extends StatelessWidget {
   SkillResponse? skillList;
-  SkillList({super.key, required this.skillList});
+  SkillList({super.key, required this.skillList}) {
+    skillList ??= SkillResponse(skills: []);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final _provider = Provider.of<AuthProvider>(context);
-
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -51,8 +52,7 @@ class SkillList extends StatelessWidget {
                           fontWeight: FontWeight.w400,
                         ),
                       ),
-                      onTap: () =>
-                          {_delete(skillList!.skills![index], _provider.token)},
+                      onTap: () => {_delete(skillList!.skills![index])},
                     ),
                   ),
                 ],
@@ -62,22 +62,23 @@ class SkillList extends StatelessWidget {
     );
   }
 
-  void _delete(String skill, String? token) async {
+  void _delete(String skill) async {
     try {
-      log(skill);
-      SkillRequest _skill = SkillRequest(skill: skill);
-      dynamic _user = await SkillServices().deleteskill(token, _skill);
-      log(_user.toString());
-      Fluttertoast.showToast(
-        msg: "Successfully Save Details",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-      );
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      if (token != null) {
+        SkillRequest _skill = SkillRequest(skill: skill);
+        dynamic res = await SkillServices().deleteskill(token, _skill);
+        Fluttertoast.showToast(
+          msg: res['msg'],
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+        );
+      }
     } catch (error) {
-      log(error.toString());
       Fluttertoast.showToast(
         msg: error.toString(),
         toastLength: Toast.LENGTH_SHORT,

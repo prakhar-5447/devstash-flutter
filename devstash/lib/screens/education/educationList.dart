@@ -1,19 +1,49 @@
 import 'dart:developer';
 
 import 'package:devstash/models/response/education.dart';
-import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/education/educationEditScreen.dart';
 import 'package:devstash/services/education.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EducationList extends StatelessWidget {
   List<EducationResponse>? educationList;
-  EducationList({super.key, required this.educationList});
-
+  EducationList({super.key, required this.educationList}) {
+    educationList ??= [];
+  }
   @override
   Widget build(BuildContext context) {
+    void _delete(String id) async {
+      try {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        final token = prefs.getString('token');
+        if (token != null) {
+          dynamic res = await EducationServices().deleteEducation(token, id);
+          Fluttertoast.showToast(
+            msg: res['msg'],
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+          );
+          if (res['success']) {
+            Navigator.pop(context);
+          }
+        }
+      } catch (error) {
+        Fluttertoast.showToast(
+          msg: error.toString(),
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -62,15 +92,15 @@ class EducationList extends StatelessWidget {
                         ),
                       ),
                       onTap: () => {
-                        // _delete(educationList![index].id!)
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EducationEditProfileScreen(
-                                    title: "Edit",
-                                    educationList: educationList![index],
-                                  )),
-                        )
+                        _delete(educationList![index].id!)
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //       builder: (context) => EducationEditProfileScreen(
+                        //             title: "Edit",
+                        //             educationList: educationList![index],
+                        //           )),
+                        // )
                       },
                     ),
                   ),
@@ -79,32 +109,5 @@ class EducationList extends StatelessWidget {
             }),
       ),
     );
-  }
-
-  void _delete(String id) async {
-    try {
-      final provider = AuthProvider();
-      dynamic _user =
-          await EducationServices().deleteEducation(provider.token, id);
-      log(_user.toString());
-      Fluttertoast.showToast(
-        msg: "Successfully Save Details",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-      );
-    } catch (error) {
-      log(error.toString());
-      Fluttertoast.showToast(
-        msg: error.toString(),
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-      );
-    }
   }
 }

@@ -2,18 +2,16 @@ import 'dart:developer';
 
 import 'package:devstash/models/request/educationRequest.dart';
 import 'package:devstash/models/response/education.dart';
-import 'package:devstash/providers/AuthProvider.dart';
 import 'package:devstash/screens/profile/ProfileScreen.dart';
 import 'package:devstash/services/education.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EducationEditProfileScreen extends StatefulWidget {
   final String title;
   final EducationResponse? educationList;
 
-  // Constructor with parameters
   EducationEditProfileScreen({required this.title, this.educationList});
 
   @override
@@ -59,10 +57,10 @@ class _EducationEditProfileScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Education'),
+        title: const Text('Add Education'),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -181,7 +179,7 @@ class _EducationEditProfileScreenState
     String fromYear = _fromYearController.text;
     String toYear = _toYearController.text;
     EducationRequest _educationList = EducationRequest(
-        id: widget.educationList!.id!,
+        id: widget.educationList?.id,
         collegeorSchoolName: schoolName,
         educationLevel: _selectedLevel,
         fromYear: fromYear,
@@ -189,24 +187,27 @@ class _EducationEditProfileScreenState
         subject: subject);
 
     try {
-      final provider = Provider.of<AuthProvider>(context, listen: false);
-      dynamic _user =
-          await saveEducation.updateEducation(_educationList, provider.token);
-      log(_user.toString());
-      Fluttertoast.showToast(
-        msg: "Successfully Save Details",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-      );
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ProfileScreen()),
-      );
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      if (token != null) {
+        dynamic res =
+            await saveEducation.updateEducation(_educationList, token);
+        Fluttertoast.showToast(
+          msg: res['msg'],
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+        );
+        if (res['success']) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfileScreen()),
+          );
+        }
+      }
     } catch (error) {
-      log(error.toString());
       Fluttertoast.showToast(
         msg: error.toString(),
         toastLength: Toast.LENGTH_SHORT,
@@ -231,24 +232,23 @@ class _EducationEditProfileScreenState
         subject: subject);
 
     try {
-      final provider = Provider.of<AuthProvider>(context, listen: false);
-      dynamic _user =
-          await saveEducation.create(_educationList, provider.token);
-      log(_user.toString());
-      Fluttertoast.showToast(
-        msg: "Successfully Save Details",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-      );
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ProfileScreen()),
-      );
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      if (token != null) {
+        dynamic res = await saveEducation.create(_educationList, token);
+        Fluttertoast.showToast(
+          msg: res['msg'],
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+        );
+        if (res['success']) {
+          Navigator.pop(context);
+        }
+      }
     } catch (error) {
-      log(error.toString());
       Fluttertoast.showToast(
         msg: error.toString(),
         toastLength: Toast.LENGTH_SHORT,

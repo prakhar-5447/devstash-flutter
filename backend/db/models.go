@@ -21,7 +21,7 @@ type User struct {
 
 type Socials struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	UserId    primitive.ObjectID `bson:"userid,omitempty"`
+	UserId    primitive.ObjectID `bson:"userId,omitempty"`
 	Twitter   string             `bson:"twitter,omitempty"`
 	Github    string             `bson:"github,omitempty"`
 	Linkedin  string             `bson:"linkedin,omitempty"`
@@ -31,7 +31,7 @@ type Socials struct {
 
 type Contact struct {
 	ID          primitive.ObjectID `bson:"_id,omitempty"`
-	UserId      primitive.ObjectID `bson:"userid,omitempty"`
+	UserId      primitive.ObjectID `bson:"userId,omitempty"`
 	City        string             `bson:"city,omitempty"`
 	State       string             `bson:"state,omitempty"`
 	Country     string             `bson:"country,omitempty"`
@@ -41,7 +41,7 @@ type Contact struct {
 
 type Education struct {
 	ID         primitive.ObjectID `bson:"_id,omitempty"`
-	UserId     primitive.ObjectID `bson:"userid,omitempty"`
+	UserId     primitive.ObjectID `bson:"userId,omitempty"`
 	Level      string             `bson:"level,omitempty"`
 	SchoolName string             `bson:"schoolName,omitempty"`
 	Subject    string             `bson:"subject,omitempty"`
@@ -51,7 +51,7 @@ type Education struct {
 
 type Skills struct {
 	ID     primitive.ObjectID `bson:"_id,omitempty"`
-	UserID primitive.ObjectID `bson:"userid,omitempty"`
+	UserID primitive.ObjectID `bson:"userId,omitempty"`
 	Skills []string           `bson:"skills,omitempty"`
 }
 
