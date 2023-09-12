@@ -14,7 +14,7 @@ class BindingScreen extends StatelessWidget {
   final _pages = [
     const HomeScreen(),
     const HomeScreen(),
-    const InboxScreen(),
+    InboxScreen(),
     const ProfileScreen(),
   ];
 
