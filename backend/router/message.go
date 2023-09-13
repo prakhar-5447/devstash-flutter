@@ -43,6 +43,7 @@ func (server *Server) createMessage(c *gin.Context) {
 		Subject:     message.Subject,
 		Description: message.Description,
 		SenderEmail: message.SenderEmail,
+		SenderName:  message.SenderName,
 		CreatedAt:   dateTime,
 	}
 
@@ -58,7 +59,7 @@ func (server *Server) createMessage(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Message created but notification not send", "messageID": msgId, "message": dbMessage})
 		return
 	}
-	
+
 	err = server.sendNotification("alpha", "this is my description", fcmtoken.FCMToken)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Message created but notification not send", "messageID": msgId, "message": dbMessage})
@@ -66,4 +67,33 @@ func (server *Server) createMessage(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Message created", "messageID": id, "message": dbMessage})
+}
+
+func (server *Server) getMessagesByUserID(c *gin.Context) {
+	token := c.GetHeader("Authorization")
+	if token == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Authorization token required"})
+		return
+	}
+
+	payload, err := server.tokenMaker.VerifyToken(token)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"success": false, "msg": "Invalid token"})
+		return
+	}
+
+	userID := payload.UserID
+	id, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
+		return
+	}
+
+	messages, err := server.store.GetMessagesByUserID(c.Request.Context(), id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "messages": messages})
 }

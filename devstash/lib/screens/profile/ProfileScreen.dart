@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:devstash/models/ProjectList.dart';
 import 'package:devstash/screens/projects/project.dart';
 import 'package:devstash/screens/projects/projectDetailScreen.dart';
-import 'package:devstash/services/firebaseServices.dart';
 import 'package:devstash/services/projectServices.dart';
 import 'package:url_launcher/url_launcher.dart';
 

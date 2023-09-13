@@ -76,9 +76,9 @@ func (server *Server) setupRouter() {
 	router.POST("/avatar", server.uploadAvatar)
 	router.GET("/images/:filename", server.handleImage)
 	router.DELETE("/images/:filename", server.deleteImage)
-	
-	
+
 	router.POST("/message", server.createMessage)
+	router.GET("/message", server.getMessagesByUserID)
 
 	server.router = router
 }
