@@ -23,8 +23,9 @@ func (server *Server) sign_up(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
+
 	if found {
-		c.JSON(http.StatusOK, gin.H{"msg": "User with the same email already exists"})
+		c.JSON(http.StatusOK, gin.H{"success": false, "msg": "User with the same email already exists"})
 		return
 	}
 
@@ -33,8 +34,9 @@ func (server *Server) sign_up(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "msg": err.Error()})
 		return
 	}
+
 	if found {
-		c.JSON(http.StatusOK, gin.H{"msg": "User with the same username already exists"})
+		c.JSON(http.StatusOK, gin.H{"success": false, "msg": "User with the same username already exists"})
 		return
 	}
 

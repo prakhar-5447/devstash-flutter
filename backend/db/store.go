@@ -66,6 +66,11 @@ type Store interface {
 	Create_Message(ctx context.Context, message *Message) (primitive.ObjectID, error)
 	FCMToken(ctx context.Context, fcmtoken *FCMToken) error
 	GetFCMToken(ctx context.Context, userID primitive.ObjectID) (*FCMToken, error)
+
+	AddFollowing(ctx context.Context, userID, targetUserID primitive.ObjectID) error
+	RemoveFollowing(ctx context.Context, userID, targetUserID primitive.ObjectID) error
+	GetFollowing(ctx context.Context, userID primitive.ObjectID) ([]primitive.ObjectID, error)
+	GetFollowers(ctx context.Context, userID primitive.ObjectID) ([]primitive.ObjectID, error)
 }
 
 type MongoDBStore struct {

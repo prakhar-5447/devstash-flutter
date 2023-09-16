@@ -57,7 +57,7 @@ func (server *Server) create_project(c *gin.Context) {
 		ProjectType:     convert_to_projectType(req.ProjectType),
 		CollaboratorsID: collaboratorsID,
 		Hashtags:        req.Hashtags,
-		UserID:          ID,
+		UserId:          ID,
 	}
 
 	createdProject, err := server.store.Create_Project(c.Request.Context(), project)

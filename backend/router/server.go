@@ -76,9 +76,12 @@ func (server *Server) setupRouter() {
 	router.POST("/avatar", server.uploadAvatar)
 	router.GET("/images/:filename", server.handleImage)
 	router.DELETE("/images/:filename", server.deleteImage)
-	
-	
+
 	router.POST("/message", server.createMessage)
+
+	router.PUT("/connection", server.connection)
+	router.GET("/following/:id", server.get_following)
+	router.GET("/followers/:id", server.get_followers)
 
 	server.router = router
 }
@@ -86,7 +89,3 @@ func (server *Server) setupRouter() {
 func (server *Server) Start(address string) error {
 	return server.router.Run(address)
 }
-
-// func errorResponse(err error) gin.H {
-// 	return gin.H{"error": err.Error()}
-// }
