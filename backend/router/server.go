@@ -80,13 +80,13 @@ func (server *Server) setupRouter() {
 	router.POST("/message", server.createMessage)
 	router.GET("/message", server.getMessagesByUserID)
 
+	router.PUT("/connection", server.connection)
+	router.GET("/following/:id", server.get_following)
+	router.GET("/followers/:id", server.get_followers)
+
 	server.router = router
 }
 
 func (server *Server) Start(address string) error {
 	return server.router.Run(address)
 }
-
-// func errorResponse(err error) gin.H {
-// 	return gin.H{"error": err.Error()}
-// }
