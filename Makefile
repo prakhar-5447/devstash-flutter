@@ -1,4 +1,4 @@
-start: server script
+.PHONY: server app script start run
 
 server:
 	cd ./backend/ && \
@@ -12,4 +12,5 @@ script:
 	cd ./scripts/ && \
 	python utility_script.py &
 
-.PHONY: server app script start
+run:
+	run.bat
