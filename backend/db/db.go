@@ -30,6 +30,8 @@ func (store *MongoDBStore) GetCollection(collectionName string) *mongo.Collectio
 		return store.contactCollection
 	case "skills":
 		return store.skillsCollection
+	case "connections":
+		return store.connectionsCollection
 	case "messages":
 		return store.messagesCollection
 	case "fcmtoken":

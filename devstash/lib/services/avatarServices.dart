@@ -1,10 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:chopper/chopper.dart';
 import 'package:devstash/constants.dart';
-import 'package:devstash/models/request/socialsRequest.dart';
-import 'package:devstash/models/response/socialsResponse.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 

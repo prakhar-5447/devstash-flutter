@@ -9,7 +9,6 @@ import 'package:intl/intl.dart';
 import 'dart:ui';
 import 'package:devstash/models/Collaborator.dart';
 import 'package:devstash/models/Hashtag.dart';
-import 'package:devstash/models/TechStack.dart';
 import 'package:devstash/models/response/projectResponse.dart';
 import 'package:devstash/services/projectServices.dart';
 import 'package:flutter/material.dart';

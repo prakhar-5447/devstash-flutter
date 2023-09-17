@@ -10,9 +10,7 @@ import (
 )
 
 func (store *MongoDBStore) Create_Project(ctx context.Context, project *Project) (*Project, error) {
-	collection := store.GetCollection("projects")
-
-	result, err := collection.InsertOne(ctx, project)
+	result, err := store.GetCollection("projects").InsertOne(ctx, project)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +63,7 @@ func (store *MongoDBStore) Update_Project(ctx context.Context, projectID primiti
 
 func (store *MongoDBStore) Delete_Project(ctx context.Context, projectID primitive.ObjectID, userID primitive.ObjectID) (bool, error) {
 	filter := bson.M{
-		"userID": userID,
+		"userId": userID,
 		"_id":    projectID,
 	}
 
@@ -83,7 +81,7 @@ func (store *MongoDBStore) Delete_Project(ctx context.Context, projectID primiti
 
 func (store *MongoDBStore) Get_Projects_By_UserId(ctx context.Context, userID primitive.ObjectID) ([]*Project, error) {
 	filter := bson.M{
-		"userID": userID,
+		"userId": userID,
 	}
 
 	cursor, err := store.projectsCollection.Find(ctx, filter)
