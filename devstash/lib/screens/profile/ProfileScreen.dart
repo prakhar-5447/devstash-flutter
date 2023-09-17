@@ -345,6 +345,7 @@ class ProfileScreen extends StatelessWidget {
                             if (projects == null) {
                               return const Text('No projects data found.');
                             }
+                            log(projects.toString());
                             return GridView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),

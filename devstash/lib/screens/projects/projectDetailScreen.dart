@@ -59,6 +59,7 @@ class ProjectDetailScreen extends StatelessWidget {
           dynamic res =
               await FavoriteServices().checkFavorite(token, projectDetail.id);
           if (res['success']) {
+            log(res.toString());
             found = res['data'];
           }
         }
@@ -135,8 +136,8 @@ class ProjectDetailScreen extends StatelessWidget {
                                     ),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(10.0),
-                                      child: Image.asset(
-                                        'assets/banner.jpg',
+                                      child: Image.network(
+                                        projectDetail!.image,
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -193,7 +194,7 @@ class ProjectDetailScreen extends StatelessWidget {
                                     tech,
                                     style: const TextStyle(
                                       fontSize: 12,
-                                      color: Colors.black26,
+                                      color: Colors.black,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -203,14 +204,22 @@ class ProjectDetailScreen extends StatelessWidget {
                             const SizedBox(
                               height: 20,
                             ),
-                            Text("work with "),
+                            const Text(
+                              "collaborators: ",
+                              style: TextStyle(
+                                color: Colors.black,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
                             Wrap(
                               spacing: 10,
                               runSpacing: 10,
                               children: collaboratorUsersDetail.map((item) {
                                 return Container(
                                   padding: const EdgeInsets.symmetric(
-                                    vertical: 3,
+                                    vertical: 5,
                                     horizontal: 10,
                                   ),
                                   decoration: const BoxDecoration(

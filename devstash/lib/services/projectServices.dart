@@ -149,7 +149,7 @@ dynamic datasFromJson(String json) {
 ProjectResponse projectFromJson(String json) {
   final projectData = jsonDecode(json)['data'];
 
-  String userID = projectData['UserID'];
+  String userID = projectData['UserId'];
   String id = projectData['ID'];
   String image = projectData['Image'];
   String title = projectData['Title'];
@@ -184,7 +184,7 @@ List<ProjectResponse> projectsFromJson(String json) {
   List<ProjectResponse> projects = [];
 
   for (var projectData in parsedData) {
-    String userID = projectData['UserID'];
+    String userID = projectData['UserId'];
     String id = projectData['ID'];
     String image = projectData['Image'];
     String title = projectData['Title'];
