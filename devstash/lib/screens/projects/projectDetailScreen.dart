@@ -1,3 +1,4 @@
+import 'dart:ui';
 import "dart:developer";
 import 'package:devstash/models/request/favoriteRequest.dart';
 import 'package:devstash/models/response/CollaboratorResponse.dart';
@@ -6,15 +7,11 @@ import 'package:devstash/screens/projects/FavoriteButton.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
-import 'dart:ui';
 import 'package:devstash/models/Collaborator.dart';
-import 'package:devstash/models/Hashtag.dart';
-import 'package:devstash/models/TechStack.dart';
 import 'package:devstash/models/response/projectResponse.dart';
 import 'package:devstash/services/projectServices.dart';
 import 'package:flutter/material.dart';
 import 'package:devstash/constants.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class ProjectDetailScreen extends StatelessWidget {
   final String id;
@@ -66,7 +63,7 @@ class ProjectDetailScreen extends StatelessWidget {
           }
         }
 
-        if (projectDetail.collaboratorsID != null) {
+        if (projectDetail.collaboratorsID.isNotEmpty) {
           dynamic res = await ProjectServices()
               .getCollaboratorUsers(projectDetail.collaboratorsID);
           if (res['success']) {
@@ -81,18 +78,11 @@ class ProjectDetailScreen extends StatelessWidget {
     ProjectResponse? projectDetail;
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
+      appBar: AppBar(
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        onPressed: () {},
-        child: FavoriteButton(
-          id: '64edf26b5fc25c49bc36c69d',
-          found: found,
-          index: index,
-          onDelete: onDelete,
-        ),
+        shadowColor: Colors.transparent,
+        foregroundColor: Colors.black,
       ),
-      appBar: AppBar(),
       body: FutureBuilder<ProjectResponse?>(
           future: _getProjectDetail(),
           builder: (context, snapshot) {
@@ -110,200 +100,136 @@ class ProjectDetailScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                     horizontal: 25,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Stack(
                     children: [
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      Container(
-                        width: 100,
-                        height: 100,
-                        clipBehavior: Clip.hardEdge,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage(projectDetail!.image),
-                            fit: BoxFit.fitWidth,
-                          ),
+                      Positioned(
+                        top: 0,
+                        right: 20,
+                        child: FavoriteButton(
+                          id: '64edf26b5fc25c49bc36c69d',
+                          found: found,
+                          index: index,
+                          onDelete: onDelete,
                         ),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            projectDetail!.title,
-                            style: const TextStyle(
-                              color: Color.fromARGB(255, 75, 73, 70),
-                              fontWeight: FontWeight.w800,
-                              fontSize: 24,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                          const SizedBox(
-                            width: 2,
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              final Uri githubRepoUri =
-                                  Uri.parse(projectDetail!.url);
-                              if (await canLaunchUrl(githubRepoUri)) {
-                                await launchUrl(githubRepoUri);
-                              } else {
-                                throw 'Could not launch $githubRepoUri';
-                              }
-                            },
-                            child: const Icon(
-                              Icons.link,
-                              size: 18,
-                            ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 2,
-                      ),
-                      Text(
-                        projectDetail!.createdDate,
-                        style: const TextStyle(
-                          color: Color.fromARGB(255, 165, 165, 165),
-                          fontWeight: FontWeight.w400,
-                          fontSize: 12,
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      Text(
-                        projectDetail!.description,
-                        style: const TextStyle(
-                            color: Color.fromARGB(255, 0, 0, 0),
-                            fontWeight: FontWeight.w400,
-                            fontSize: 15,
-                            height: 1.5),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: projectDetail!.technologies.map((tech) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 30),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 3,
-                                      horizontal: 10,
-                                    ),
+                      Center(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Center(
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 100,
+                                    height: 100,
                                     decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black),
-                                      borderRadius: BorderRadius.circular(8),
-                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.5),
+                                          spreadRadius: 2,
+                                          blurRadius: 7,
+                                          offset: const Offset(0, 3),
+                                        ),
+                                      ],
                                     ),
-                                    child: Text(
-                                      tech,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.black,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      child: Image.asset(
+                                        'assets/banner.jpg',
+                                        fit: BoxFit.cover,
                                       ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Text(
+                                    projectDetail!.title.toUpperCase(),
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    projectDetail!.createdDate,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black26,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              projectDetail!.description,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                height: 1.3,
+                              ),
+                              textAlign: TextAlign.justify,
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            Wrap(
+                              spacing: 10,
+                              runSpacing: 10,
+                              children: projectDetail!.technologies.map((tech) {
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 3,
+                                    horizontal: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: const Color.fromARGB(
+                                        255, 232, 231, 255),
+                                  ),
+                                  child: Text(
+                                    tech,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.black26,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 );
                               }).toList(),
-                            )),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 30),
-                        child: Column(
-                          children: [
-                            const Row(
-                              children: [
-                                Text("COLLABORATORS",
-                                    style: TextStyle(
-                                        color:
-                                            Color.fromARGB(255, 165, 165, 165),
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 20)),
-                              ],
                             ),
-                            Padding(
-                                padding: const EdgeInsets.only(top: 15),
-                                child: Align(
-                                  alignment: Alignment.topLeft,
-                                  child: SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        children:
-                                            collaboratorUsersDetail.map((item) {
-                                          return Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 10),
-                                            child: Container(
-                                              decoration: const BoxDecoration(
-                                                  color: Color.fromARGB(
-                                                      255, 241, 242, 246)),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(10),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 10),
-                                                  child: Text(item.name,
-                                                      style: const TextStyle(
-                                                          color: Color.fromARGB(
-                                                              255, 39, 24, 126),
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontSize: 12)),
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        }).toList(),
-                                      )),
-                                )),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Text("work with "),
+                            Wrap(
+                              spacing: 10,
+                              runSpacing: 10,
+                              children: collaboratorUsersDetail.map((item) {
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 3,
+                                    horizontal: 10,
+                                  ),
+                                  decoration: const BoxDecoration(
+                                      color:
+                                          Color.fromARGB(255, 241, 242, 246)),
+                                  child: Text(
+                                    item.name,
+                                    style: const TextStyle(
+                                      color: Color.fromARGB(255, 39, 24, 126),
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            )
                           ],
                         ),
                       ),
-                      Padding(
-                          padding: const EdgeInsets.only(top: 40),
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: projectDetail!.hashtags.map((hash) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(right: 10),
-                                      child: Container(
-                                        decoration: const BoxDecoration(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(3)),
-                                            color: Color.fromARGB(
-                                                255, 39, 24, 126)),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 10, horizontal: 15),
-                                          child: Text("#$hash",
-                                              style: const TextStyle(
-                                                  color: Color.fromARGB(
-                                                      255, 241, 242, 246),
-                                                  fontWeight: FontWeight.w700,
-                                                  fontSize: 12)),
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                )),
-                          ))
                     ],
                   ),
                 );
