@@ -4,6 +4,7 @@ import 'package:devstash/constants.dart';
 import 'package:devstash/models/request/contactRequest.dart';
 import 'package:devstash/models/response/contactResponse.dart';
 import 'package:devstash/models/response/education.dart';
+import 'package:devstash/services/Helper.dart';
 import 'package:http/http.dart' as http;
 
 class ContactServices {
@@ -15,7 +16,7 @@ class ContactServices {
       };
       var response = await http.put(url,
           headers: headers, body: jsonEncode(contact.toJson()));
-      return jsonDecode(response.body);
+      return Helper().responseFromJson(response.body);
     } catch (e) {
       log(e.toString());
     }

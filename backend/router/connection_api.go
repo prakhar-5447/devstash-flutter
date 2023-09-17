@@ -10,7 +10,7 @@ import (
 )
 
 func (server *Server) connection(c *gin.Context) {
-	var req models.OtherUserProfiles
+	var req models.Connect
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "msg": err.Error()})
 		return

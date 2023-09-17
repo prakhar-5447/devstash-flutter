@@ -23,5 +23,7 @@ class ApiConstants {
   static String socialsEndpoint = "/socials";
   static String contactEndpoint = "/contact";
   static String avatarEndpoint = "/avatar";
+  static String connectionEndpoint = "/connection";
+  static String followingEndpoint = "/following/";
+  static String followerEndpoint = "/followers/";
 }
-
