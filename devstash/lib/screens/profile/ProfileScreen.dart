@@ -445,7 +445,7 @@ class ProfileScreen extends StatelessWidget {
                                 children: [
                                   for (var i in educations!)
                                     Container(
-                                      margin: EdgeInsets.only(bottom: 10),
+                                      margin: const EdgeInsets.only(bottom: 10),
                                       decoration: const BoxDecoration(
                                         color:
                                             Color.fromARGB(255, 241, 242, 246),

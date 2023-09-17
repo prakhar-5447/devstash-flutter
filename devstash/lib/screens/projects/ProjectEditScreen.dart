@@ -21,7 +21,13 @@ class ProjectEditScreen extends StatefulWidget {
 
 class _ProjectEditScreenState extends State<ProjectEditScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final List<String> _allCollaboratorsID = ['64d0eb91908b9fdbe1c77250'];
+  final List<String> _allCollaboratorsID = [
+    '64db8ef425797753868a7ba0',
+    '64d0eb91908b9fdbe1c77251',
+    '64d0eb91908b9fdbe1c77257',
+    '64d0eb91908b9fdbe1c77259'
+    '64bd4592086868580bca97d2'
+  ];
   final List<String> _allTechnologies = ['html', 'css', 'javascript'];
   final List<String> _allProjectType = [
     'Select a value',
@@ -230,7 +236,8 @@ class _ProjectEditScreenState extends State<ProjectEditScreen> {
       children: [
         DropdownButtonFormField<String>(
           decoration: InputDecoration(labelText: labelText),
-          value: selectedValues.isNotEmpty ? selectedValues[0] : null,
+          value:
+              selectedValues.isNotEmpty ? selectedValues[0] : null,
           items: items.map((String value) {
             return DropdownMenuItem<String>(
               value: value,
@@ -390,7 +397,7 @@ class _ProjectEditScreenState extends State<ProjectEditScreen> {
                                   setState(() {
                                     _technologies.remove(technology);
                                     _allTechnologies.add(
-                                        technology); // Add back to suggestions
+                                        technology);
                                   });
                                 },
                               );

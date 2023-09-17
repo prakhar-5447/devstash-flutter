@@ -6,6 +6,7 @@ import 'package:devstash/screens/projects/ProjectEditScreen.dart';
 import 'package:devstash/services/projectServices.dart';
 import 'package:devstash/models/ProjectInfo.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:devstash/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -90,245 +91,132 @@ class _ProjectState extends State<Project> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              Get.to(() => ProjectAddScreen(addProject: _addProject));
+            },
+            icon: const Icon(
+              Icons.add,
+              size: 12,
+              color: Colors.black,
+            ),
+          )
+        ],
+      ),
+      body: Column(
         children: [
-          Column(children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 3,
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 15,
               ),
-              child: const Padding(
-                padding:
-                    EdgeInsets.only(top: 40, left: 25, right: 25, bottom: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Icon(
-                      Icons.arrow_back,
-                      size: 40,
-                      color: Color.fromARGB(255, 0, 0, 0),
-                    ),
-                    Text("PROJECTS",
-                        style: TextStyle(
-                            color: Color.fromARGB(255, 165, 165, 165),
-                            fontFamily: 'Comfortaa',
-                            fontWeight: FontWeight.w400,
-                            fontSize: 20)),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25),
-                child: SingleChildScrollView(
-                  child: FutureBuilder<void>(
-                    future: _getProject(),
-                    builder:
-                        (BuildContext context, AsyncSnapshot<void> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else {
-                        return Column(
-                          children: [
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: project.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                var item = project[index];
-                                return Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 10, bottom: 20),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border(
-                                          left: BorderSide(
-                                            color:
-                                                _selectedProjectIndex == index
-                                                    ? Colors.red
-                                                    : const Color.fromARGB(
-                                                        255, 174, 183, 254),
-                                            width: 5.0,
-                                          ),
-                                        ),
-                                      ),
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 15),
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                SizedBox(
-                                                  height: 100,
-                                                  width: 150,
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                    child: Image.network(
-                                                      item.image,
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  height: 100,
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.end,
-                                                    children: [
-                                                      Row(
-                                                        children: [
-                                                          GestureDetector(
-                                                            onTap: () => {
-                                                              _removeProject(
-                                                                  item.id,
-                                                                  index)
-                                                            },
-                                                            child: const Icon(
-                                                              Icons.delete,
-                                                              size: 20,
-                                                              color: Colors.red,
-                                                            ),
-                                                          ),
-                                                          GestureDetector(
-                                                            onTap: () {
-                                                              Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                      builder: (context) =>
-                                                                          ProjectEditScreen(
-                                                                              id: item.id)));
-                                                            },
-                                                            child: const Icon(
-                                                              Icons.edit,
-                                                              size: 20,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .end,
-                                                        children: [
-                                                          Text(
-                                                            item.name,
-                                                            style:
-                                                                const TextStyle(
-                                                              color: Color
-                                                                  .fromARGB(
-                                                                      255,
-                                                                      75,
-                                                                      73,
-                                                                      70),
-                                                              fontFamily:
-                                                                  'Comfortaa',
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              fontSize: 15,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            item.date,
-                                                            style:
-                                                                const TextStyle(
-                                                              color: Color
-                                                                  .fromARGB(
-                                                                      255,
-                                                                      165,
-                                                                      165,
-                                                                      165),
-                                                              fontFamily:
-                                                                  'Comfortaa',
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              fontSize: 14,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 10),
-                                              child: Align(
-                                                alignment: Alignment.topLeft,
-                                                child: Text(
-                                                  "${item.description} ${item.id}",
-                                                  style: const TextStyle(
-                                                    color: Color.fromARGB(
-                                                        255, 165, 165, 165),
-                                                    fontFamily: 'Comfortaa',
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 12,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ));
-                              },
+              child: SingleChildScrollView(
+                child: FutureBuilder<void>(
+                  future: _getProject(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<void> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      return Column(
+                        children: [
+                          ListView.builder(
+                            shrinkWrap: true,
+                            padding: const EdgeInsets.only(
+                              top: 15,
                             ),
-                          ],
-                        );
-                      }
-                    },
-                  ),
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: project.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              var item = project[index];
+                              return Container(
+                                margin: const EdgeInsets.only(
+                                  bottom: 10,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      height: 60,
+                                      width: 60,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.network(
+                                          item.image,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Flexible(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text(
+                                            item.name,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text(
+                                            item.description.length <= 100
+                                                ? item.description
+                                                : '${item.description.substring(0, 100)}...',
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                            softWrap: true,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    IconButton(
+                                        visualDensity: VisualDensity.compact,
+                                        enableFeedback: false,
+                                        color: Colors.black,
+                                        splashColor: Colors.transparent,
+                                        padding: EdgeInsets.zero,
+                                        onPressed: () {
+                                          Get.to(() =>
+                                              ProjectEditScreen(id: item.id));
+                                        },
+                                        icon: const Icon(
+                                          Icons.edit,
+                                          size: 20,
+                                          color: Colors.black26,
+                                        ))
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    }
+                  },
                 ),
               ),
-            )
-          ]),
-          Positioned(
-            bottom: 25,
-            right: 25,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            ProjectAddScreen(addProject: _addProject)));
-              },
-              child: Container(
-                  width: 60,
-                  height: 60,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(11)),
-                    color: Color.fromARGB(255, 255, 161, 54),
-                  ),
-                  child: const Icon(Icons.add,
-                      color: Color.fromARGB(255, 255, 255, 255), size: 40)),
             ),
-          ),
+          )
         ],
       ),
     );

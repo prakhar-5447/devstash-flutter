@@ -48,24 +48,17 @@ class _FavoriteButtonState extends State<FavoriteButton> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 60,
-      height: 60,
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(11)),
-        color: Color.fromARGB(255, 174, 183, 254),
-      ),
-      child: GestureDetector(
-        onTap: () {
-          _updateFavorite();
-        },
-        child: Icon(
-          Icons.star_rounded,
-          color: widget.found
-              ? const Color.fromARGB(255, 254, 237, 89)
-              : const Color.fromARGB(223, 223, 220, 220),
-          size: 40,
-        ),
+    return GestureDetector(
+      onTap: () {
+        _updateFavorite();
+      },
+      child: Icon(
+        
+        Icons.star_rounded,
+        color: widget.found
+            ? const Color.fromARGB(255, 254, 237, 89)
+            : const Color.fromARGB(223, 208, 208, 208),
+        size: 30,
       ),
     );
   }
