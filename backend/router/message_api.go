@@ -95,5 +95,5 @@ func (server *Server) getMessagesByUserID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"success": true, "messages": messages})
+	c.JSON(http.StatusOK, gin.H{"success": true, "msg": "Data fetched sucessfully", "data": messages})
 }

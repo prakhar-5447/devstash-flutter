@@ -18,7 +18,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GithubServices {
-  Future<void> loginWithGitHub() async {
+  void loginWithGitHub() async {
     try {
       final result = await FlutterWebAuth.authenticate(
         url:

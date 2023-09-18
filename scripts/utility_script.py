@@ -24,12 +24,12 @@ for i, profile in enumerate(user_profiles):
 
 @app.route('/get_recommendations', methods=['GET'])
 def get_recommendations():
-    userid = request.args.get('userid') 
+    userid = request.args.get('') 
     num_recommendations = int(request.args.get('num_recommendations', 5))
     
     user_index = None
     for i, profile in enumerate(user_profiles):
-        if str(profile["userid"]) == userid:
+        if str(profile["userId"]) == userid:
             user_index = i
             break
     
@@ -43,7 +43,7 @@ def get_recommendations():
     recommended = [user_profiles[i] for i in similar_users_list if i != user_index][:num_recommendations]
     recommended_profiles=list()
     for profile in recommended:
-        recommended_profiles.append(str(profile["userid"]))
+        recommended_profiles.append(str(profile["userId"]))
     return jsonify({"data": recommended_profiles})
 
 if __name__ == '__main__':

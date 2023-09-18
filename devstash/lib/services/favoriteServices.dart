@@ -31,7 +31,7 @@ class FavoriteServices {
       };
 
       var response = await http.get(url, headers: headers);
-      return Helper().responseFromJson(response.body);
+      return jsonDecode(response.body);
     } catch (e) {
       log(e.toString());
     }
