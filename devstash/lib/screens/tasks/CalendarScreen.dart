@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:devstash/models/Events.dart';
 import 'package:devstash/utils/utils.dart' as devstash_utils;
-import 'package:devstash/widgets/AppDrawer.dart';
 import 'package:devstash/screens/events/EventList.dart';
 import 'package:devstash/screens/events/EventModal.dart';
 import 'package:flutter/material.dart';
@@ -102,7 +101,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: AppDrawer(currentIndex: 3),
       appBar: AppBar(
         title: const Text('Calendar'),
         actions: [

@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:devstash/models/ProjectList.dart';
+import 'package:devstash/screens/networks/UserNetworks.dart';
 import 'package:devstash/screens/projects/project.dart';
 import 'package:devstash/screens/projects/projectDetailScreen.dart';
 import 'package:devstash/services/projectServices.dart';
@@ -124,7 +125,7 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const Stack(
+            Stack(
               children: [
                 Align(
                   alignment: Alignment.topRight,
@@ -133,45 +134,68 @@ class ProfileScreen extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Column(
-                          children: [
-                            Text(
-                              "12",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w400,
+                        GestureDetector(
+                          onTap: () {
+                            Get.to(() => UserNetworks());
+                          },
+                          child: const Column(
+                            children: [
+                              Text(
+                                "12",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w400,
+                                ),
                               ),
-                            ),
-                            Text(
-                              "Followers",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
+                              Text(
+                                "Followers",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                        SizedBox(
-                          width: 30,
+                        const SizedBox(
+                          width: 15,
                         ),
-                        Column(
-                          children: [
-                            Text(
-                              "20",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400,
+                        GestureDetector(
+                          onTap: () {
+                            Get.to(() => UserNetworks());
+                          },
+                          child: const Column(
+                            children: [
+                              Text(
+                                "20",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w400,
+                                ),
                               ),
-                            ),
-                            Text(
-                              "Following",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
+                              Text(
+                                "Following",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Get.to(() => UserNetworks());
+                          },
+                          child: const Icon(
+                            Icons.bookmark_added,
+                            size: 18,
+                            color: Colors.black,
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -446,12 +470,13 @@ class ProfileScreen extends StatelessWidget {
                                 children: [
                                   for (var i in educations!)
                                     Container(
-                                      margin: const EdgeInsets.only(bottom: 10),
+                                      margin: const EdgeInsets.only(bottom: 5),
                                       decoration: const BoxDecoration(
                                         color:
                                             Color.fromARGB(255, 241, 242, 246),
                                       ),
                                       child: ListTile(
+                                        dense: true,
                                         title: Text(
                                           i.collegeorSchoolName!,
                                           style: const TextStyle(
