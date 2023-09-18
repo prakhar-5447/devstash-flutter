@@ -104,7 +104,7 @@ type Message struct {
 	UserId      primitive.ObjectID `bson:"userid,omitempty"`
 	Subject     string             `bson:"subject"`
 	Description string             `bson:"description"`
-	SenderName string             `bson:"senderName"`
+	SenderName  string             `bson:"senderName"`
 	SenderEmail string             `bson:"senderEmail"`
 	CreatedAt   primitive.DateTime `bson:"createdAt,omitempty"`
 }

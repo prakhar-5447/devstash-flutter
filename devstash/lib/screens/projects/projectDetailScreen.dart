@@ -1,13 +1,10 @@
 import 'dart:ui';
 import "dart:developer";
-import 'package:devstash/models/request/favoriteRequest.dart';
 import 'package:devstash/models/response/CollaboratorResponse.dart';
 import 'package:devstash/services/favoriteServices.dart';
 import 'package:devstash/screens/projects/FavoriteButton.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
-import 'package:devstash/models/Collaborator.dart';
 import 'package:devstash/models/response/projectResponse.dart';
 import 'package:devstash/services/projectServices.dart';
 import 'package:flutter/material.dart';

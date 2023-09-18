@@ -1,4 +1,9 @@
+import 'dart:developer';
+
+import 'package:devstash/models/response/messageResponse.dart';
+import 'package:devstash/services/messageServicess.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Messages {
   String sender;
@@ -15,14 +20,20 @@ class Messages {
 }
 
 class InboxScreen extends StatelessWidget {
-  final List<Messages> messages = [
-    Messages(
-      sender: "Prakhar Sahu",
-      subject: "Important",
-      description: "This is hereby inform that, tommorrow is day after today, this is day of day and day",
-      date: DateTime.now(),
-    ),
-  ];
+  Future<List<MessageResponse>?> _getMessage() async {
+    late List<MessageResponse> messageList;
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    if (token != null) {
+      dynamic res = await MessageServices().getMessage(token);
+      if (res["success"]) {
+        messageList = res['data'];
+      } else {
+        return null;
+      }
+    }
+    return messageList;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,56 +97,76 @@ class InboxScreen extends StatelessWidget {
             Expanded(
               child: TabBarView(
                 children: [
-                  ListView.builder(
-                    padding: EdgeInsets.zero,
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      var message = messages[index];
-                      return Container(
-                        color: Colors.grey[200],
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 20,
-                          horizontal: 20,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    message.sender,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
+                  FutureBuilder<List<MessageResponse>?>(
+                      future: _getMessage(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<MessageResponse>?> snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else {
+                          List<MessageResponse>? messages = snapshot.data;
+                          if (messages == null) {
+                            return const Text('Not able to fetch messages');
+                          }
+                          return ListView.builder(
+                            padding: EdgeInsets.zero,
+                            itemCount: messages.length,
+                            itemBuilder: (context, index) {
+                              var message = messages[index];
+                              return Container(
+                                color: Colors.grey[200],
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 20,
+                                  horizontal: 20,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Flexible(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            message.senderName,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text(
+                                            message.description.length <= 100
+                                                ? message.description
+                                                : '${message.description.substring(0, 100)}...',
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                            softWrap: true,
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(
-                                    message.description.length <= 100
-                                        ? message.description
-                                        : '${message.description.substring(0, 100)}...',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400,
+                                    Text(
+                                      message.createdAt,
                                     ),
-                                    softWrap: true,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Text(
-                              "${message.date.hour}:${message.date.minute}",
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        }
+                      }),
                   const Center(
                     child: Text("Important Tab Content"),
                   ),
