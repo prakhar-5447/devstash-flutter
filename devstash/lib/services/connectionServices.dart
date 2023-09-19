@@ -23,24 +23,29 @@ class ConnectionServices {
     }
   }
 
-  dynamic getFollowing(String id) async {
+  dynamic getFollowing(String token) async {
     try {
       var url =
-          Uri.parse(ApiConstants.baseUrl + ApiConstants.followingEndpoint + id);
+          Uri.parse(ApiConstants.baseUrl + ApiConstants.followingEndpoint);
+      var headers = {
+        'Authorization': token,
+      };
 
-      var response = await http.get(url);
+      var response = await http.get(url, headers: headers);
       return dataFromJson(response.body);
     } catch (e) {
       log(e.toString());
     }
   }
 
-  dynamic getFollower(String id) async {
+  dynamic getFollower(String token) async {
     try {
-      var url =
-          Uri.parse(ApiConstants.baseUrl + ApiConstants.followerEndpoint + id);
+      var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.followerEndpoint);
+      var headers = {
+        'Authorization': token,
+      };
 
-      var response = await http.get(url);
+      var response = await http.get(url, headers: headers);
       return dataFromJson(response.body);
     } catch (e) {
       log(e.toString());
