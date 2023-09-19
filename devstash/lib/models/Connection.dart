@@ -1,8 +1,8 @@
-class Bookmarks {
+class Connection {
   String _name;
   String _avatar;
 
-  Bookmarks(this._name, this._avatar);
+  Connection(this._name, this._avatar);
 
   String get name => _name;
   set name(String value) => _name = value;
