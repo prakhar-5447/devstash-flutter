@@ -13,7 +13,6 @@ import 'package:devstash/models/response/education.dart';
 import 'package:devstash/models/response/skillResponse.dart';
 import 'package:devstash/models/response/socialsResponse.dart';
 import 'package:devstash/models/response/user_state.dart';
-import 'package:devstash/screens/profile/EditProfile.dart';
 import 'package:devstash/screens/contact/contactScreen.dart';
 import 'package:devstash/screens/education/educationList.dart';
 import 'package:devstash/screens/skills/skillList.dart';

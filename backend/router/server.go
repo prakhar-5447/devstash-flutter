@@ -81,8 +81,8 @@ func (server *Server) setupRouter() {
 	router.GET("/message", server.getMessagesByUserID)
 
 	router.PUT("/connection", server.connection)
-	router.GET("/following/:id", server.get_following)
-	router.GET("/followers/:id", server.get_followers)
+	router.GET("/following", server.get_following)
+	router.GET("/followers", server.get_followers)
 
 	server.router = router
 }
