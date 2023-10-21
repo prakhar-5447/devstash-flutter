@@ -55,7 +55,6 @@ class AuthScreen extends StatelessWidget {
                         "or",
                         style: TextStyle(
                           color: Color.fromARGB(197, 144, 144, 144),
-                          fontFamily: 'Comfortaa',
                           fontWeight: FontWeight.w400,
                           fontSize: 20,
                         ),
@@ -81,8 +80,8 @@ class AuthScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        width: 45,
-                        height: 45,
+                        width: 40,
+                        height: 40,
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.black),
@@ -95,8 +94,8 @@ class AuthScreen extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        width: 45,
-                        height: 45,
+                        width: 40,
+                        height: 40,
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.black),
@@ -109,8 +108,8 @@ class AuthScreen extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        width: 45,
-                        height: 45,
+                        width: 40,
+                        height: 40,
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.black),
@@ -146,7 +145,6 @@ class AuthScreen extends StatelessWidget {
                               : "Already have an account?",
                           style: const TextStyle(
                             color: Color.fromARGB(197, 144, 144, 144),
-                            fontFamily: 'Comfortaa',
                             fontWeight: FontWeight.w400,
                             fontSize: 15,
                           ),
@@ -163,7 +161,6 @@ class AuthScreen extends StatelessWidget {
                                 : "Register here",
                             style: const TextStyle(
                               color: Color.fromARGB(255, 24, 178, 250),
-                              fontFamily: 'Comfortaa',
                               fontWeight: FontWeight.w400,
                               fontSize: 15,
                             ),

@@ -1,5 +1,3 @@
-.PHONY: server app script start run
-
 server:
 	cd ./backend/ && \
 	go run main.go &
@@ -14,3 +12,5 @@ script:
 
 run:
 	run.bat
+	
+.PHONY: server app script start run

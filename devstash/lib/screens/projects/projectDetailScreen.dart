@@ -142,20 +142,20 @@ class ProjectDetailScreen extends StatelessWidget {
                                   const SizedBox(height: 20),
                                   GestureDetector(
                                     onTap: () async {
-                                      final Uri url =
-                                          Uri.parse(projectDetail!.url);
-                                      if (await canLaunchUrl(url)) {
-                                        await launchUrl(url);
-                                      } else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text('invalid url $url'),
-                                            behavior: SnackBarBehavior.floating,
-                                            backgroundColor: Colors.red,
-                                          ),
-                                        );
-                                      }
+                                      // final Uri url =
+                                      //     Uri.parse(projectDetail!.url);
+                                      // if (await canLaunchUrl(url)) {
+                                      //   await launchUrl(url);
+                                      // } else {
+                                      //   ScaffoldMessenger.of(context)
+                                      //       .showSnackBar(
+                                      //     SnackBar(
+                                      //       content: Text('invalid url $url'),
+                                      //       behavior: SnackBarBehavior.floating,
+                                      //       backgroundColor: Colors.red,
+                                      //     ),
+                                      //   );
+                                      // }
                                     },
                                     child: Text(
                                       projectDetail!.title.toUpperCase(),
