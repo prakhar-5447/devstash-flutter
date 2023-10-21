@@ -4,11 +4,31 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:devstash/connectivity_handler.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  final AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('app_icon');
+
+  final DarwinInitializationSettings initializationSettingsDarwin =
+      DarwinInitializationSettings(
+          onDidReceiveLocalNotification: onDidReceiveLocalNotification);
+
+  final InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+    iOS: initializationSettingsDarwin,
+  );
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
   await Firebase.initializeApp();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
@@ -32,6 +52,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      navigatorKey: navigatorKey,
       initialBinding: InitialBindings(),
       title: 'Devstash',
       theme: ThemeData(
@@ -56,4 +77,27 @@ class InitialBindings extends Bindings {
     Get.put(UserController());
     Get.put(BottomTabController());
   }
+}
+
+void onDidReceiveLocalNotification(
+    int id, String? title, String? body, String? payload) async {
+  showDialog(
+    context: navigatorKey.currentContext!, // Access the context here
+    builder: (BuildContext context) => AlertDialog(
+      title: Text(title ?? ''),
+      content: Text(body ?? ''),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context, rootNavigator: true).pop();
+          },
+          child: Text('Close'),
+        ),
+        TextButton(
+          onPressed: () async {},
+          child: Text('Go to Second Screen'),
+        ),
+      ],
+    ),
+  );
 }
