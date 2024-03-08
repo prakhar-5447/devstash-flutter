@@ -42,7 +42,6 @@ class LoginModalContent extends StatelessWidget {
               "Welcome\nBack",
               style: TextStyle(
                 color: Color.fromARGB(255, 82, 81, 81),
-                fontFamily: 'Comfortaa',
                 fontWeight: FontWeight.w600,
                 height: 1.2,
                 fontSize: 30,
@@ -50,7 +49,7 @@ class LoginModalContent extends StatelessWidget {
               textAlign: TextAlign.left,
             ),
             const SizedBox(
-              height: 25,
+              height: 30,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -82,8 +81,9 @@ class LoginModalContent extends StatelessWidget {
                         },
                         controller: _usernameOrEmail,
                         decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
+                          border: UnderlineInputBorder(),
                           labelText: 'Username/Email',
+                          isDense: true,
                         ),
                       ),
                       const SizedBox(
@@ -106,15 +106,14 @@ class LoginModalContent extends StatelessWidget {
                         },
                         controller: _password,
                         decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
+                          border: UnderlineInputBorder(),
                           hintText: 'Enter Password',
                           labelText: 'Password',
+                          isDense: true,
                         ),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           TextButton(
                             onPressed: () {},
@@ -123,10 +122,8 @@ class LoginModalContent extends StatelessWidget {
                               style: TextStyle(
                                 color: Color.fromARGB(255, 117, 140, 253),
                                 fontSize: 12,
-                                fontFamily: 'Comfortaa',
                                 fontWeight: FontWeight.w500,
                               ),
-                              textAlign: TextAlign.right,
                             ),
                           ),
                         ],
@@ -146,14 +143,11 @@ class LoginModalContent extends StatelessWidget {
                           return _isLoading.value
                               ? const CircularProgressIndicator()
                               : ElevatedButton(
-                                  style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(
-                                      const Color.fromARGB(
-                                        255,
-                                        33,
-                                        149,
-                                        221,
-                                      ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 5, 66, 157),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
                                     ),
                                   ),
                                   onPressed:
@@ -166,11 +160,9 @@ class LoginModalContent extends StatelessWidget {
                                     child: Text(
                                       "LOGIN",
                                       style: TextStyle(
-                                        color:
-                                            Color.fromARGB(221, 221, 215, 215),
-                                        fontFamily: 'Comfortaa',
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 22,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 20,
                                       ),
                                     ),
                                   ),

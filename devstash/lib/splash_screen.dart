@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:devstash/binding_screens.dart';
 import 'package:devstash/controllers/user_controller.dart';
 import 'package:devstash/models/response/user_state.dart';
+import 'package:devstash/screens/auth/onboarding_screen.dart';
 import 'package:devstash/screens/home/home_screen.dart';
 import 'package:devstash/screens/auth/welcome_screen.dart';
 import 'package:devstash/services/userServices.dart';
@@ -21,7 +22,13 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    // deleteToken();
     loadToken();
+  }
+
+  void deleteToken() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('token', "hello");
   }
 
   void loadToken() async {
@@ -30,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     Future.delayed(const Duration(seconds: 2), () async {
       if (token.isEmpty) {
-        Get.off(() => WelcomeScreen());
+        Get.off(() => OnboardingScreen());
       } else {
         try {
           dynamic res = await UserServices().getUser(token);
@@ -39,11 +46,11 @@ class _SplashScreenState extends State<SplashScreen> {
             Get.find<UserController>().user = userData;
             Get.off(() => BindingScreen());
           } else {
-            Get.off(() => WelcomeScreen());
+            Get.off(() => OnboardingScreen());
           }
         } catch (error) {
           log(error.toString());
-          Get.off(() => WelcomeScreen());
+          Get.off(() => OnboardingScreen());
         }
       }
     });
