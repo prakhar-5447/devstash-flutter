@@ -3,6 +3,8 @@ package router
 import (
 	"context"
 	"net/http"
+	"regexp"
+	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -15,6 +17,16 @@ func (server *Server) sign_up(c *gin.Context) {
 	var req models.CreateUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "msg": err.Error()})
+		return
+	}
+
+	req.Name = strings.TrimSpace(req.Name)
+	req.Username = strings.TrimSpace(req.Username)
+	req.Email = strings.TrimSpace(req.Email)
+	req.Description = strings.TrimSpace(req.Description)
+
+	if !is_valid_email(req.Email) {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "msg": "Invalid email format"})
 		return
 	}
 
@@ -121,4 +133,10 @@ func (server *Server) sign_in(c *gin.Context) {
 		"msg":     "Login successfully",
 		"token":   token,
 		"data":    user})
+}
+
+func is_valid_email(email string) bool {
+	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+	regex := regexp.MustCompile(emailRegex)
+	return regex.MatchString(email)
 }
